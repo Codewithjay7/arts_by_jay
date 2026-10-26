@@ -15,11 +15,16 @@
     "seed:supabase": "node supabase/seed/seed.mjs",
     "db:push": "npx supabase db push",
     "db:link": "npx supabase link --project-ref tdcdghuzasxkfdvactdz",
-    "functions:deploy": "npx supabase functions deploy create-order && npx supabase functions deploy verify-payment && npx supabase functions deploy razorpay-webhook --no-verify-jwt"
+    "functions:deploy": "npx supabase functions deploy create-order && npx supabase functions deploy verify-payment && npx supabase functions deploy razorpay-webhook --no-verify-jwt",
+    "db:apply": "node supabase/apply.mjs",
+    "db:verify": "node supabase/apply.mjs --verify",
+    "db:security": "node supabase/verify.mjs"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.118.0",
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "dotenv": "^18.0.9",
+    "pg": "^8.23.1"
   },
   "engines": {
     "node": ">=20"
