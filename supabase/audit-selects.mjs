@@ -78,7 +78,22 @@ const loadSchema = async () => {
     link(row.tgt_table, row.src_table);
   }
 
-  return { columns, related };
+  // Functions and their parameter names, for the .rpc() call sites. A name
+  // may have several overloads, so each is kept.
+  const procs = await client.query(`
+    select p.proname, coalesce(array_to_string(p.proargnames, ','), '') as argnames
+    from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public'
+  `);
+
+  const functions = new Map();
+  for (const row of procs.rows) {
+    if (!functions.has(row.proname)) functions.set(row.proname, []);
+    functions.get(row.proname).push(new Set(row.argnames ? row.argnames.split(',') : []));
+  }
+
+  return { columns, related, functions };
 };
 
 /* ───────────────────────── Select parsing ───────────────────────── */
@@ -173,7 +188,7 @@ const expandConstants = (text, consts, depth = 0) => {
   );
 };
 
-const scanFile = (file, schema, problems) => {
+const scanFile = (file, schema, problems, counts) => {
   const src = fs.readFileSync(file, 'utf8');
   const rel = path.relative(root, file).replace(/\\/g, '/');
 
@@ -208,7 +223,84 @@ const scanFile = (file, schema, problems) => {
     // A select built from a runtime variable cannot be checked statically.
     if (/\$\{/.test(text)) continue;
 
+    counts.selects += 1;
     walk(text, table, schema, problems, `${rel}:${line} (${table})`);
+  }
+
+  /* ── .rpc('name', { args }) ── */
+  // The same failure mode as a missing column, and just as invisible until
+  // someone opens the page: a renamed function or a renamed parameter throws
+  // only when called. Postgres resolves by parameter NAME here, so
+  // `{ p_user_id }` against a function declared `p_artist_user_id` fails
+  // even though the intent is obvious.
+  for (const m of src.matchAll(/\.rpc\(\s*['"`]([a-z_][\w]*)['"`]\s*(?:,\s*\{([^}]*)\})?/g)) {
+    const name = m[1];
+    const line = src.slice(0, m.index).split('\n').length;
+    const where = `${rel}:${line}`;
+
+    counts.rpcs += 1;
+    const overloads = schema.functions.get(name);
+    if (!overloads) {
+      problems.push(`${where}: rpc("${name}") — no such function in the database`);
+      continue;
+    }
+
+    const keys = [...(m[2] ?? '').matchAll(/([A-Za-z_]\w*)\s*:/g)].map((k) => k[1]);
+    // Shorthand `{ p_slug }` passes the variable under its own name.
+    for (const bare of (m[2] ?? '').split(',')) {
+      const t = bare.trim();
+      if (t && !t.includes(':') && /^[A-Za-z_]\w*$/.test(t)) keys.push(t);
+    }
+
+    // An overload matches when it accepts every key given. Arguments with a
+    // default may be omitted, so this checks only that nothing is passed
+    // that the function cannot accept.
+    const ok = overloads.some((params) => keys.every((k) => params.has(k)));
+    if (!ok) {
+      const expected = overloads.map((p) => `{${[...p].join(', ')}}`).join(' | ') || '{}';
+      problems.push(
+        `${where}: rpc("${name}") called with {${keys.join(', ')}} — accepts ${expected}`,
+      );
+    }
+  }
+
+  /* ── .eq / .neq / .gt / .in / .ilike / .order on a column ── */
+  // A filter on a column that does not exist fails the query exactly like a
+  // select on one. The table is again the nearest preceding from().
+  const filterCall = /\.(eq|neq|gt|gte|lt|lte|like|ilike|is|in|contains|overlaps|order)\(\s*['"`]([\w.]+)['"`]/g;
+
+  for (const m of src.matchAll(filterCall)) {
+    let owner = null;
+    for (const f of froms) {
+      if (f.index < m.index) owner = f;
+      else break;
+    }
+    if (!owner) continue;
+
+    // The filter must belong to the SAME chained expression as the from().
+    //
+    // Filters are frequently applied to a stored builder — `query = query.eq(…)`
+    // — and a lookup on another table can sit in between. Then the nearest
+    // preceding from() is the wrong one and every filter is reported against
+    // it: that is how `.gte("price_minor")` came to be blamed on
+    // artist_profiles. A chained expression contains no semicolon, so its
+    // presence means these two are not part of one chain.
+    if (src.slice(owner.index, m.index).includes(';')) continue;
+
+    const table = owner[1];
+    const known = schema.columns.get(table);
+    if (!known) continue;
+
+    // `order('orders(created_at)')` and `eq('artist.slug', …)` reach through
+    // an embed; only the local-column case is checked here.
+    const column = m[2];
+    if (column.includes('.')) continue;
+    counts.filters += 1;
+
+    if (!known.has(column)) {
+      const line = src.slice(0, m.index).split('\n').length;
+      problems.push(`${rel}:${line}: .${m[1]}("${column}") — no such column on ${table}`);
+    }
   }
 };
 
@@ -236,7 +328,20 @@ const run = async () => {
   }
 
   const problems = [];
-  for (const file of [...files].sort()) scanFile(file, schema, problems);
+  const counts = { selects: 0, rpcs: 0, filters: 0 };
+  for (const file of [...files].sort()) scanFile(file, schema, problems, counts);
+
+  console.log(
+    `[audit] examined ${counts.selects} selects, ${counts.rpcs} rpc calls, ` +
+      `${counts.filters} column filters across ${files.size} files`,
+  );
+
+  // A check that matches nothing looks exactly like a check that passes, so
+  // refuse to report success on an empty scan.
+  if (!counts.selects || !counts.rpcs || !counts.filters) {
+    console.log('\n  FAILED: the scan matched nothing - the patterns are broken, not the code\n');
+    process.exit(2);
+  }
 
   await client.end();
 

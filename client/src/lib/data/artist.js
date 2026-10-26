@@ -588,12 +588,38 @@ export const getArtistOverview = async () => {
     db.from('platform_settings').select('key, value'),
   ]);
 
+  // A FAILED query and an ABSENT profile are different things, and conflating
+  // them sent an approved artist to "You do not have an artist profile yet."
+  // when the real fault was a query error (the profile select named a
+  // column that did not exist). The artist was looking at their own name and
+  // "Approved to sell" in the header while being told they had no profile.
+  // Check the error first, and report it.
+  if (profileResult.error) {
+    throw new Error(supabaseError(profileResult.error, 'Could not load your dashboard'));
+  }
+
   const profile = profileResult.data;
   if (!profile) {
     const notFound = new Error('You do not have an artist profile yet.');
     notFound.status = 404;
     throw notFound;
   }
+
+  // The money summary is not allowed to fail quietly. `payout.data ?? {}`
+  // turns every amount into 0, so an artist with real earnings would be shown
+  // a confident zero balance - the single most misleading thing this page
+  // could do. A failure here stops the page instead.
+  if (payout.error) {
+    throw new Error(supabaseError(payout.error, 'Could not load your sales figures'));
+  }
+
+  // The remaining panels are counts. A failure in one should not take the
+  // whole dashboard down, but it must not read as zero either, so each is
+  // named here and the page says which figures it could not load.
+  const degraded = [];
+  if (artworkRows.error) degraded.push('your artwork counts');
+  if (actionRows.error) degraded.push('orders awaiting dispatch');
+  if (recentRows.error) degraded.push('recent sales');
 
   const payoutData = payout.data ?? {};
   const settingMap = new Map((settings.data ?? []).map((row) => [row.key, row.value]));
@@ -657,10 +683,13 @@ export const getArtistOverview = async () => {
       returnWindowDays: payoutData.return_window_days ?? 7,
     },
     actionsNeeded: {
-      ordersToFulfil: (actionRows.data ?? []).length,
-      openEnquiries: enquiries.count ?? 0,
+      ordersToFulfil: actionRows.error ? null : (actionRows.data ?? []).length,
+      openEnquiries: enquiries.error ? null : (enquiries.count ?? 0),
     },
     recentOrders: [...byOrder.values()],
+    // Empty when everything loaded. The page renders a note naming whatever
+    // is in here, so a missing figure is visible as missing.
+    degraded,
   };
 };
 

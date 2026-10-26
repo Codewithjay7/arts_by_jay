@@ -97,10 +97,25 @@ export const ArtistOverviewPage = () => {
     );
   }
 
-  const { artworks, sales, actionsNeeded, recentOrders } = data;
+  const { artworks, sales, actionsNeeded, recentOrders, degraded = [] } = data;
+
+  // A count that could not be read is shown as an em dash, never as 0: an
+  // artist should not be told they have nothing waiting when the truth is
+  // that we failed to ask.
+  const countOrDash = (n) => (n === null || n === undefined ? '—' : n);
 
   return (
     <div className="space-y-10">
+      {degraded.length > 0 && (
+        <p
+          role="status"
+          className="rounded-xl border border-line bg-surface-100 px-4 py-3 text-[0.82rem] text-muted"
+        >
+          Some figures could not be loaded just now: {degraded.join(', ')}. Everything else on this
+          page is current.
+        </p>
+      )}
+
       <section aria-labelledby="sales-heading">
         <h2 id="sales-heading" className="eyebrow mb-4">
           Your numbers
@@ -121,8 +136,12 @@ export const ArtistOverviewPage = () => {
           <StatCard label="Live listings" value={artworks.published ?? 0} sublabel={`${artworks.total ?? 0} in total`} />
           <StatCard
             label="Needs you"
-            value={(actionsNeeded.ordersToFulfil ?? 0) + (actionsNeeded.openEnquiries ?? 0)}
-            sublabel={`${actionsNeeded.ordersToFulfil ?? 0} to dispatch · ${actionsNeeded.openEnquiries ?? 0} enquiries`}
+            value={
+              actionsNeeded.ordersToFulfil === null || actionsNeeded.openEnquiries === null
+                ? '—'
+                : actionsNeeded.ordersToFulfil + actionsNeeded.openEnquiries
+            }
+            sublabel={`${countOrDash(actionsNeeded.ordersToFulfil)} to dispatch · ${countOrDash(actionsNeeded.openEnquiries)} enquiries`}
           />
         </div>
       </section>
