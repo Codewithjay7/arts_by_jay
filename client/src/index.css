@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --wall: #151814;
+    --frame: #0b0c0a;
+    --accent: #c5ff3d;
+  }
+
+  * {
+    @apply border-charcoal-700;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Honour the OS setting: no smooth scrolling, no long transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    @apply bg-charcoal-900 font-sans text-parchment antialiased;
+    /* A faint paper tooth so large dark fields do not read as flat black. */
+    background-image: radial-gradient(
+      140% 100% at 50% -10%,
+      #1b1f19 0%,
+      #101210 55%,
+      #0a0b0a 100%
+    );
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-medium tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* A visible, branded focus ring everywhere — keyboard users need it and the
+     default browser outline disappears against the dark wall. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-lime-300 ring-offset-2 ring-offset-charcoal-900;
+  }
+
+  ::selection {
+    @apply bg-lime-300 text-charcoal-950;
+  }
+
+  /* Scrollbar, styled to match the gallery rather than the OS. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-charcoal-950;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-charcoal-700;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-charcoal-600;
+  }
+
+  /* Keep number inputs from showing spinners in price fields. */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  /* ── Typographic helpers ── */
+
+  .eyebrow {
+    @apply font-mono text-[0.68rem] uppercase tracking-[0.22em] text-lime-300/80;
+  }
+
+  .lede {
+    @apply text-base leading-relaxed text-muted sm:text-lg;
+  }
+
+  /* ── Surfaces ── */
+
+  .panel {
+    @apply rounded-2xl border border-charcoal-700/70 bg-charcoal-850/80 backdrop-blur-sm;
+  }
+
+  .panel-inset {
+    @apply rounded-xl border border-charcoal-700/60 bg-charcoal-900/60;
+  }
+
+  /* A hairline rule that fades out, used between gallery sections. */
+  .rule {
+    @apply h-px w-full border-0 bg-gradient-to-r from-charcoal-700 via-charcoal-700 to-transparent;
+  }
+
+  /* ── Artwork frame ──
+     A real frame has depth: an outer moulding, an inner mount (mat) and a
+     shadow the canvas casts onto it. */
+  .art-frame {
+    @apply relative overflow-hidden rounded-sm bg-charcoal-950 p-[3%];
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+      inset 0 2px 6px rgba(0, 0, 0, 0.9),
+      0 24px 48px -24px rgba(0, 0, 0, 0.9);
+  }
+
+  .art-frame::after {
+    /* Glass: a soft diagonal sheen across the top-left. */
+    content: '';
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      118deg,
+      rgba(255, 255, 255, 0.09) 0%,
+      rgba(255, 255, 255, 0.02) 28%,
+      transparent 52%
+    );
+  }
+
+  /* ── Skeletons ── */
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-lg bg-charcoal-800;
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.045) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    @apply animate-shimmer;
+  }
+
+  /* ── Scroll-progress indicator for the gallery ── */
+
+  .scroll-track {
+    @apply pointer-events-none fixed right-5 top-1/2 z-30 hidden h-40 w-[2px] -translate-y-1/2 bg-charcoal-700 lg:block;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Hides content visually while leaving it available to screen readers. */
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    @apply sr-only;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Opt a subtree out of the browser's scroll anchoring, which fights the
+     gallery's own scroll-driven camera. */
+  .no-anchor {
+    overflow-anchor: none;
+  }
+}

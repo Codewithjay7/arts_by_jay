@@ -1,0 +1,43 @@
+# Arts by Jay — Supabase project configuration
+# Link with:  npx supabase link --project-ref tdcdghuzasxkfdvactdz
+project_id = "tdcdghuzasxkfdvactdz"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173", "http://localhost:5173/login"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+# Turn this on in production. Left off locally so test accounts work instantly.
+enable_confirmations = false
+
+[storage]
+enabled = true
+file_size_limit = "8MiB"
+
+[functions.create-razorpay-order]
+verify_jwt = true
+
+[functions.verify-razorpay-payment]
+verify_jwt = true
+
+# The webhook is called by Razorpay, which carries no Supabase session, so JWT
+# verification must be off. It authenticates by HMAC signature instead.
+[functions.razorpay-webhook]
+verify_jwt = false

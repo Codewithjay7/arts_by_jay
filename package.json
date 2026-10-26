@@ -1,0 +1,22 @@
+{
+  "name": "arts-by-jay",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Arts by Jay — premium art marketplace with an immersive virtual gallery",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "dev": "concurrently -n server,client -c green,magenta \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server start",
+    "seed": "npm --prefix server run seed",
+    "lint:client": "npm --prefix client run lint"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
