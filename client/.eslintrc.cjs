@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     'react-refresh/only-export-components': 'off',
     'react/prop-types': 'off',
+    
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
   },
   overrides: [

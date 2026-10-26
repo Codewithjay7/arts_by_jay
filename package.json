@@ -11,9 +11,14 @@
     "build": "npm --prefix client run build",
     "start": "npm --prefix server start",
     "seed": "npm --prefix server run seed",
-    "lint:client": "npm --prefix client run lint"
+    "lint:client": "npm --prefix client run lint",
+    "seed:supabase": "node supabase/seed/seed.mjs",
+    "db:push": "npx supabase db push",
+    "db:link": "npx supabase link --project-ref tdcdghuzasxkfdvactdz",
+    "functions:deploy": "npx supabase functions deploy create-order && npx supabase functions deploy verify-payment && npx supabase functions deploy razorpay-webhook --no-verify-jwt"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2.118.0",
     "concurrently": "^9.1.2"
   },
   "engines": {

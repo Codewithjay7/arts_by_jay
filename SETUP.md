@@ -6,6 +6,46 @@ run.
 
 ---
 
+## 0. Target architecture — nothing self-hosted
+
+No database, server process or file storage on your own machines:
+
+```
+Netlify  ──  the React site (static files only, no server)
+   │
+   ├─ Supabase PostgreSQL   all data
+   ├─ Supabase Auth         accounts and sessions
+   ├─ Supabase Storage      every artwork and avatar image
+   ├─ Supabase Edge Fns     checkout, payment verification, webhooks
+   └─ Razorpay              payments
+```
+
+`server/` (Express + MongoDB) and `server/uploads/` are the **old** path. They
+still run today because the Supabase path is not yet verified, and they are
+retired the moment it is. Nothing in the target architecture needs anything
+from your company.
+
+### Once you have the Supabase keys, the whole setup is five commands
+
+```bash
+npm run db:link                  # links to project tdcdghuzasxkfdvactdz
+npm run db:push                  # applies migrations 0001 → 0006
+npm run functions:deploy         # deploys the three Edge Functions
+
+SUPABASE_URL=https://tdcdghuzasxkfdvactdz.supabase.co \
+SUPABASE_SERVICE_ROLE_KEY=eyJ... \
+npm run seed:supabase            # categories, artists, artwork + images to Storage
+
+npm --prefix client run build    # then deploy client/dist to Netlify
+```
+
+The seed generates artwork images in memory and uploads them straight to
+Supabase Storage — nothing is written to local disk. It is re-runnable, and it
+**refuses to reset** if any seeded account has a real order attached, because
+deleting a paid order would destroy a financial record.
+
+---
+
 ## 1. What is running today
 
 A complete, working art marketplace: React 18 + Vite frontend, Express +
