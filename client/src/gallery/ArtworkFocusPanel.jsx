@@ -79,7 +79,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
       aria-label={artwork ? `${artwork.title}, details` : 'Artwork details'}
       className={clsx(
         'pointer-events-auto absolute inset-x-0 bottom-0 z-30 max-h-[82vh] overflow-y-auto',
-        'border-t border-charcoal-700/80 bg-charcoal-950/92 backdrop-blur-2xl',
+        'border-t border-line/80 bg-surface-300/92 backdrop-blur-2xl',
         'animate-fade-up focus:outline-none',
         'md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[clamp(26rem,36vw,34rem)] md:border-l md:border-t-0',
       )}
@@ -87,7 +87,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-charcoal-600 bg-charcoal-900/80 text-parchment transition-colors hover:border-accent-300/60 hover:text-accent-300"
+        className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-line-strong bg-surface-100/80 text-ink transition-colors hover:border-accent-300/60 hover:text-accent-300"
         aria-label="Close and return to the gallery"
       >
         <X className="h-4.5 w-4.5" aria-hidden="true" />
@@ -128,7 +128,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
                       />
                     )}
                   </div>
-                  <p className="mt-2 truncate text-sm text-parchment group-hover:text-accent-300">
+                  <p className="mt-2 truncate text-sm text-ink group-hover:text-accent-300">
                     {alternative.title}
                   </p>
                   <p className="font-mono text-[0.75rem] text-muted">
@@ -173,7 +173,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
                   />
                 )}
                 <span>
-                  by <span className="text-parchment group-hover:text-accent-300">{artwork.artist.displayName}</span>
+                  by <span className="text-ink group-hover:text-accent-300">{artwork.artist.displayName}</span>
                 </span>
               </Link>
             )}
@@ -182,7 +182,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
           {/* ── The story behind the work ── */}
           {artwork.story && (
             <blockquote className="mt-6 border-l-2 border-accent-300/40 pl-4">
-              <p className="font-display text-base italic leading-relaxed text-parchment/90">
+              <p className="font-display text-base italic leading-relaxed text-ink/90">
                 “{artwork.story}”
               </p>
             </blockquote>
@@ -193,34 +193,34 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
           )}
 
           {/* ── Specification table ── */}
-          <dl className="mt-6 grid grid-cols-2 gap-x-5 gap-y-3.5 border-y border-charcoal-700 py-5 text-[0.82rem]">
+          <dl className="mt-6 grid grid-cols-2 gap-x-5 gap-y-3.5 border-y border-line py-5 text-[0.82rem]">
             {artwork.medium && (
               <div>
                 <dt className="eyebrow">Medium</dt>
-                <dd className="mt-0.5 text-parchment">{artwork.medium}</dd>
+                <dd className="mt-0.5 text-ink">{artwork.medium}</dd>
               </div>
             )}
             {formatDimensions(artwork.dimensions) && (
               <div>
                 <dt className="eyebrow">Dimensions</dt>
-                <dd className="mt-0.5 text-parchment">{formatDimensions(artwork.dimensions)}</dd>
+                <dd className="mt-0.5 text-ink">{formatDimensions(artwork.dimensions)}</dd>
               </div>
             )}
             {artwork.year && (
               <div>
                 <dt className="eyebrow">Year</dt>
-                <dd className="mt-0.5 text-parchment">{artwork.year}</dd>
+                <dd className="mt-0.5 text-ink">{artwork.year}</dd>
               </div>
             )}
             {artwork.style && (
               <div>
                 <dt className="eyebrow">Style</dt>
-                <dd className="mt-0.5 text-parchment">{artwork.style}</dd>
+                <dd className="mt-0.5 text-ink">{artwork.style}</dd>
               </div>
             )}
             <div>
               <dt className="eyebrow">Availability</dt>
-              <dd className="mt-0.5 text-parchment">
+              <dd className="mt-0.5 text-ink">
                 {artwork.isSoldOut
                   ? 'Sold'
                   : artwork.type === 'commission'
@@ -233,7 +233,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
             {artwork.shipping?.shipsFrom && (
               <div>
                 <dt className="eyebrow">Ships from</dt>
-                <dd className="mt-0.5 text-parchment">{artwork.shipping.shipsFrom}</dd>
+                <dd className="mt-0.5 text-ink">{artwork.shipping.shipsFrom}</dd>
               </div>
             )}
           </dl>
@@ -319,7 +319,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
 };
 
 export const FocusPanelFallback = () => (
-  <div className="absolute inset-x-0 bottom-0 z-30 flex items-center justify-center border-t border-charcoal-700 bg-charcoal-950/92 py-16 backdrop-blur-xl md:inset-y-0 md:left-auto md:right-0 md:w-[30rem] md:border-l md:border-t-0">
+  <div className="absolute inset-x-0 bottom-0 z-30 flex items-center justify-center border-t border-line bg-surface-300/92 py-16 backdrop-blur-xl md:inset-y-0 md:left-auto md:right-0 md:w-[30rem] md:border-l md:border-t-0">
     <Spinner label="Loading artwork" />
   </div>
 );

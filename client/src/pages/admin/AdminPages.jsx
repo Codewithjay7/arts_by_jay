@@ -148,16 +148,16 @@ export const AdminOverviewPage = () => {
         </div>
 
         {!recentOrders?.length ? (
-          <p className="rounded-2xl border border-dashed border-charcoal-600 px-5 py-10 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-line-strong px-5 py-10 text-center text-sm text-muted">
             No orders yet.
           </p>
         ) : (
-          <ul className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+          <ul className="divide-y divide-line border-y border-line">
             {recentOrders.map((order) => (
               <li key={order.orderNumber} className="flex flex-wrap items-center gap-4 py-3.5">
                 <Link
                   to={`/admin/orders?q=${order.orderNumber}`}
-                  className="min-w-0 flex-1 font-mono text-[0.82rem] text-parchment transition-colors hover:text-accent-300"
+                  className="min-w-0 flex-1 font-mono text-[0.82rem] text-ink transition-colors hover:text-accent-300"
                 >
                   {order.orderNumber}
                 </Link>
@@ -184,13 +184,13 @@ const QueueCard = ({ label, count, to, icon: Icon }) => (
       'flex items-center gap-3.5 rounded-2xl border p-4 transition-colors',
       count > 0
         ? 'border-accent-300/30 bg-accent-300/[0.05] hover:border-accent-300/60'
-        : 'border-charcoal-700 bg-charcoal-850/40 hover:border-charcoal-600',
+        : 'border-line bg-surface-0/40 hover:border-line-strong',
     )}
   >
     <span
       className={clsx(
         'grid h-9 w-9 shrink-0 place-items-center rounded-full',
-        count > 0 ? 'bg-accent-300/15 text-accent-300' : 'bg-charcoal-800 text-muted',
+        count > 0 ? 'bg-accent-300/15 text-accent-300' : 'bg-surface-150 text-muted',
       )}
     >
       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -295,7 +295,7 @@ export const AdminUsersPage = () => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[42rem] border-collapse text-left text-[0.84rem]">
               <thead>
-                <tr className="border-b border-charcoal-700">
+                <tr className="border-b border-line">
                   <th scope="col" className="py-3 pr-4 font-mono text-[0.68rem] uppercase tracking-wider text-muted">
                     Name
                   </th>
@@ -315,9 +315,9 @@ export const AdminUsersPage = () => {
               </thead>
               <tbody>
                 {data.items.map((user) => (
-                  <tr key={user.id} className="border-b border-charcoal-700/60">
+                  <tr key={user.id} className="border-b border-line/60">
                     <td className="py-3.5 pr-4">
-                      <p className="text-parchment">{user.name}</p>
+                      <p className="text-ink">{user.name}</p>
                       <p className="text-[0.76rem] text-muted">{user.email}</p>
                     </td>
                     <td className="py-3.5 pr-4">
@@ -493,7 +493,7 @@ export const AdminArtistsPage = () => {
             {data.items.map((artist) => (
               <li key={artist.id} className="panel space-y-4 p-5">
                 <div className="flex flex-wrap items-start gap-4">
-                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-charcoal-800">
+                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-surface-150">
                     {artist.avatarUrl && (
                       <img
                         src={imageSource({ url: artist.avatarUrl })}
@@ -543,7 +543,7 @@ export const AdminArtistsPage = () => {
                 </div>
 
                 {artist.bio && (
-                  <p className="border-t border-charcoal-700 pt-4 text-[0.84rem] leading-relaxed text-muted">
+                  <p className="border-t border-line pt-4 text-[0.84rem] leading-relaxed text-muted">
                     {artist.bio}
                   </p>
                 )}
@@ -557,7 +557,7 @@ export const AdminArtistsPage = () => {
                 )}
 
                 {artist.reviewNote && (
-                  <p className="rounded-xl bg-charcoal-900/60 px-3.5 py-2.5 text-[0.78rem] text-muted">
+                  <p className="rounded-xl bg-surface-100/60 px-3.5 py-2.5 text-[0.78rem] text-muted">
                     Curator note: {artist.reviewNote}
                   </p>
                 )}
@@ -714,7 +714,7 @@ export const AdminModerationPage = () => {
           <ul className="grid gap-5 sm:grid-cols-2">
             {data.items.map((artwork) => (
               <li key={artwork.id} className="panel overflow-hidden">
-                <div className="aspect-[4/3] bg-charcoal-800">
+                <div className="aspect-[4/3] bg-surface-150">
                   {artwork.image ? (
                     <img
                       src={imageSource(artwork.image)}
@@ -750,12 +750,12 @@ export const AdminModerationPage = () => {
                   )}
 
                   {artwork.moderation?.note && (
-                    <p className="rounded-lg bg-charcoal-900/60 px-3 py-2 text-[0.76rem] text-muted">
+                    <p className="rounded-lg bg-surface-100/60 px-3 py-2 text-[0.76rem] text-muted">
                       Note: {artwork.moderation.note}
                     </p>
                   )}
 
-                  <div className="flex flex-wrap gap-1.5 border-t border-charcoal-700 pt-3.5">
+                  <div className="flex flex-wrap gap-1.5 border-t border-line pt-3.5">
                     {artwork.status !== 'published' && (
                       <Button
                         variant="primary"
@@ -943,7 +943,7 @@ export const AdminOrdersPage = () => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[46rem] border-collapse text-left text-[0.84rem]">
               <thead>
-                <tr className="border-b border-charcoal-700">
+                <tr className="border-b border-line">
                   {['Order', 'Customer', 'Status', 'Total', 'Placed', ''].map((heading, index) => (
                     <th
                       key={index}
@@ -957,9 +957,9 @@ export const AdminOrdersPage = () => {
               </thead>
               <tbody>
                 {data.items.map((order) => (
-                  <tr key={order.id} className="border-b border-charcoal-700/60">
+                  <tr key={order.id} className="border-b border-line/60">
                     <td className="py-3.5 pr-4">
-                      <p className="font-mono text-parchment">{order.orderNumber}</p>
+                      <p className="font-mono text-ink">{order.orderNumber}</p>
                       <p className="text-[0.74rem] text-muted">
                         {order.itemCount} {order.itemCount === 1 ? 'item' : 'items'}
                       </p>
@@ -1175,11 +1175,11 @@ export const AdminCategoriesPage = () => {
               </div>
 
               {category.children?.length > 0 && (
-                <ul className="mt-4 space-y-2 border-l border-charcoal-700 pl-5">
+                <ul className="mt-4 space-y-2 border-l border-line pl-5">
                   {category.children.map((child) => (
                     <li key={child.id} className="flex flex-wrap items-center gap-3">
                       <span className="min-w-0 flex-1">
-                        <span className="text-[0.88rem] text-parchment">{child.name}</span>
+                        <span className="text-[0.88rem] text-ink">{child.name}</span>
                         <span className="ml-2 font-mono text-[0.7rem] text-muted">
                           {child.artworkCount} works
                         </span>
@@ -1340,7 +1340,7 @@ export const AdminReportsPage = () => {
         </h2>
 
         {!data.byDay.length ? (
-          <p className="rounded-2xl border border-dashed border-charcoal-600 px-5 py-10 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-line-strong px-5 py-10 text-center text-sm text-muted">
             No paid orders in this period.
           </p>
         ) : (
@@ -1352,8 +1352,8 @@ export const AdminReportsPage = () => {
                     className="w-full rounded-t bg-accent-300/70 transition-colors group-hover:bg-accent-300"
                     style={{ height: `${Math.max(2, (row.grossMinor / maxDay) * 100)}%` }}
                   />
-                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg border border-charcoal-600 bg-charcoal-900 px-2.5 py-1.5 text-[0.72rem] group-hover:block">
-                    <p className="text-parchment">{formatMoney(row.grossMinor, data.currency)}</p>
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg border border-line-strong bg-surface-100 px-2.5 py-1.5 text-[0.72rem] group-hover:block">
+                    <p className="text-ink">{formatMoney(row.grossMinor, data.currency)}</p>
                     <p className="text-muted">
                       {row.date} · {row.orders} {row.orders === 1 ? 'order' : 'orders'}
                     </p>
@@ -1376,14 +1376,14 @@ export const AdminReportsPage = () => {
         </h2>
 
         {!data.byArtist.length ? (
-          <p className="rounded-2xl border border-dashed border-charcoal-600 px-5 py-10 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-line-strong px-5 py-10 text-center text-sm text-muted">
             No sales to report.
           </p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[38rem] border-collapse text-left text-[0.84rem]">
               <thead>
-                <tr className="border-b border-charcoal-700">
+                <tr className="border-b border-line">
                   {['Artist', 'Pieces', 'Gross', 'Commission', 'Artist earns'].map((heading) => (
                     <th
                       key={heading}
@@ -1397,10 +1397,10 @@ export const AdminReportsPage = () => {
               </thead>
               <tbody>
                 {data.byArtist.map((row) => (
-                  <tr key={row._id} className="border-b border-charcoal-700/60">
+                  <tr key={row._id} className="border-b border-line/60">
                     <td className="py-3 pr-4">
                       {row.slug ? (
-                        <Link to={`/artists/${row.slug}`} className="text-parchment transition-colors hover:text-accent-300">
+                        <Link to={`/artists/${row.slug}`} className="text-ink transition-colors hover:text-accent-300">
                           {row.displayName}
                         </Link>
                       ) : (
@@ -1408,7 +1408,7 @@ export const AdminReportsPage = () => {
                       )}
                     </td>
                     <td className="py-3 pr-4 font-mono text-muted">{row.units}</td>
-                    <td className="py-3 pr-4 font-mono text-parchment">{formatMoney(row.grossMinor, data.currency)}</td>
+                    <td className="py-3 pr-4 font-mono text-ink">{formatMoney(row.grossMinor, data.currency)}</td>
                     <td className="py-3 pr-4 font-mono text-muted">
                       {formatMoney(row.commissionMinor, data.currency)}
                     </td>
@@ -1434,13 +1434,13 @@ export const AdminReportsPage = () => {
               return (
                 <li key={row._id ?? row.name} className="space-y-1.5">
                   <div className="flex justify-between text-[0.82rem]">
-                    <span className="text-parchment">{row.name ?? 'Uncategorised'}</span>
+                    <span className="text-ink">{row.name ?? 'Uncategorised'}</span>
                     <span className="font-mono text-muted">
                       {formatMoney(row.grossMinor, data.currency)} · {row.units}{' '}
                       {row.units === 1 ? 'piece' : 'pieces'}
                     </span>
                   </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-charcoal-800">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-surface-150">
                     <div
                       className="h-full rounded-full bg-accent-300/70"
                       style={{ width: `${(row.grossMinor / max) * 100}%` }}
@@ -1489,7 +1489,7 @@ export const AdminSettingsPage = () => {
           Payments
         </h2>
 
-        <dl className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+        <dl className="divide-y divide-line border-y border-line">
           <SettingRow label="Provider" value={data.payments.provider} />
           <SettingRow label="Currency" value={data.payments.currency} />
           <SettingRow label="Platform commission" value={`${data.payments.commissionPercent}%`} />
@@ -1515,7 +1515,7 @@ export const AdminSettingsPage = () => {
           Storage and features
         </h2>
 
-        <dl className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+        <dl className="divide-y divide-line border-y border-line">
           <SettingRow label="Image storage" value={data.storage.driver} />
           <SettingRow label="Maximum upload" value={`${data.storage.maxUploadMb} MB`} />
           <SettingRow
@@ -1553,7 +1553,7 @@ const SettingRow = ({ label, value, tone = 'neutral' }) => (
     <dt className="text-[0.86rem] text-muted">{label}</dt>
     <dd>
       {tone === 'neutral' ? (
-        <span className="font-mono text-[0.84rem] text-parchment">{value}</span>
+        <span className="font-mono text-[0.84rem] text-ink">{value}</span>
       ) : (
         <Badge tone={tone}>{value}</Badge>
       )}

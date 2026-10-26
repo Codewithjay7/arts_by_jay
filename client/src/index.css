@@ -5,56 +5,58 @@
 /* ===========================================================================
    Arts by Jay — design tokens
 
-   Single source of truth for the palette. Tailwind's theme mirrors these
-   values, and anything that cannot go through a utility class (inline SVG,
-   a canvas fill, a gradient stop, a WebGL material) reads from here instead
-   of hard-coding a hex.
+   Single source of truth. Tailwind's theme mirrors these, and anything that
+   cannot use a utility class — inline SVG, a canvas fill, a WebGL material,
+   a payment gateway's theme option — reads from here rather than hard-coding
+   a hex.
    =========================================================================== */
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
 
     /* ── Surfaces ── */
-    --abj-bg: #121212; /* midnight charcoal */
-    --abj-bg-elevated: #1c1b1a; /* deep charcoal */
-    --abj-bg-sunken: #0d0c0b;
-    --abj-border: #37322f; /* dark warm gray */
-    --abj-border-strong: #4a433e;
-
-    /* ── Accent ── */
-    --abj-accent: #c46a4a; /* burnt terracotta */
-    --abj-accent-hover: #d98565; /* soft terracotta */
-    --abj-accent-deep: #a85d43; /* muted copper */
+    --abj-bg: #f5f5f7; /* page */
+    --abj-surface: #ffffff; /* cards, panels */
+    --abj-surface-hover: #f0f0f2;
+    --abj-surface-sunken: #e3e3e6;
+    --abj-line: #d2d2d7; /* the only border weight */
+    --abj-line-strong: #c7c7cc;
 
     /* ── Type ── */
-    --abj-text: #f4efe6; /* warm ivory */
-    --abj-text-muted: #b8aea3; /* soft taupe */
-    --abj-text-on-accent: #171412;
+    --abj-ink: #1d1d1f;
+    --abj-muted: #6e6e73;
+    --abj-on-accent: #ffffff;
+    --abj-on-dark: #f5f5f7;
 
-    /* ── Gallery furniture ── */
-    --abj-frame: #e8dfd1; /* antique ivory */
-    --abj-cream: #f1ebe1; /* light section background */
+    /* ── Accent — action and state only ── */
+    --abj-accent: #0071e3;
+    --abj-accent-hover: #3395f0;
+    --abj-accent-pressed: #0062c4;
+
+    /* ── Cinematic sections ── */
+    --abj-dark: #000000;
+    --abj-dark-soft: #161617;
+
+    /* ── Gallery ── */
+    --abj-wall: #fbfbfd; /* a museum wall is not pure white */
+    --abj-mount: #f5f2ed; /* mount board */
 
     /* ── Motion ── */
     --abj-ease-gallery: cubic-bezier(0.22, 1, 0.36, 1);
-    --abj-ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
-
-    /* Updated by a pointer listener; drives the cursor glow and tilt. */
-    --abj-pointer-x: 50%;
-    --abj-pointer-y: 50%;
+    --abj-ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   * {
-    @apply border-charcoal-700;
+    @apply border-line;
   }
 
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Honour the OS setting. Everything below degrades to "already there". */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
@@ -68,26 +70,12 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
-
-    /* A clip-path reveal that never runs would hide its content forever. */
-    .reveal-clip,
-    .line-mask > * {
-      clip-path: none !important;
-      transform: none !important;
-      opacity: 1 !important;
-    }
   }
 
   body {
-    @apply bg-charcoal-900 font-sans text-parchment antialiased;
-    /* Warm falloff from the top, as though a single light hangs above. */
-    background-image: radial-gradient(
-      140% 100% at 50% -10%,
-      #241f1c 0%,
-      #161413 55%,
-      #0d0c0b 100%
-    );
-    background-attachment: fixed;
+    @apply bg-surface-100 font-sans text-ink antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     min-height: 100vh;
   }
 
@@ -95,7 +83,8 @@
   h2,
   h3,
   h4 {
-    @apply font-display font-medium tracking-tight;
+    @apply font-display tracking-tight;
+    font-weight: 600;
     text-wrap: balance;
   }
 
@@ -103,31 +92,38 @@
     text-wrap: pretty;
   }
 
-  /* Branded, always visible. The default outline disappears on warm dark. */
+  /* A clear, accessible focus ring in the accent blue. */
   :focus-visible {
-    @apply outline-none ring-2 ring-accent-300 ring-offset-2 ring-offset-charcoal-900;
+    @apply outline-none;
+    box-shadow: 0 0 0 4px rgb(0 113 227 / 0.25);
+    border-radius: 6px;
   }
 
   ::selection {
-    background-color: var(--abj-accent);
-    color: var(--abj-text-on-accent);
+    background-color: rgb(0 113 227 / 0.18);
+    color: var(--abj-ink);
   }
 
+  /* Overlay scrollbars that stay out of the way. */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-charcoal-950;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply rounded-full bg-charcoal-700;
+    @apply rounded-full;
+    background-color: rgb(0 0 0 / 0.18);
+    border: 3px solid transparent;
+    background-clip: content-box;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-charcoal-600;
+    background-color: rgb(0 0 0 / 0.3);
+    background-clip: content-box;
   }
 
   input[type='number']::-webkit-inner-spin-button,
@@ -144,147 +140,121 @@
 @layer components {
   /* ──────────────────────── Typography ──────────────────────── */
 
+  /* A quiet label, not a shouty badge. */
   .eyebrow {
-    @apply font-mono text-[0.68rem] uppercase tracking-[0.22em] text-accent-300/85;
+    @apply text-[0.8rem] font-medium tracking-tight text-accent-300;
   }
 
   .lede {
-    @apply text-base leading-relaxed text-muted sm:text-lg;
+    @apply text-[1.0625rem] leading-relaxed text-muted sm:text-[1.1875rem];
   }
 
   /* ──────────────────────── Surfaces ──────────────────────── */
 
   .panel {
-    @apply rounded-2xl border border-charcoal-700/70 bg-charcoal-850/80 backdrop-blur-sm;
-    box-shadow: inset 0 1px 0 0 rgb(244 239 230 / 0.04);
+    @apply rounded-panel border border-line bg-surface-0;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
   }
 
   .panel-inset {
-    @apply rounded-xl border border-charcoal-700/60 bg-charcoal-900/60;
+    @apply rounded-card border border-line bg-surface-100;
   }
 
   .rule {
-    @apply h-px w-full border-0;
-    background: linear-gradient(
-      to right,
-      var(--abj-border) 0%,
-      var(--abj-border) 55%,
-      transparent 100%
-    );
+    @apply h-px w-full border-0 bg-line;
+  }
+
+  /* ──────────────────────── Dark sections ────────────────────────
+     Used sparingly — the gallery, and the occasional full-bleed statement.
+     Inverts type and borders properly rather than leaving dark text on black. */
+
+  .section-dark {
+    background: var(--abj-dark);
+    color: var(--abj-on-dark);
+  }
+
+  .section-dark h1,
+  .section-dark h2,
+  .section-dark h3,
+  .section-dark .text-ink {
+    color: #f5f5f7;
+  }
+
+  .section-dark .lede,
+  .section-dark .text-muted {
+    color: #86868b;
+  }
+
+  .section-dark .panel {
+    background: rgb(255 255 255 / 0.06);
+    border-color: rgb(255 255 255 / 0.1);
+    box-shadow: none;
+  }
+
+  /* The accent lifted for contrast on black. */
+  .section-dark .eyebrow {
+    color: #2997ff;
+  }
+
+  .section-dark .border-line {
+    border-color: rgb(255 255 255 / 0.12);
   }
 
   /* ──────────────────────── Artwork frame ────────────────────────
-     Real depth: an outer moulding, an antique-ivory mount, the shadow the
-     canvas casts onto that mount, and a sheen on the glass. */
+     A hung piece, not a CSS box: a hairline mount and a soft shadow onto the
+     wall below. Restrained, because the artwork is the subject. */
 
   .art-frame {
-    @apply relative overflow-hidden rounded-sm p-[3%];
-    background-color: #0b0a09;
+    @apply relative overflow-hidden rounded-card bg-surface-0 p-[2.5%];
     box-shadow:
-      inset 0 0 0 1px rgb(232 223 209 / 0.1),
-      inset 0 2px 7px rgb(0 0 0 / 0.9),
-      0 26px 52px -26px rgb(0 0 0 / 0.95);
+      0 1px 2px rgb(0 0 0 / 0.05),
+      0 18px 40px -16px rgb(0 0 0 / 0.16);
   }
 
-  /* The mount: a hairline of antique ivory just inside the moulding. */
   .art-frame::before {
     content: '';
-    @apply pointer-events-none absolute inset-[2.4%] rounded-[1px];
-    box-shadow: 0 0 0 1px rgb(232 223 209 / 0.14);
+    @apply pointer-events-none absolute inset-0 z-[1] rounded-card;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.07);
   }
 
-  /* Glass: a soft diagonal across the top-left. */
-  .art-frame::after {
-    content: '';
-    @apply pointer-events-none absolute inset-0;
-    background: linear-gradient(
-      118deg,
-      rgb(244 239 230 / 0.09) 0%,
-      rgb(244 239 230 / 0.025) 28%,
-      transparent 52%
-    );
+  .section-dark .art-frame {
+    @apply bg-surface-800;
+    box-shadow:
+      0 2px 8px rgb(0 0 0 / 0.5),
+      0 28px 60px -20px rgb(0 0 0 / 0.7);
   }
 
-  /* ──────────────────────── Light sections ────────────────────────
-     A gallery also has daylit rooms. Inverts the palette correctly rather
-     than leaving ivory text on cream. */
-
-  .section-light {
-    background-color: var(--abj-cream);
-    color: #231f1c;
-  }
-
-  .section-light .eyebrow {
-    color: var(--abj-accent-deep);
-  }
-
-  .section-light .lede,
-  .section-light .text-muted {
-    color: #6b625a;
-  }
-
-  .section-light h1,
-  .section-light h2,
-  .section-light h3 {
-    color: #1a1715;
+  .section-dark .art-frame::before {
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.09);
   }
 
   /* ──────────────────────── Skeletons ──────────────────────── */
 
   .skeleton {
-    @apply relative overflow-hidden rounded-lg bg-charcoal-800;
+    @apply relative overflow-hidden rounded-card bg-surface-150;
     background-image: linear-gradient(
       90deg,
-      rgb(244 239 230 / 0) 0%,
-      rgb(244 239 230 / 0.05) 50%,
-      rgb(244 239 230 / 0) 100%
+      rgb(0 0 0 / 0) 0%,
+      rgb(0 0 0 / 0.04) 50%,
+      rgb(0 0 0 / 0) 100%
     );
     background-size: 200% 100%;
     @apply animate-shimmer;
   }
 
-  /* ──────────────────────── Marquee ────────────────────────
-     Duplicate the content in the markup; the track translates by exactly
-     -50%, so the loop is seamless with no JS. */
+  /* ──────────────────────── Navigation ────────────────────────
+     A thin translucent bar that blurs the page behind it. */
 
-  .marquee {
-    @apply relative flex overflow-hidden;
-    /* Fade both ends so the words appear from and vanish into the dark. */
-    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  .nav-blur {
+    background-color: rgb(245 245 247 / 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
   }
 
-  .marquee__track {
-    @apply flex shrink-0 items-center gap-10 pr-10;
-    @apply animate-marquee;
-    will-change: transform;
-  }
-
-  .marquee:hover .marquee__track {
-    animation-play-state: paused;
-  }
-
-  /* ──────────────────────── Buttons ──────────────────────── */
-
-  /* A terracotta sheen that sweeps across on hover. */
-  .btn-sheen {
-    @apply relative overflow-hidden;
-  }
-
-  .btn-sheen::after {
-    content: '';
-    @apply pointer-events-none absolute inset-0 -translate-x-full;
-    background: linear-gradient(
-      100deg,
-      transparent 0%,
-      rgb(244 239 230 / 0.22) 50%,
-      transparent 100%
-    );
-    transition: transform 0.75s var(--abj-ease-gallery);
-  }
-
-  .btn-sheen:hover::after {
-    @apply translate-x-full;
+  .nav-blur-dark {
+    background-color: rgb(0 0 0 / 0.6);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
   }
 }
 
@@ -312,97 +282,38 @@
     overflow-anchor: none;
   }
 
-  /* ──────────────────────── Advanced motion ──────────────────────── */
-
-  /* Per-line reveal. Wrap each line in `.line-mask` and the inner span rises
-     out from behind its own edge, the way titles do on film. */
-  .line-mask {
-    @apply block overflow-hidden;
-  }
-
-  .line-mask > * {
-    @apply block animate-line-rise;
-  }
-
-  /* An image uncovered rather than faded. */
-  .reveal-clip {
-    @apply animate-reveal-up;
-  }
-
-  /* Slow drift on a hero still. */
-  .ken-burns {
-    @apply animate-ken-burns;
-    will-change: transform;
-  }
-
   /**
-   * Scroll-linked reveal with zero JavaScript, where the browser supports it.
+   * Scroll-linked reveal, no JavaScript, where the browser supports it.
    *
-   * animation-timeline is progressive enhancement: browsers without it simply
-   * show the element, because the @supports block is the only thing that
-   * hides it in the first place. That ordering matters — done the other way
-   * round, unsupported browsers would get permanently invisible content.
+   * The hiding rule lives INSIDE the @supports block on purpose. Done the
+   * other way round, a browser without animation-timeline would hide the
+   * content and never reveal it.
    */
   @supports (animation-timeline: view()) {
     .scroll-reveal {
-      animation: fade-up 1s var(--abj-ease-gallery) both;
+      animation: fade-up 0.9s var(--abj-ease-gallery) both;
       animation-timeline: view();
-      animation-range: entry 8% cover 32%;
-    }
-
-    .scroll-parallax {
-      animation: float 1s linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
+      animation-range: entry 6% cover 28%;
     }
   }
 
-  /* A warm pool of light that follows the pointer. Decorative only. */
-  .cursor-glow {
-    @apply pointer-events-none fixed inset-0 z-0;
-    background: radial-gradient(
-      22rem 22rem at var(--abj-pointer-x) var(--abj-pointer-y),
-      rgb(196 106 74 / 0.07) 0%,
-      transparent 70%
-    );
-    transition: background 180ms linear;
+  /* Very slow pan on a hero still. Barely perceptible, which is the point. */
+  .slow-pan {
+    @apply animate-slow-pan;
+    will-change: transform;
   }
 
-  /**
-   * Film grain over the whole page.
-   *
-   * An inline SVG feTurbulence rather than a raster tile: no extra request,
-   * resolution-independent, and it stops large charcoal fields from banding
-   * on cheap panels.
-   */
-  .grain::after {
-    content: '';
-    @apply pointer-events-none fixed inset-0 z-[1] opacity-[0.035];
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode: overlay;
+  /* A card that lifts a little on hover. */
+  .hover-lift {
+    transition:
+      transform 0.5s var(--abj-ease-gallery),
+      box-shadow 0.5s var(--abj-ease-gallery);
   }
 
-  /* Hairline terracotta rule under a heading. */
-  .underline-accent {
-    background-image: linear-gradient(var(--abj-accent), var(--abj-accent));
-    background-repeat: no-repeat;
-    background-position: 0 100%;
-    background-size: 0% 1px;
-    transition: background-size 0.5s var(--abj-ease-gallery);
-  }
-
-  .underline-accent:hover,
-  .group:hover .underline-accent {
-    background-size: 100% 1px;
-  }
-
-  /* Pointer-reactive tilt for a framed card. */
-  .tilt {
-    transform-style: preserve-3d;
-    transition: transform 0.5s var(--abj-ease-gallery);
-  }
-
-  .tilt:hover {
-    transform: perspective(900px) rotateX(1.4deg) rotateY(-1.4deg) translateZ(6px);
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 2px 4px rgb(0 0 0 / 0.05),
+      0 18px 40px -12px rgb(0 0 0 / 0.16);
   }
 }

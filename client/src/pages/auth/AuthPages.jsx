@@ -22,15 +22,15 @@ const AuthShell = ({ title, subtitle, children, footer }) => (
 
         {children}
 
-        {footer && <div className="border-t border-charcoal-700 pt-5 text-center text-sm">{footer}</div>}
+        {footer && <div className="border-t border-line pt-5 text-center text-sm">{footer}</div>}
       </div>
     </div>
 
-    <aside className="relative hidden overflow-hidden border-l border-charcoal-700 bg-gallery-wall lg:block">
+    <aside className="relative hidden overflow-hidden border-l border-line bg-gallery-wall lg:block">
       <div className="absolute inset-0 grid place-items-center p-14">
         <div className="max-w-md space-y-6">
           <p className="eyebrow">Arts by Jay</p>
-          <blockquote className="font-display text-3xl leading-tight text-parchment">
+          <blockquote className="font-display text-3xl leading-tight text-ink">
             A marketplace where the artist sets the price, keeps the majority, and the work hangs in a
             gallery you can walk through.
           </blockquote>
@@ -69,7 +69,7 @@ const PasswordInput = ({ id, value, onChange, error, autoComplete, placeholder }
       <button
         type="button"
         onClick={() => setVisible((shown) => !shown)}
-        className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted transition-colors hover:text-parchment"
+        className="absolute right-3 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted transition-colors hover:text-ink"
         aria-label={visible ? 'Hide password' : 'Show password'}
       >
         {visible ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
@@ -234,7 +234,7 @@ export const RegisterPage = () => {
              Only these two are offered. The administrator role cannot be
              requested here, and the server would refuse it if it were. */}
         <fieldset className="space-y-2.5">
-          <legend className="text-[0.8rem] font-medium text-parchment">I am here to</legend>
+          <legend className="text-[0.8rem] font-medium text-ink">I am here to</legend>
           <div className="grid grid-cols-2 gap-2.5">
             <IntentCard
               selected={intent === 'customer'}
@@ -342,11 +342,11 @@ const IntentCard = ({ selected, onClick, icon: Icon, title, description }) => (
       'rounded-2xl border p-4 text-left transition-all',
       selected
         ? 'border-accent-300 bg-accent-300/[0.07]'
-        : 'border-charcoal-600 hover:border-charcoal-500 hover:bg-charcoal-850',
+        : 'border-line-strong hover:border-surface-400 hover:bg-surface-0',
     )}
   >
     <Icon className={clsx('h-5 w-5', selected ? 'text-accent-300' : 'text-muted')} aria-hidden="true" />
-    <p className="mt-2.5 text-sm font-medium text-parchment">{title}</p>
+    <p className="mt-2.5 text-sm font-medium text-ink">{title}</p>
     <p className="mt-0.5 text-[0.75rem] text-muted">{description}</p>
   </button>
 );

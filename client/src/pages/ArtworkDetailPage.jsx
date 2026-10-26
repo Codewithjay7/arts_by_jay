@@ -125,7 +125,7 @@ export const ArtworkDetailPage = () => {
           </>
         )}
         <span aria-hidden="true">/</span>
-        <span className="text-parchment">{artwork.title}</span>
+        <span className="text-ink">{artwork.title}</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
@@ -149,14 +149,14 @@ export const ArtworkDetailPage = () => {
                 fetchPriority="high"
               />
             ) : (
-              <div className="grid h-full place-items-center bg-charcoal-800 text-sm text-muted">
+              <div className="grid h-full place-items-center bg-surface-150 text-sm text-muted">
                 No image provided
               </div>
             )}
 
             {artwork.isSoldOut && (
-              <div className="absolute inset-0 grid place-items-center bg-charcoal-950/60">
-                <span className="rounded-full border border-parchment/25 px-5 py-2 font-mono text-[0.75rem] uppercase tracking-[0.25em] text-parchment">
+              <div className="absolute inset-0 grid place-items-center bg-surface-300/60">
+                <span className="rounded-full border border-ink/25 px-5 py-2 font-mono text-[0.75rem] uppercase tracking-[0.25em] text-ink">
                   Sold
                 </span>
               </div>
@@ -174,7 +174,7 @@ export const ArtworkDetailPage = () => {
                   onClick={() => setActiveImage(index)}
                   className={clsx(
                     'h-20 w-16 overflow-hidden rounded-sm border-2 transition-colors',
-                    index === activeImage ? 'border-accent-300' : 'border-transparent hover:border-charcoal-500',
+                    index === activeImage ? 'border-accent-300' : 'border-transparent hover:border-surface-400',
                   )}
                 >
                   <img
@@ -217,7 +217,7 @@ export const ArtworkDetailPage = () => {
                 )}
                 <span className="text-muted">
                   by{' '}
-                  <span className="text-parchment transition-colors group-hover:text-accent-300">
+                  <span className="text-ink transition-colors group-hover:text-accent-300">
                     {artwork.artist.displayName}
                   </span>
                   {artwork.artist.location && (
@@ -267,22 +267,22 @@ export const ArtworkDetailPage = () => {
             {artwork.isPurchasable && maxQuantity > 1 && (
               <div className="flex items-center gap-3">
                 <span className="text-[0.82rem] text-muted">Quantity</span>
-                <div className="flex items-center rounded-full border border-charcoal-600">
+                <div className="flex items-center rounded-full border border-line-strong">
                   <button
                     type="button"
                     onClick={() => setQuantity((value) => Math.max(1, value - 1))}
                     disabled={quantity <= 1}
-                    className="grid h-9 w-9 place-items-center rounded-l-full text-muted transition-colors hover:text-parchment disabled:opacity-40"
+                    className="grid h-9 w-9 place-items-center rounded-l-full text-muted transition-colors hover:text-ink disabled:opacity-40"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="h-3.5 w-3.5" aria-hidden="true" />
                   </button>
-                  <span className="min-w-10 text-center font-mono text-sm text-parchment">{quantity}</span>
+                  <span className="min-w-10 text-center font-mono text-sm text-ink">{quantity}</span>
                   <button
                     type="button"
                     onClick={() => setQuantity((value) => Math.min(maxQuantity, value + 1))}
                     disabled={quantity >= maxQuantity}
-                    className="grid h-9 w-9 place-items-center rounded-r-full text-muted transition-colors hover:text-parchment disabled:opacity-40"
+                    className="grid h-9 w-9 place-items-center rounded-r-full text-muted transition-colors hover:text-ink disabled:opacity-40"
                     aria-label="Increase quantity"
                   >
                     <Plus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -348,7 +348,7 @@ export const ArtworkDetailPage = () => {
           {/* ── The story ── */}
           {artwork.story && (
             <blockquote className="border-l-2 border-accent-300/40 pl-4">
-              <p className="font-display text-lg italic leading-relaxed text-parchment/90">
+              <p className="font-display text-lg italic leading-relaxed text-ink/90">
                 “{artwork.story}”
               </p>
               <footer className="mt-2 text-[0.78rem] text-muted">
@@ -369,7 +369,7 @@ export const ArtworkDetailPage = () => {
           {/* ── Specification ── */}
           <div className="space-y-3">
             <h2 className="eyebrow">Details</h2>
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-charcoal-700 pt-4 text-[0.85rem]">
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-t border-line pt-4 text-[0.85rem]">
               <Spec label="Medium" value={artwork.medium} />
               <Spec label="Dimensions" value={formatDimensions(artwork.dimensions)} />
               <Spec label="Year" value={artwork.year} />
@@ -384,7 +384,7 @@ export const ArtworkDetailPage = () => {
           </div>
 
           {/* ── Shipping ── */}
-          <div className="space-y-3 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-5">
+          <div className="space-y-3 rounded-2xl border border-line bg-surface-0/50 p-5">
             <h2 className="eyebrow">Delivery</h2>
             <ul className="space-y-2.5 text-[0.84rem] text-muted">
               {artwork.shipping?.isDigitalDelivery ? (
@@ -418,7 +418,7 @@ export const ArtworkDetailPage = () => {
 
           {/* ── The artist ── */}
           {artwork.artist?.bio && (
-            <div className="space-y-3 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-5">
+            <div className="space-y-3 rounded-2xl border border-line bg-surface-0/50 p-5">
               <h2 className="eyebrow">About the artist</h2>
               <p className="text-[0.86rem] leading-relaxed text-muted">{artwork.artist.bio}</p>
               <div className="flex flex-wrap gap-2 pt-1">
@@ -493,7 +493,7 @@ const Spec = ({ label, value }) => {
   return (
     <div>
       <dt className="eyebrow">{label}</dt>
-      <dd className="mt-1 text-parchment">{value}</dd>
+      <dd className="mt-1 text-ink">{value}</dd>
     </div>
   );
 };

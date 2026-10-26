@@ -61,7 +61,7 @@ export const OrderConfirmationPage = () => {
         <header className="space-y-5 text-center">
           <span
             className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${
-              isPaid ? 'bg-accent-300 text-ink' : 'bg-charcoal-800 text-muted'
+              isPaid ? 'bg-accent-300 text-white' : 'bg-surface-150 text-muted'
             }`}
           >
             {isPaid ? <Check className="h-7 w-7" aria-hidden="true" /> : <Package className="h-7 w-7" aria-hidden="true" />}
@@ -73,7 +73,7 @@ export const OrderConfirmationPage = () => {
               {isPaid ? 'Thank you — your order is confirmed' : 'Your order is not yet complete'}
             </h1>
             <p className="lede mx-auto max-w-xl">
-              Order <span className="font-mono text-parchment">{order.orderNumber}</span>
+              Order <span className="font-mono text-ink">{order.orderNumber}</span>
               {' · '}
               {formatDate(order.createdAt)}
             </p>
@@ -103,7 +103,7 @@ export const OrderConfirmationPage = () => {
       )}
 
       {/* Honest about email: no claim that a receipt was sent when it wasn't. */}
-      <div className="mt-8 flex items-start gap-3 rounded-xl border border-charcoal-700 bg-charcoal-850/60 px-4 py-3.5">
+      <div className="mt-8 flex items-start gap-3 rounded-xl border border-line bg-surface-0/60 px-4 py-3.5">
         <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted" aria-hidden="true" />
         <p className="text-[0.84rem] leading-relaxed text-muted">
           {emailConfigured
@@ -118,10 +118,10 @@ export const OrderConfirmationPage = () => {
           What you bought
         </h2>
 
-        <ul className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+        <ul className="divide-y divide-line border-y border-line">
           {order.items.map((item) => (
             <li key={item.id} className="flex gap-4 py-5">
-              <div className="h-24 w-20 shrink-0 overflow-hidden rounded-sm bg-charcoal-800">
+              <div className="h-24 w-20 shrink-0 overflow-hidden rounded-sm bg-surface-150">
                 {item.imageUrl && (
                   <img
                     src={imageSource({ url: item.imageUrl })}
@@ -153,7 +153,7 @@ export const OrderConfirmationPage = () => {
                 </div>
               </div>
 
-              <p className="shrink-0 font-mono text-[0.9rem] text-parchment">
+              <p className="shrink-0 font-mono text-[0.9rem] text-ink">
                 {formatMoney(item.lineTotalMinor, order.currency)}
               </p>
             </li>
@@ -170,16 +170,16 @@ export const OrderConfirmationPage = () => {
           <dl className="space-y-2.5 text-[0.86rem]">
             <div className="flex justify-between">
               <dt className="text-muted">Subtotal</dt>
-              <dd className="text-parchment">{formatMoney(order.subtotalMinor, order.currency)}</dd>
+              <dd className="text-ink">{formatMoney(order.subtotalMinor, order.currency)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted">Shipping ({order.shippingMethod})</dt>
-              <dd className="text-parchment">
+              <dd className="text-ink">
                 {order.shippingTotalMinor > 0 ? formatMoney(order.shippingTotalMinor, order.currency) : 'Free'}
               </dd>
             </div>
-            <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-2.5">
-              <dt className="text-base text-parchment">Total paid</dt>
+            <div className="flex items-baseline justify-between border-t border-line pt-2.5">
+              <dt className="text-base text-ink">Total paid</dt>
               <dd className="font-mono text-xl text-accent-300">{formatMoney(order.totalMinor, order.currency)}</dd>
             </div>
           </dl>
@@ -190,7 +190,7 @@ export const OrderConfirmationPage = () => {
             Delivering to
           </h2>
           <address className="space-y-0.5 text-[0.86rem] not-italic leading-relaxed text-muted">
-            <p className="text-parchment">{order.shippingAddress.fullName}</p>
+            <p className="text-ink">{order.shippingAddress.fullName}</p>
             <p>{order.shippingAddress.line1}</p>
             {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
             <p>
@@ -204,19 +204,19 @@ export const OrderConfirmationPage = () => {
 
       {/* ── What happens next ── */}
       {isPaid && (
-        <section className="mt-10 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-6" aria-labelledby="next-heading">
+        <section className="mt-10 rounded-2xl border border-line bg-surface-0/50 p-6" aria-labelledby="next-heading">
           <h2 id="next-heading" className="eyebrow mb-4">
             What happens next
           </h2>
           <ol className="space-y-4 text-[0.86rem] leading-relaxed text-muted">
             <li className="flex gap-3">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent-300 font-mono text-[0.7rem] text-ink">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent-300 font-mono text-[0.7rem] text-white">
                 1
               </span>
               The studio has been notified and will prepare your piece.
             </li>
             <li className="flex gap-3">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-charcoal-600 font-mono text-[0.7rem]">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-line-strong font-mono text-[0.7rem]">
                 2
               </span>
               <span className="inline-flex items-start gap-2">
@@ -225,7 +225,7 @@ export const OrderConfirmationPage = () => {
               </span>
             </li>
             <li className="flex gap-3">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-charcoal-600 font-mono text-[0.7rem]">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-line-strong font-mono text-[0.7rem]">
                 3
               </span>
               Once it is delivered you can leave a review on the piece.

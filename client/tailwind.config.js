@@ -1,98 +1,148 @@
 /**
- * Arts by Jay — midnight charcoal, warm ivory, burnt terracotta.
+ * Arts by Jay — light, editorial, artwork-first.
  *
- * The intent is a contemporary gallery after closing time: warm darkness,
- * ivory type, and terracotta used sparingly enough that it still reads as an
- * accent. The paintings supply the colour; the interface gets out of the way.
+ * The interface is deliberately almost colourless: near-white surfaces, one
+ * near-black for type, one blue used sparingly. That is not minimalism for
+ * its own sake — a marketplace selling paintings cannot afford to compete
+ * with them. Every saturated pixel on the page should belong to an artwork.
  *
- * The `accent` scale is deliberately NOT ordered light-to-dark in the usual
- * Tailwind way. 300 is the primary terracotta, 200 is the lighter hover and
- * 400 the darker pressed state, because that is how the components use them:
- *   bg-accent-300  hover:bg-accent-200  active:bg-accent-400
+ * Token names are semantic, not descriptive, so a future palette change is a
+ * values edit rather than a sweep through fifty files:
+ *
+ *   surface-*   backgrounds, from white (0) through to black (900)
+ *   line        hairline borders
+ *   ink         primary type
+ *   muted       secondary type
+ *   accent      the single blue, used for action and state only
  */
 export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        // Warm charcoal. Every value carries a little red so the darks read
-        // as unlit gallery wall rather than as switched-off screen.
-        charcoal: {
-          950: '#0D0C0B',
-          900: '#121212', // primary background
-          850: '#1C1B1A', // secondary background / panels
-          800: '#242220',
-          750: '#2B2826',
-          700: '#37322F', // borders
-          600: '#4A433E',
-          500: '#5E554E',
+        surface: {
+          0: '#FFFFFF', // cards, panels, elevated things
+          100: '#F5F5F7', // page background
+          150: '#F0F0F2', // hover on a card
+          200: '#EBEBED', // pressed, inset wells
+          300: '#E3E3E6', // sunken, scrollbar track
+          400: '#AEAEB2', // disabled type, muted icons
+          800: '#161617', // cinematic section, one step off black
+          900: '#000000', // the gallery, and full-bleed dark sections
         },
 
-        // Burnt terracotta.
+        line: {
+          DEFAULT: '#D2D2D7', // the only border weight needed
+          strong: '#C7C7CC', // separators that must carry more weight
+        },
+
+        ink: {
+          DEFAULT: '#1D1D1F', // primary type
+          soft: '#424245', // headings on a dark section
+        },
+
+        muted: '#6E6E73', // secondary type
+
         accent: {
-          50: '#FAF3EF',
-          100: '#F2E0D6',
-          200: '#D98565', // hover highlight (soft terracotta)
-          300: '#C46A4A', // PRIMARY accent
-          400: '#A85D43', // pressed / muted copper
-          500: '#8E4C37',
-          600: '#763E2C',
-          700: '#5E3123',
-          800: '#47251A',
-          900: '#301912',
+          50: '#F0F7FF',
+          100: '#DCEBFC',
+          200: '#3395F0', // lighter hover
+          300: '#0071E3', // PRIMARY — actions and active state
+          400: '#0062C4', // pressed
+          500: '#0052A6',
+          600: '#004488',
+          700: '#00356B',
+          800: '#00284F',
+          900: '#001B36',
         },
 
-        parchment: '#F4EFE6', // warm ivory — main text
-        muted: '#B8AEA3', // soft taupe — secondary text
-        frame: '#E8DFD1', // antique ivory — artwork mounts
-        cream: '#F1EBE1', // light section background
-        ink: '#171412', // text on a terracotta button
+        // Gallery furniture. A museum wall is not pure white and a mount is
+        // not pure anything; these keep frames from looking like CSS boxes.
+        frame: '#FBFBFD', // gallery wall
+        cream: '#F5F2ED', // mount board
       },
 
       fontFamily: {
-        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+        /**
+         * The system stack. On Apple platforms this resolves to San
+         * Francisco, on Windows to Segoe UI, on Android to Roboto — each
+         * already hinted for its own renderer, and none of them costing a
+         * font request. The previous build loaded two webfonts from Google
+         * for this; now it loads none.
+         */
+        sans: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Text"',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          'sans-serif',
+        ],
+        display: [
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"SF Pro Display"',
+          '"Segoe UI"',
+          'Roboto',
+          '"Helvetica Neue"',
+          'Arial',
+          'sans-serif',
+        ],
+        mono: ['"SF Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
 
       fontSize: {
-        'display-xl': ['clamp(3rem, 9vw, 7.5rem)', { lineHeight: '0.92', letterSpacing: '-0.03em' }],
-        'display-lg': ['clamp(2.25rem, 6vw, 4.5rem)', { lineHeight: '0.98', letterSpacing: '-0.02em' }],
-        'display-md': ['clamp(1.75rem, 4vw, 2.75rem)', { lineHeight: '1.05', letterSpacing: '-0.01em' }],
+        // Tight tracking and heavy weight at large sizes; the optical
+        // correction a display face needs.
+        'display-xl': [
+          'clamp(2.75rem, 7vw, 5.5rem)',
+          { lineHeight: '1.05', letterSpacing: '-0.025em', fontWeight: '600' },
+        ],
+        'display-lg': [
+          'clamp(2rem, 5vw, 3.5rem)',
+          { lineHeight: '1.08', letterSpacing: '-0.02em', fontWeight: '600' },
+        ],
+        'display-md': [
+          'clamp(1.5rem, 3.2vw, 2.25rem)',
+          { lineHeight: '1.15', letterSpacing: '-0.015em', fontWeight: '600' },
+        ],
+      },
+
+      borderRadius: {
+        // One generous radius used consistently, rather than five arbitrary ones.
+        card: '18px',
+        panel: '22px',
       },
 
       boxShadow: {
-        // A hung frame casts a long, soft shadow and catches a hairline of
-        // light on its top edge.
-        frame: '0 30px 60px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(244,239,230,0.06)',
-        lift: '0 20px 45px -25px rgba(0,0,0,0.85)',
-        // Restrained warm glow — never neon.
-        glow: '0 0 36px -10px rgba(196,106,74,0.45)',
-        'glow-sm': '0 0 18px -6px rgba(196,106,74,0.35)',
-        inset: 'inset 0 1px 0 0 rgba(244,239,230,0.05)',
+        // Light-theme elevation is a soft spread, not a hard drop. Two layers:
+        // a tight contact shadow and a wide ambient one.
+        card: '0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -8px rgba(0,0,0,0.08)',
+        lift: '0 2px 4px rgba(0,0,0,0.05), 0 18px 40px -12px rgba(0,0,0,0.14)',
+        // A hung frame casts onto the wall below it.
+        frame: '0 2px 6px rgba(0,0,0,0.06), 0 24px 48px -20px rgba(0,0,0,0.18)',
+        inset: 'inset 0 0 0 1px rgba(0,0,0,0.05)',
+        focus: '0 0 0 4px rgba(0,113,227,0.25)',
       },
 
       backgroundImage: {
-        'gallery-wall': 'radial-gradient(120% 80% at 50% 0%, #241F1C 0%, #191715 45%, #0F0E0D 100%)',
-        'terracotta-sweep': 'linear-gradient(100deg, #C46A4A 0%, #A85D43 100%)',
-        'ivory-sweep': 'linear-gradient(100deg, #F4EFE6 0%, #E8DFD1 100%)',
-        // Picture-light wash, used behind headings.
-        spotlight: 'radial-gradient(60% 50% at 50% 0%, rgba(196,106,74,0.16) 0%, transparent 70%)',
+        // A museum wall: barely-there vertical falloff, no visible gradient.
+        'gallery-wall': 'linear-gradient(180deg, #FFFFFF 0%, #FBFBFD 60%, #F5F5F7 100%)',
+        'dark-section': 'linear-gradient(180deg, #000000 0%, #101011 100%)',
       },
 
       transitionTimingFunction: {
-        // Long tail, no overshoot: a camera easing to a stop.
+        // Long tail, no overshoot.
         gallery: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        curtain: 'cubic-bezier(0.76, 0, 0.24, 1)',
-      },
-
-      transitionDuration: {
-        cinematic: '900ms',
+        // The easing used for a sheet or overlay.
+        sheet: 'cubic-bezier(0.32, 0.72, 0, 1)',
       },
 
       keyframes: {
         'fade-up': {
-          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '0%': { opacity: '0', transform: 'translateY(14px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         'fade-in': {
@@ -107,66 +157,25 @@ export default {
           '0%': { transform: 'translateX(100%)' },
           '100%': { transform: 'translateX(0)' },
         },
-
-        // ── Advanced motion ──
-
-        // A canvas being uncovered rather than faded in.
-        'reveal-up': {
-          '0%': { clipPath: 'inset(100% 0 0 0)', transform: 'scale(1.06)' },
-          '100%': { clipPath: 'inset(0 0 0 0)', transform: 'scale(1)' },
+        // A sheet rising from the bottom edge.
+        'sheet-up': {
+          '0%': { opacity: '0', transform: 'translateY(2rem) scale(0.985)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
         },
-        'reveal-left': {
-          '0%': { clipPath: 'inset(0 100% 0 0)' },
-          '100%': { clipPath: 'inset(0 0 0 0)' },
-        },
-        // Per-word rise, masked by its own line box.
-        'line-rise': {
-          '0%': { transform: 'translateY(110%) rotate(2deg)', opacity: '0' },
-          '100%': { transform: 'translateY(0) rotate(0deg)', opacity: '1' },
-        },
-        // Slow drift across a still image.
-        'ken-burns': {
-          '0%': { transform: 'scale(1.04) translate3d(0,0,0)' },
-          '100%': { transform: 'scale(1.14) translate3d(-1.5%, -1.5%, 0)' },
-        },
-        // The breathing of a picture light on a dimmer.
-        'light-breathe': {
-          '0%, 100%': { opacity: '0.72' },
-          '50%': { opacity: '1' },
-        },
-        marquee: {
-          '0%': { transform: 'translateX(0)' },
-          '100%': { transform: 'translateX(-50%)' },
-        },
-        'stroke-draw': {
-          '0%': { strokeDashoffset: '1' },
-          '100%': { strokeDashoffset: '0' },
-        },
-        'curtain-up': {
-          '0%': { transform: 'translateY(0)' },
-          '100%': { transform: 'translateY(-101%)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-6px)' },
+        // Very slow drift on a hero still. Barely perceptible by design.
+        'slow-pan': {
+          '0%': { transform: 'scale(1.02)' },
+          '100%': { transform: 'scale(1.08)' },
         },
       },
 
       animation: {
-        'fade-up': 'fade-up 0.6s cubic-bezier(0.22,1,0.36,1) both',
-        'fade-in': 'fade-in 0.4s ease both',
+        'fade-up': 'fade-up 0.7s cubic-bezier(0.22,1,0.36,1) both',
+        'fade-in': 'fade-in 0.45s ease both',
         shimmer: 'shimmer 1.6s linear infinite',
-        'slide-in-right': 'slide-in-right 0.35s cubic-bezier(0.22,1,0.36,1) both',
-
-        'reveal-up': 'reveal-up 1.1s cubic-bezier(0.22,1,0.36,1) both',
-        'reveal-left': 'reveal-left 0.9s cubic-bezier(0.76,0,0.24,1) both',
-        'line-rise': 'line-rise 0.95s cubic-bezier(0.22,1,0.36,1) both',
-        'ken-burns': 'ken-burns 22s ease-out alternate infinite',
-        'light-breathe': 'light-breathe 6s ease-in-out infinite',
-        marquee: 'marquee 38s linear infinite',
-        'stroke-draw': 'stroke-draw 1.6s cubic-bezier(0.22,1,0.36,1) both',
-        'curtain-up': 'curtain-up 1s cubic-bezier(0.76,0,0.24,1) both',
-        float: 'float 5s ease-in-out infinite',
+        'slide-in-right': 'slide-in-right 0.4s cubic-bezier(0.32,0.72,0,1) both',
+        'sheet-up': 'sheet-up 0.5s cubic-bezier(0.32,0.72,0,1) both',
+        'slow-pan': 'slow-pan 28s ease-out alternate infinite',
       },
     },
   },

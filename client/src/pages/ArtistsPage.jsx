@@ -130,13 +130,13 @@ export const ArtistsPage = () => {
 const ArtistCard = ({ artist }) => (
   <Link
     to={`/artists/${artist.slug}`}
-    className="group block overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850/60 transition-colors hover:border-accent-300/40"
+    className="group block overflow-hidden rounded-2xl border border-line bg-surface-0/60 transition-colors hover:border-accent-300/40"
   >
     {/* Three works, so the card is led by art rather than a biography. */}
-    <div className="grid grid-cols-3 gap-0.5 bg-charcoal-900">
+    <div className="grid grid-cols-3 gap-0.5 bg-surface-100">
       {artist.preview.length > 0 ? (
         artist.preview.map((piece) => (
-          <div key={piece.id} className="aspect-square overflow-hidden bg-charcoal-800">
+          <div key={piece.id} className="aspect-square overflow-hidden bg-surface-150">
             {piece.image && (
               <img
                 src={imageSource({ url: piece.image })}
@@ -148,7 +148,7 @@ const ArtistCard = ({ artist }) => (
           </div>
         ))
       ) : (
-        <div className="col-span-3 grid aspect-[3/1] place-items-center bg-charcoal-800 text-[0.75rem] text-muted">
+        <div className="col-span-3 grid aspect-[3/1] place-items-center bg-surface-150 text-[0.75rem] text-muted">
           No published work yet
         </div>
       )}
@@ -156,7 +156,7 @@ const ArtistCard = ({ artist }) => (
 
     <div className="space-y-3 p-5">
       <div className="flex items-start gap-3.5">
-        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-charcoal-800">
+        <div className="h-11 w-11 shrink-0 overflow-hidden rounded-full bg-surface-150">
           {artist.avatarUrl && (
             <img
               src={imageSource({ url: artist.avatarUrl })}
@@ -250,13 +250,13 @@ export const ArtistStorefrontPage = () => {
           ) : (
             <div className="h-full w-full bg-gallery-wall" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-900 via-charcoal-900/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface-100 via-surface-100/50 to-transparent" />
         </div>
 
         <div className="mx-auto -mt-16 max-w-[1500px] px-4 sm:px-6 lg:-mt-20 lg:px-10">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-5">
-              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-charcoal-700 bg-charcoal-850 shadow-frame lg:h-32 lg:w-32">
+              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-line bg-surface-0 shadow-frame lg:h-32 lg:w-32">
                 {artist.avatarUrl && (
                   <img
                     src={imageSource({ url: artist.avatarUrl })}
@@ -300,7 +300,7 @@ export const ArtistStorefrontPage = () => {
           <aside className="space-y-7">
             {artist.statement && (
               <blockquote className="border-l-2 border-accent-300/40 pl-4">
-                <p className="font-display text-lg italic leading-relaxed text-parchment/90">
+                <p className="font-display text-lg italic leading-relaxed text-ink/90">
                   “{artist.statement}”
                 </p>
               </blockquote>
@@ -324,23 +324,23 @@ export const ArtistStorefrontPage = () => {
               </div>
             )}
 
-            <dl className="space-y-3 border-t border-charcoal-700 pt-5 text-[0.82rem]">
+            <dl className="space-y-3 border-t border-line pt-5 text-[0.82rem]">
               <div className="flex justify-between">
                 <dt className="text-muted">Works listed</dt>
-                <dd className="text-parchment">{artist.publishedArtworks}</dd>
+                <dd className="text-ink">{artist.publishedArtworks}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted">Pieces sold</dt>
-                <dd className="text-parchment">{artist.totalSales}</dd>
+                <dd className="text-ink">{artist.totalSales}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted">On Arts by Jay since</dt>
-                <dd className="text-parchment">{formatDate(artist.joinedAt, { day: undefined })}</dd>
+                <dd className="text-ink">{formatDate(artist.joinedAt, { day: undefined })}</dd>
               </div>
             </dl>
 
             {(artist.links?.website || artist.links?.instagram) && (
-              <div className="space-y-2.5 border-t border-charcoal-700 pt-5">
+              <div className="space-y-2.5 border-t border-line pt-5">
                 <h2 className="eyebrow">Elsewhere</h2>
                 <div className="flex gap-2">
                   {artist.links.website && (
@@ -348,7 +348,7 @@ export const ArtistStorefrontPage = () => {
                       href={artist.links.website}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
+                      className="grid h-9 w-9 place-items-center rounded-full border border-line-strong text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                       aria-label={`${artist.displayName} website`}
                     >
                       <Globe className="h-4 w-4" aria-hidden="true" />
@@ -363,7 +363,7 @@ export const ArtistStorefrontPage = () => {
                       }
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
+                      className="grid h-9 w-9 place-items-center rounded-full border border-line-strong text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                       aria-label={`${artist.displayName} on Instagram`}
                     >
                       <Instagram className="h-4 w-4" aria-hidden="true" />

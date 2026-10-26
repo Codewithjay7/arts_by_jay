@@ -27,7 +27,7 @@ export const GalleryFallback = ({ artworks, rooms, onSelect, reason }) => {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 sm:px-6">
       {reason && (
-        <div className="mb-10 rounded-2xl border border-charcoal-700 bg-charcoal-850/60 p-5">
+        <div className="mb-10 rounded-2xl border border-line bg-surface-0/60 p-5">
           <p className="eyebrow mb-1.5">Gallery walkthrough</p>
           <p className="text-sm leading-relaxed text-muted">{reason}</p>
         </div>
@@ -41,7 +41,7 @@ export const GalleryFallback = ({ artworks, rooms, onSelect, reason }) => {
 
           return (
             <section key={room} className="mb-20" aria-labelledby={`room-${room}`}>
-              <header className="mb-8 flex items-baseline justify-between gap-4 border-b border-charcoal-700 pb-4">
+              <header className="mb-8 flex items-baseline justify-between gap-4 border-b border-line pb-4">
                 <h2 id={`room-${room}`} className="text-display-md">
                   {rooms?.find((entry) => entry.room === room)?.label ?? `Room ${room + 1}`}
                 </h2>
@@ -60,7 +60,7 @@ export const GalleryFallback = ({ artworks, rooms, onSelect, reason }) => {
           );
         })}
 
-      <div className="rounded-2xl border border-charcoal-700 bg-charcoal-850/60 p-8 text-center">
+      <div className="rounded-2xl border border-line bg-surface-0/60 p-8 text-center">
         <h2 className="text-display-md">That is the whole exhibition</h2>
         <p className="lede mx-auto mt-3 max-w-xl">
           Every piece here is for sale in the shop, with the same price and availability.
@@ -115,14 +115,14 @@ const Wall = ({ label, pieces, onSelect, align }) => (
               )}
 
               {artwork.isSoldOut && (
-                <div className="absolute inset-0 grid place-items-center bg-charcoal-950/65">
-                  <span className="rounded-full border border-parchment/25 px-4 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-parchment">
+                <div className="absolute inset-0 grid place-items-center bg-surface-300/65">
+                  <span className="rounded-full border border-ink/25 px-4 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink">
                     Sold
                   </span>
                 </div>
               )}
 
-              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full border border-parchment/20 bg-charcoal-950/80 px-3 py-1 text-[0.72rem] text-parchment opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-full border border-ink/20 bg-surface-300/80 px-3 py-1 text-[0.72rem] text-ink opacity-0 transition-opacity group-hover:opacity-100">
                 <Eye className="h-3 w-3" aria-hidden="true" />
                 View
               </span>

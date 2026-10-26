@@ -173,7 +173,7 @@ export const ShopPage = () => {
             <button
               type="button"
               onClick={() => setSearchInput('')}
-              className="absolute right-3.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted transition-colors hover:bg-charcoal-800 hover:text-parchment"
+              className="absolute right-3.5 top-1/2 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-full text-muted transition-colors hover:bg-surface-150 hover:text-ink"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />

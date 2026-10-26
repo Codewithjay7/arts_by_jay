@@ -76,7 +76,7 @@ export const ActiveFilters = ({ filters, onRemove, onClear, categories, facets, 
           key={key}
           type="button"
           onClick={() => onRemove(key)}
-          className="group inline-flex items-center gap-1.5 rounded-full border border-charcoal-600 bg-charcoal-800 px-3 py-1 text-[0.75rem] text-parchment transition-colors hover:border-accent-300/50 hover:text-accent-300"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-line-strong bg-surface-150 px-3 py-1 text-[0.75rem] text-ink transition-colors hover:border-accent-300/50 hover:text-accent-300"
         >
           {describeFilter(key, filters[key], { categories, facets })}
           <X className="h-3 w-3 opacity-60 group-hover:opacity-100" aria-hidden="true" />

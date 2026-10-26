@@ -422,9 +422,9 @@ export const CheckoutPage = () => {
                 <span
                   className={clsx(
                     'grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[0.78rem] transition-colors',
-                    done && 'border-accent-300 bg-accent-300 text-ink',
+                    done && 'border-accent-300 bg-accent-300 text-white',
                     current && 'border-accent-300 text-accent-300',
-                    !done && !current && 'border-charcoal-600 text-muted',
+                    !done && !current && 'border-line-strong text-muted',
                   )}
                 >
                   {done ? <Check className="h-4 w-4" aria-hidden="true" /> : <Icon className="h-4 w-4" aria-hidden="true" />}
@@ -432,14 +432,14 @@ export const CheckoutPage = () => {
                 <span
                   className={clsx(
                     'hidden text-[0.84rem] sm:block',
-                    current ? 'text-parchment' : 'text-muted',
+                    current ? 'text-ink' : 'text-muted',
                   )}
                 >
                   {entry.label}
                 </span>
               </button>
               {index < STEPS.length - 1 && (
-                <span className={clsx('h-px flex-1', done ? 'bg-accent-300/50' : 'bg-charcoal-700')} aria-hidden="true" />
+                <span className={clsx('h-px flex-1', done ? 'bg-accent-300/50' : 'bg-line')} aria-hidden="true" />
               )}
             </li>
           );
@@ -503,10 +503,10 @@ export const CheckoutPage = () => {
                           'rounded-2xl border p-4 text-left text-[0.82rem] transition-colors',
                           selectedAddressId === saved.id
                             ? 'border-accent-300 bg-accent-300/[0.06]'
-                            : 'border-charcoal-600 hover:border-charcoal-500',
+                            : 'border-line-strong hover:border-surface-400',
                         )}
                       >
-                        <p className="font-medium text-parchment">{saved.label}</p>
+                        <p className="font-medium text-ink">{saved.label}</p>
                         <p className="mt-1 text-muted">
                           {saved.fullName} · {saved.line1}, {saved.city}, {saved.state} {saved.postalCode}
                         </p>
@@ -523,7 +523,7 @@ export const CheckoutPage = () => {
                         'rounded-2xl border border-dashed p-4 text-left text-[0.82rem] transition-colors',
                         selectedAddressId === null
                           ? 'border-accent-300 text-accent-300'
-                          : 'border-charcoal-600 text-muted hover:border-charcoal-500',
+                          : 'border-line-strong text-muted hover:border-surface-400',
                       )}
                     >
                       Use a new address
@@ -554,7 +554,7 @@ export const CheckoutPage = () => {
               />
 
               {!billingSameAsShipping && (
-                <div className="space-y-5 rounded-2xl border border-charcoal-700 p-5">
+                <div className="space-y-5 rounded-2xl border border-line p-5">
                   <h3 className="eyebrow">Billing address</h3>
                   <AddressFields
                     values={billingAddress}
@@ -601,11 +601,11 @@ export const CheckoutPage = () => {
                       'flex w-full items-start justify-between gap-4 rounded-2xl border p-5 text-left transition-colors',
                       shippingMethod === method.key
                         ? 'border-accent-300 bg-accent-300/[0.06]'
-                        : 'border-charcoal-600 hover:border-charcoal-500',
+                        : 'border-line-strong hover:border-surface-400',
                     )}
                   >
                     <div className="space-y-1">
-                      <p className="text-[0.92rem] text-parchment">{method.label}</p>
+                      <p className="text-[0.92rem] text-ink">{method.label}</p>
                       <p className="text-[0.8rem] leading-relaxed text-muted">{method.description}</p>
                     </div>
                     <p className="shrink-0 font-mono text-[0.85rem] text-accent-300">
@@ -650,7 +650,7 @@ export const CheckoutPage = () => {
               ) : (
                 <div className="flex items-start gap-3 rounded-xl border border-accent-300/25 bg-accent-300/[0.05] px-4 py-3">
                   <Lock className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
-                  <p className="text-[0.82rem] leading-relaxed text-parchment/90">
+                  <p className="text-[0.82rem] leading-relaxed text-ink/90">
                     Payment is taken by <span className="text-accent-300">{payment.provider}</span> in their own
                     secure window. Your card details never reach our server, and your order is confirmed only
                     after we verify the payment with the gateway.
@@ -671,7 +671,7 @@ export const CheckoutPage = () => {
               {/* Stripe's inline fields */}
               {pendingOrder && isInlineProvider(pendingOrder.payment.provider) && (
                 <div className="space-y-4">
-                  <div ref={stripeContainerRef} className="rounded-2xl border border-charcoal-600 p-4" />
+                  <div ref={stripeContainerRef} className="rounded-2xl border border-line-strong p-4" />
                   <Button
                     variant="primary"
                     size="lg"
@@ -725,10 +725,10 @@ export const CheckoutPage = () => {
           <div className="panel space-y-5 p-6">
             <h2 className="font-display text-xl">Your order</h2>
 
-            <ul className="space-y-3.5 border-b border-charcoal-700 pb-5">
+            <ul className="space-y-3.5 border-b border-line pb-5">
               {items.map(({ artwork, quantity, lineTotalMinor }) => (
                 <li key={artwork.id} className="flex gap-3">
-                  <div className="h-16 w-13 shrink-0 overflow-hidden rounded-sm bg-charcoal-800">
+                  <div className="h-16 w-13 shrink-0 overflow-hidden rounded-sm bg-surface-150">
                     {artwork.image && (
                       <img
                         src={imageSource(artwork.image, { preferThumb: true })}
@@ -739,11 +739,11 @@ export const CheckoutPage = () => {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[0.84rem] text-parchment">{artwork.title}</p>
+                    <p className="truncate text-[0.84rem] text-ink">{artwork.title}</p>
                     <p className="truncate text-[0.74rem] text-muted">{artwork.artist?.displayName}</p>
                     <p className="font-mono text-[0.74rem] text-muted">Qty {quantity}</p>
                   </div>
-                  <p className="shrink-0 font-mono text-[0.8rem] text-parchment">
+                  <p className="shrink-0 font-mono text-[0.8rem] text-ink">
                     {formatMoney(lineTotalMinor, totals?.currency)}
                   </p>
                 </li>
@@ -753,16 +753,16 @@ export const CheckoutPage = () => {
             <dl className="space-y-2.5 text-[0.86rem]">
               <div className="flex justify-between">
                 <dt className="text-muted">Subtotal</dt>
-                <dd className="text-parchment">{formatMoney(totals?.subtotalMinor, totals?.currency)}</dd>
+                <dd className="text-ink">{formatMoney(totals?.subtotalMinor, totals?.currency)}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted">Shipping</dt>
-                <dd className="text-parchment">
+                <dd className="text-ink">
                   {totals?.shippingTotalMinor > 0 ? formatMoney(totals.shippingTotalMinor, totals.currency) : 'Free'}
                 </dd>
               </div>
-              <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-3">
-                <dt className="text-base text-parchment">Total</dt>
+              <div className="flex items-baseline justify-between border-t border-line pt-3">
+                <dt className="text-base text-ink">Total</dt>
                 <dd className="font-mono text-2xl text-accent-300">
                   {formatMoney(totals?.totalMinor, totals?.currency)}
                 </dd>

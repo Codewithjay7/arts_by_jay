@@ -109,7 +109,7 @@ const RoomDividers = ({ roomCount, quality }) => {
           <meshStandardMaterial
             color="#c46a4a"
             emissive="#c46a4a"
-            emissiveIntensity={1.6}
+            emissiveIntensity={0.9}
             toneMapped={false}
           />
         </mesh>
@@ -130,10 +130,10 @@ const CorridorLighting = ({ length, quality }) => {
   return (
     <group>
       {/* A low ambient keeps the darkest corners from going pure black. */}
-      <ambientLight intensity={0.22} color="#b8aea3" />
+      <ambientLight intensity={1.05} color="#eef1f5" />
 
       {/* A single soft fill from above and behind the visitor. */}
-      <directionalLight position={[2, CORRIDOR_HEIGHT, 4]} intensity={0.25} color="#f0e6da" />
+      <directionalLight position={[2, CORRIDOR_HEIGHT, 4]} intensity={0.55} color="#ffffff" />
 
       {washes.map((z, index) => (
         <group key={z} position={[0, CORRIDOR_HEIGHT - 0.12, z]}>
@@ -143,7 +143,7 @@ const CorridorLighting = ({ length, quality }) => {
             <meshStandardMaterial
               color="#f4efe6"
               emissive="#f4efe6"
-              emissiveIntensity={0.9}
+              emissiveIntensity={0.55}
               toneMapped={false}
             />
           </mesh>
@@ -151,7 +151,7 @@ const CorridorLighting = ({ length, quality }) => {
           {/* Only every other fixture actually casts light on lower tiers,
               which halves the lighting cost without changing the look much. */}
           {(quality === 'high' || index % 2 === 0) && (
-            <pointLight position={[0, -0.4, 0]} intensity={2.6} distance={9} decay={2} color="#efe2d2" />
+            <pointLight position={[0, -0.4, 0]} intensity={1.1} distance={9} decay={2} color="#ffffff" />
           )}
         </group>
       ))}
@@ -242,10 +242,10 @@ export const CorridorScene = ({
   reducedMotion = false,
 }) => (
   <>
-    <color attach="background" args={['#070806']} />
-    {/* Fog hides the far end of the corridor, which both sells the depth and
-        means distant rooms cost nothing to look at. */}
-    <fog attach="fog" args={['#070806', 10, 46]} />
+    <color attach="background" args={['#f2f2f4']} />
+    {/* Haze softens the far end of the corridor, which both sells the depth
+        and means distant rooms cost nothing to render. */}
+    <fog attach="fog" args={['#f2f2f4', 16, 62]} />
 
     <CameraRig
       scrollRef={scrollRef}

@@ -30,7 +30,7 @@ const Canvas2D = ({ url, width, height }) => {
 const CanvasPlaceholder = ({ width, height }) => (
   <mesh position={[0, 0, 0.04]}>
     <planeGeometry args={[width, height]} />
-    <meshBasicMaterial color="#241f1c" />
+    <meshBasicMaterial color="#ececf0" />
   </mesh>
 );
 
@@ -72,13 +72,13 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
         {/* ── Outer moulding ── */}
         <mesh castShadow={quality === 'high'} receiveShadow={quality === 'high'}>
           <boxGeometry args={[frameWidth, frameHeight, 0.08]} />
-          <meshStandardMaterial color="#0c0d0b" roughness={0.55} metalness={0.15} />
+          <meshStandardMaterial color="#1d1d1f" roughness={0.55} metalness={0.15} />
         </mesh>
 
         {/* ── Mount / mat board ── */}
         <mesh position={[0, 0, 0.025]}>
           <planeGeometry args={[width + mount * 2, height + mount * 2]} />
-          <meshStandardMaterial color="#2b2522" roughness={0.9} />
+          <meshStandardMaterial color="#f5f2ed" roughness={0.9} />
         </mesh>
 
         {/* ── The artwork ── */}
@@ -89,7 +89,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
         {/* ── Glass sheen: a faint diagonal highlight across the surface ── */}
         <mesh position={[0, 0, 0.05]}>
           <planeGeometry args={[width, height]} />
-          <meshBasicMaterial color="#e8dfd1" transparent opacity={hovered ? 0.07 : 0.035} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={hovered ? 0.05 : 0.02} />
         </mesh>
 
         {/* ── Hit area ──
@@ -123,9 +123,9 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
       <mesh position={[0, frameHeight / 2 + 0.3, 0.26]} rotation={[-0.5, 0, 0]}>
         <boxGeometry args={[Math.min(frameWidth * 0.55, 1.1), 0.045, 0.1]} />
         <meshStandardMaterial
-          color="#f4efe6"
-          emissive="#c46a4a"
-          emissiveIntensity={isDimmed ? 0.35 : hovered || isFocused ? 2.4 : 1.1}
+          color="#ffffff"
+          emissive="#fff6e8"
+          emissiveIntensity={isDimmed ? 0.2 : hovered || isFocused ? 1.3 : 0.65}
           toneMapped={false}
         />
       </mesh>
@@ -133,10 +133,10 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
       {quality !== 'low' && (
         <pointLight
           position={[0, frameHeight / 2 + 0.25, 0.75]}
-          intensity={isDimmed ? 0.5 : hovered || isFocused ? 5 : 2.4}
+          intensity={isDimmed ? 0.25 : hovered || isFocused ? 2.2 : 1.1}
           distance={4.5}
           decay={2}
-          color="#f0e4d6"
+          color="#fff6e8"
         />
       )}
 
@@ -150,7 +150,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
           lineHeight={1.35}
           anchorX={side === 'left' ? 'left' : 'right'}
           anchorY="top"
-          color={isDimmed ? '#4e554b' : '#9aa196'}
+          color={isDimmed ? '#aeaeb2' : '#6e6e73'}
           outlineWidth={0}
         >
           {label}
@@ -160,7 +160,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
       {/* ── Sold marker ── */}
       {artwork.isSoldOut && (
         <group position={[0, -frameHeight / 2 - 0.22, 0.06]}>
-          <Text fontSize={0.11} anchorX="center" anchorY="middle" color="#c46a4a" letterSpacing={0.2}>
+          <Text fontSize={0.11} anchorX="center" anchorY="middle" color="#0071e3" letterSpacing={0.2}>
             SOLD
           </Text>
         </group>

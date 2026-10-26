@@ -169,7 +169,7 @@ export const ArtistOverviewPage = () => {
             <Link
               key={key}
               to={`/artist/artworks?status=${key}`}
-              className="rounded-xl border border-charcoal-700 bg-charcoal-850/50 px-4 py-3 transition-colors hover:border-accent-300/40"
+              className="rounded-xl border border-line bg-surface-0/50 px-4 py-3 transition-colors hover:border-accent-300/40"
             >
               <p className="font-display text-2xl">{artworks[key] ?? 0}</p>
               <p className="font-mono text-[0.68rem] uppercase tracking-wider text-muted">{label}</p>
@@ -190,15 +190,15 @@ export const ArtistOverviewPage = () => {
         </div>
 
         {!recentOrders?.length ? (
-          <p className="rounded-2xl border border-dashed border-charcoal-600 px-5 py-10 text-center text-sm text-muted">
+          <p className="rounded-2xl border border-dashed border-line-strong px-5 py-10 text-center text-sm text-muted">
             No sales yet. Your first one will appear here.
           </p>
         ) : (
-          <ul className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+          <ul className="divide-y divide-line border-y border-line">
             {recentOrders.map((order) => (
               <li key={order.orderNumber} className="flex flex-wrap items-center gap-4 py-4">
                 <div className="min-w-0 flex-1 space-y-1">
-                  <p className="font-mono text-[0.82rem] text-parchment">{order.orderNumber}</p>
+                  <p className="font-mono text-[0.82rem] text-ink">{order.orderNumber}</p>
                   <p className="truncate text-[0.78rem] text-muted">{order.titles.join(', ')}</p>
                   <p className="text-[0.72rem] text-muted">{formatRelative(order.createdAt)}</p>
                 </div>
@@ -226,7 +226,7 @@ const ActionCard = ({ icon: Icon, title, to }) => (
     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-300/15 text-accent-300">
       <Icon className="h-4 w-4" aria-hidden="true" />
     </span>
-    <span className="flex-1 text-[0.88rem] text-parchment">{title}</span>
+    <span className="flex-1 text-[0.88rem] text-ink">{title}</span>
     <ArrowRight className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
   </Link>
 );
@@ -342,7 +342,7 @@ export const ArtistArtworksPage = () => {
           <ul className="space-y-3">
             {data.items.map((artwork) => (
               <li key={artwork.id} className="panel flex flex-wrap items-center gap-4 p-4">
-                <div className="h-20 w-16 shrink-0 overflow-hidden rounded-sm bg-charcoal-800">
+                <div className="h-20 w-16 shrink-0 overflow-hidden rounded-sm bg-surface-150">
                   {artwork.image ? (
                     <img
                       src={imageSource(artwork.image, { preferThumb: true })}
@@ -387,7 +387,7 @@ export const ArtistArtworksPage = () => {
                   </p>
                 </div>
 
-                <div className="flex w-full shrink-0 flex-wrap gap-1.5 border-t border-charcoal-700 pt-3 sm:w-auto sm:border-0 sm:pt-0">
+                <div className="flex w-full shrink-0 flex-wrap gap-1.5 border-t border-line pt-3 sm:w-auto sm:border-0 sm:pt-0">
                   <Button variant="ghost" size="sm" to={`/artist/artworks/${artwork.id}`}>
                     <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
                     Edit
@@ -721,21 +721,21 @@ export const ArtworkFormPage = () => {
 
         <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
           {images.map((image, index) => (
-            <div key={image.url} className="group relative aspect-square overflow-hidden rounded-lg bg-charcoal-800">
+            <div key={image.url} className="group relative aspect-square overflow-hidden rounded-lg bg-surface-150">
               <img
                 src={imageSource(image, { preferThumb: true })}
                 alt={`Image ${index + 1}`}
                 className="h-full w-full object-cover"
               />
               {index === 0 && (
-                <span className="absolute left-1.5 top-1.5 rounded-full bg-accent-300 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-ink">
+                <span className="absolute left-1.5 top-1.5 rounded-full bg-accent-300 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-white">
                   Main
                 </span>
               )}
               <button
                 type="button"
                 onClick={() => setImages((current) => current.filter((_, position) => position !== index))}
-                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-charcoal-950/80 text-parchment opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                className="absolute right-1.5 top-1.5 grid h-7 w-7 place-items-center rounded-full bg-surface-300/80 text-ink opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                 aria-label={`Remove image ${index + 1}`}
               >
                 <X className="h-3.5 w-3.5" aria-hidden="true" />
@@ -746,7 +746,7 @@ export const ArtworkFormPage = () => {
           {images.length < 8 && (
             <label
               htmlFor="artwork-images"
-              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
+              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line-strong text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
             >
               <Upload className="h-5 w-5" aria-hidden="true" />
               <span className="text-[0.72rem]">{uploading ? 'Uploading…' : 'Add images'}</span>
@@ -1086,7 +1086,7 @@ export const ArtworkFormPage = () => {
       </section>
 
       {/* ── Actions ── */}
-      <div className="flex flex-wrap gap-3 border-t border-charcoal-700 pt-7">
+      <div className="flex flex-wrap gap-3 border-t border-line pt-7">
         <Button type="submit" variant="secondary" size="lg" loading={save.isPending}>
           {isEditing ? 'Save changes' : 'Save as draft'}
         </Button>
@@ -1179,9 +1179,9 @@ export const ArtistOrdersPage = () => {
           <ul className="space-y-5">
             {data.items.map((order) => (
               <li key={order.id} className="panel space-y-4 p-5">
-                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-charcoal-700 pb-4">
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-4">
                   <div className="space-y-1">
-                    <p className="font-mono text-[0.86rem] text-parchment">{order.orderNumber}</p>
+                    <p className="font-mono text-[0.86rem] text-ink">{order.orderNumber}</p>
                     <p className="text-[0.78rem] text-muted">
                       {formatDate(order.createdAt)} · {order.shipTo.fullName}, {order.shipTo.city},{' '}
                       {order.shipTo.state} {order.shipTo.postalCode}
@@ -1199,7 +1199,7 @@ export const ArtistOrdersPage = () => {
                 <ul className="space-y-4">
                   {order.items.map((item) => (
                     <li key={item.id} className="flex flex-wrap items-center gap-4">
-                      <div className="h-16 w-13 shrink-0 overflow-hidden rounded-sm bg-charcoal-800">
+                      <div className="h-16 w-13 shrink-0 overflow-hidden rounded-sm bg-surface-150">
                         {item.imageUrl && (
                           <img
                             src={imageSource({ url: item.imageUrl })}
@@ -1211,7 +1211,7 @@ export const ArtistOrdersPage = () => {
                       </div>
 
                       <div className="min-w-0 flex-1 space-y-1.5">
-                        <p className="truncate text-[0.9rem] text-parchment">{item.title}</p>
+                        <p className="truncate text-[0.9rem] text-ink">{item.title}</p>
                         <p className="font-mono text-[0.74rem] text-muted">
                           Qty {item.quantity} · {formatMoney(item.lineTotalMinor, order.currency)} gross ·{' '}
                           {formatMoney(item.earningsMinor, order.currency)} to you
@@ -1530,7 +1530,7 @@ export const ArtistEnquiriesPage = () => {
                   </div>
                 </div>
 
-                <p className="whitespace-pre-line text-[0.88rem] leading-relaxed text-parchment/90">
+                <p className="whitespace-pre-line text-[0.88rem] leading-relaxed text-ink/90">
                   {request.message}
                 </p>
 
@@ -1538,19 +1538,19 @@ export const ArtistEnquiriesPage = () => {
                   {request.styleKey && (
                     <div>
                       <dt className="eyebrow">Treatment</dt>
-                      <dd className="mt-0.5 text-parchment">{request.styleKey.replace('_', ' ')}</dd>
+                      <dd className="mt-0.5 text-ink">{request.styleKey.replace('_', ' ')}</dd>
                     </div>
                   )}
                   {request.preferredSize && (
                     <div>
                       <dt className="eyebrow">Size wanted</dt>
-                      <dd className="mt-0.5 text-parchment">{request.preferredSize}</dd>
+                      <dd className="mt-0.5 text-ink">{request.preferredSize}</dd>
                     </div>
                   )}
                   {request.budgetMinor != null && (
                     <div>
                       <dt className="eyebrow">Their budget</dt>
-                      <dd className="mt-0.5 text-parchment">{formatMoney(request.budgetMinor)}</dd>
+                      <dd className="mt-0.5 text-ink">{formatMoney(request.budgetMinor)}</dd>
                     </div>
                   )}
                   {request.quotedAmountMinor != null && (
@@ -1572,7 +1572,7 @@ export const ArtistEnquiriesPage = () => {
                           href={imageSource({ url: image.url })}
                           target="_blank"
                           rel="noreferrer noopener"
-                          className="h-20 w-20 overflow-hidden rounded-lg bg-charcoal-800"
+                          className="h-20 w-20 overflow-hidden rounded-lg bg-surface-150"
                         >
                           <img
                             src={imageSource({ url: image.url })}
@@ -1587,18 +1587,18 @@ export const ArtistEnquiriesPage = () => {
                 )}
 
                 {request.messages?.length > 0 && (
-                  <div className="space-y-2.5 border-t border-charcoal-700 pt-4">
+                  <div className="space-y-2.5 border-t border-line pt-4">
                     <p className="eyebrow">Your replies</p>
                     {request.messages.map((message, index) => (
-                      <div key={index} className="rounded-xl bg-charcoal-900/60 p-3.5">
-                        <p className="text-[0.84rem] leading-relaxed text-parchment/90">{message.body}</p>
+                      <div key={index} className="rounded-xl bg-surface-100/60 p-3.5">
+                        <p className="text-[0.84rem] leading-relaxed text-ink/90">{message.body}</p>
                         <p className="mt-1.5 text-[0.72rem] text-muted">{formatRelative(message.at)}</p>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-2 border-t border-charcoal-700 pt-4">
+                <div className="flex flex-wrap gap-2 border-t border-line pt-4">
                   <Button variant="primary" size="sm" onClick={() => openReply(request)}>
                     <Send className="h-3.5 w-3.5" aria-hidden="true" />
                     Reply or quote
@@ -1820,7 +1820,7 @@ export const ArtistStorefrontPage = () => {
         </h2>
 
         <div className="flex items-end gap-5">
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-charcoal-800">
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-surface-150">
             {profile.avatarUrl ? (
               <img src={imageSource({ url: profile.avatarUrl })} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -1832,7 +1832,7 @@ export const ArtistStorefrontPage = () => {
           <div className="space-y-2">
             <label
               htmlFor="avatar-field"
-              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full bg-charcoal-750 px-4 text-[0.8rem] text-parchment transition-colors hover:bg-charcoal-700"
+              className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full bg-surface-200 px-4 text-[0.8rem] text-ink transition-colors hover:bg-line"
             >
               <Upload className="h-3.5 w-3.5" aria-hidden="true" />
               {uploadingField === 'avatar' ? 'Uploading…' : 'Change portrait'}
@@ -1851,7 +1851,7 @@ export const ArtistStorefrontPage = () => {
         </div>
 
         <div className="space-y-2.5">
-          <div className="h-28 overflow-hidden rounded-xl bg-charcoal-800">
+          <div className="h-28 overflow-hidden rounded-xl bg-surface-150">
             {profile.coverUrl ? (
               <img src={imageSource({ url: profile.coverUrl })} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -1860,7 +1860,7 @@ export const ArtistStorefrontPage = () => {
           </div>
           <label
             htmlFor="cover-field"
-            className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full bg-charcoal-750 px-4 text-[0.8rem] text-parchment transition-colors hover:bg-charcoal-700"
+            className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full bg-surface-200 px-4 text-[0.8rem] text-ink transition-colors hover:bg-line"
           >
             <Upload className="h-3.5 w-3.5" aria-hidden="true" />
             {uploadingField === 'cover' ? 'Uploading…' : 'Change cover'}
@@ -2004,7 +2004,7 @@ export const ArtistStorefrontPage = () => {
         </Field>
       </section>
 
-      <div className="flex flex-wrap gap-3 border-t border-charcoal-700 pt-7">
+      <div className="flex flex-wrap gap-3 border-t border-line pt-7">
         <Button type="submit" variant="primary" size="lg" loading={save.isPending}>
           Save storefront
         </Button>

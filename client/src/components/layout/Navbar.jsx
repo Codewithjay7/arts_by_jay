@@ -23,10 +23,10 @@ import { useUi } from '../../store/ui';
 
 /** Public navigation, identical for everyone. */
 const PUBLIC_LINKS = [
-  { to: '/shop', label: 'Explore Art' },
-  { to: '/gallery', label: 'Virtual Gallery' },
+  { to: '/shop', label: 'Discover' },
   { to: '/artists', label: 'Artists' },
-  { to: '/studio', label: 'Custom Art' },
+  { to: '/gallery', label: 'Collections' },
+  { to: '/studio', label: 'About' },
 ];
 
 export const Navbar = () => {
@@ -85,19 +85,19 @@ export const Navbar = () => {
     navigate('/');
   };
 
+  // Small, quiet, and darkening on hover. Apple's nav has no underline and
+  // no accent colour on links — the active item is simply darker.
   const linkClass = ({ isActive }) =>
     clsx(
-      'relative px-1 py-2 text-[0.84rem] tracking-wide transition-colors',
-      'after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent-300 after:transition-transform after:duration-300',
-      'hover:after:scale-x-100',
-      isActive ? 'text-accent-300 after:scale-x-100' : 'text-parchment/85 hover:text-parchment',
+      'px-1 py-2 text-[0.75rem] transition-colors sm:text-[0.8125rem]',
+      isActive ? 'text-ink' : 'text-ink/80 hover:text-ink',
     );
 
   return (
     <>
       <a
         href="#main"
-        className="sr-only-focusable fixed left-4 top-4 z-[70] rounded-full bg-accent-300 px-4 py-2 text-sm font-medium text-ink"
+        className="sr-only-focusable fixed left-4 top-4 z-[70] rounded-full bg-accent-300 px-4 py-2 text-sm font-medium text-white"
       >
         Skip to content
       </a>
@@ -105,23 +105,26 @@ export const Navbar = () => {
       <header
         className={clsx(
           'fixed inset-x-0 top-0 z-40 transition-all duration-500 ease-gallery',
+          // Translucent and blurred once scrolled, and fully transparent at
+          // rest so the hero reads edge to edge. The gallery is a dark room,
+          // so the bar inverts there.
           isScrolled || isMobileNavOpen
-            ? 'border-b border-charcoal-700/80 bg-charcoal-950/88 backdrop-blur-xl'
+            ? isGallery
+              ? 'nav-blur-dark border-b border-white/10'
+              : 'nav-blur border-b border-line'
             : isGallery
-              ? 'bg-gradient-to-b from-charcoal-950/70 to-transparent'
+              ? 'bg-gradient-to-b from-black/50 to-transparent'
               : 'bg-transparent',
         )}
       >
-        <div className="mx-auto flex h-16 max-w-[1500px] items-center justify-between gap-6 px-4 sm:h-18 sm:px-6 lg:px-10">
+        <div className="mx-auto flex h-12 max-w-[1024px] items-center justify-between gap-5 px-4 sm:h-[52px] sm:px-6">
           {/* ── Wordmark ── */}
           <Link to="/" className="group flex shrink-0 items-baseline gap-2" aria-label="Arts by Jay, home">
-            <span className="font-display text-xl tracking-tight text-parchment sm:text-2xl">
-              Arts by <span className="text-accent-300">Jay</span>
-            </span>
+            <span className="text-[1.0625rem] font-semibold tracking-tight text-ink">Arts by Jay</span>
           </Link>
 
           {/* ── Desktop navigation ── */}
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Main">
+          <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
             {PUBLIC_LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} className={linkClass}>
                 {link.label}
@@ -141,21 +144,21 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={openSearch}
-              className="grid h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300"
+              className="grid h-8 w-8 place-items-center rounded-full text-ink/80 transition-colors hover:bg-surface-150 hover:text-ink"
               aria-label="Search artwork"
             >
-              <Search className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
+              <Search className="h-4 w-4" aria-hidden="true" />
             </button>
 
             {user && (
               <Link
                 to="/account/wishlist"
-                className="relative hidden h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300 sm:grid"
+                className="relative hidden h-8 w-8 place-items-center rounded-full text-ink/80 transition-colors hover:bg-surface-150 hover:text-ink sm:grid"
                 aria-label={`Wishlist, ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`}
               >
-                <Heart className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
+                <Heart className="h-4 w-4" aria-hidden="true" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent-300 px-1 font-mono text-[0.6rem] font-semibold text-ink">
+                  <span className="absolute -right-0.5 -top-0.5 grid h-[15px] min-w-[15px] place-items-center rounded-full bg-accent-300 px-1 text-[0.6rem] font-semibold text-white">
                     {wishlistCount > 9 ? '9+' : wishlistCount}
                   </span>
                 )}
@@ -165,12 +168,12 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={openCart}
-              className="relative grid h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300"
+              className="relative grid h-8 w-8 place-items-center rounded-full text-ink/80 transition-colors hover:bg-surface-150 hover:text-ink"
               aria-label={`Shopping cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
             >
-              <ShoppingBag className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
+              <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent-300 px-1 font-mono text-[0.6rem] font-semibold text-ink">
+                <span className="absolute -right-0.5 -top-0.5 grid h-[15px] min-w-[15px] place-items-center rounded-full bg-accent-300 px-1 text-[0.6rem] font-semibold text-white">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
@@ -184,16 +187,16 @@ export const Navbar = () => {
                   onClick={() => setAccountOpen((open) => !open)}
                   aria-expanded={accountOpen}
                   aria-haspopup="menu"
-                  className="flex items-center gap-2 rounded-full border border-charcoal-600 bg-charcoal-850/70 py-1 pl-1 pr-3 transition-colors hover:border-charcoal-500"
+                  className="flex items-center gap-2 rounded-full border border-line-strong bg-surface-0/70 py-1 pl-1 pr-3 transition-colors hover:border-surface-400"
                 >
-                  <span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-accent-300 font-medium text-ink">
+                  <span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-accent-300 font-medium text-white">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
                     ) : (
                       <span className="text-[0.72rem]">{user.name.charAt(0).toUpperCase()}</span>
                     )}
                   </span>
-                  <span className="max-w-[7rem] truncate text-[0.8rem] text-parchment">
+                  <span className="max-w-[7rem] truncate text-[0.8rem] text-ink">
                     {user.name.split(' ')[0]}
                   </span>
                   <ChevronDown
@@ -205,10 +208,10 @@ export const Navbar = () => {
                 {accountOpen && (
                   <div
                     role="menu"
-                    className="absolute right-0 top-full mt-2 w-60 animate-fade-up overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850 shadow-frame"
+                    className="absolute right-0 top-full mt-2 w-60 animate-fade-up overflow-hidden rounded-2xl border border-line bg-surface-0 shadow-frame"
                   >
-                    <div className="border-b border-charcoal-700 px-4 py-3">
-                      <p className="truncate text-sm text-parchment">{user.name}</p>
+                    <div className="border-b border-line px-4 py-3">
+                      <p className="truncate text-sm text-ink">{user.name}</p>
                       <p className="truncate text-[0.75rem] text-muted">{user.email}</p>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         <Badge tone={user.role === 'admin' ? 'accent' : 'neutral'}>{user.role}</Badge>
@@ -227,23 +230,23 @@ export const Navbar = () => {
 
                     {/* Dashboards only appear for roles that actually have them. */}
                     {(user.role === 'artist' || user.role === 'admin') && (
-                      <div className="border-t border-charcoal-700 py-1.5">
+                      <div className="border-t border-line py-1.5">
                         <MenuItem to="/artist" icon={Palette} label="Artist Dashboard" />
                       </div>
                     )}
 
                     {user.role === 'admin' && (
-                      <div className="border-t border-charcoal-700 py-1.5">
+                      <div className="border-t border-line py-1.5">
                         <MenuItem to="/admin" icon={Shield} label="Admin Dashboard" />
                       </div>
                     )}
 
-                    <div className="border-t border-charcoal-700 py-1.5">
+                    <div className="border-t border-line py-1.5">
                       <button
                         type="button"
                         role="menuitem"
                         onClick={onLogout}
-                        className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-[0.84rem] text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-red-300"
+                        className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-[0.84rem] text-ink/85 transition-colors hover:bg-surface-150 hover:text-red-300"
                       >
                         <LogOut className="h-4 w-4" aria-hidden="true" />
                         Log out
@@ -266,7 +269,7 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={() => (isMobileNavOpen ? closeMobileNav() : openMobileNav())}
-              className="grid h-10 w-10 place-items-center rounded-full text-parchment transition-colors hover:bg-charcoal-800 lg:hidden"
+              className="grid h-10 w-10 place-items-center rounded-full text-ink transition-colors hover:bg-surface-150 lg:hidden"
               aria-label={isMobileNavOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMobileNavOpen}
             >
@@ -281,7 +284,7 @@ export const Navbar = () => {
 
         {/* ── Mobile drawer ── */}
         {isMobileNavOpen && (
-          <div className="max-h-[calc(100vh-4rem)] animate-fade-up overflow-y-auto border-t border-charcoal-700 bg-charcoal-950/97 px-4 pb-8 pt-4 backdrop-blur-xl lg:hidden">
+          <div className="max-h-[calc(100vh-3rem)] animate-fade-up overflow-y-auto border-t border-line bg-surface-0 px-4 pb-8 pt-3 lg:hidden">
             <nav className="space-y-0.5" aria-label="Mobile">
               {PUBLIC_LINKS.map((link) => (
                 <MobileLink key={link.to} to={link.to} label={link.label} />
@@ -291,11 +294,11 @@ export const Navbar = () => {
               )}
             </nav>
 
-            <div className="mt-6 border-t border-charcoal-700 pt-5">
+            <div className="mt-6 border-t border-line pt-5">
               {user ? (
                 <>
                   <p className="px-3 pb-3 text-[0.75rem] text-muted">
-                    Signed in as <span className="text-parchment">{user.email}</span>
+                    Signed in as <span className="text-ink">{user.email}</span>
                   </p>
                   <nav className="space-y-0.5">
                     <MobileLink to="/account/profile" label="My Profile" icon={User} />
@@ -309,7 +312,7 @@ export const Navbar = () => {
                   <button
                     type="button"
                     onClick={onLogout}
-                    className="mt-3 flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-[0.9rem] text-red-300 transition-colors hover:bg-charcoal-850"
+                    className="mt-3 flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-[0.9rem] text-red-300 transition-colors hover:bg-surface-0"
                   >
                     <LogOut className="h-4 w-4" aria-hidden="true" />
                     Log out
@@ -337,7 +340,7 @@ const MenuItem = ({ to, icon: Icon, label }) => (
   <Link
     to={to}
     role="menuitem"
-    className="flex items-center gap-2.5 px-4 py-2 text-[0.84rem] text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300"
+    className="flex items-center gap-2.5 px-4 py-2 text-[0.84rem] text-ink/85 transition-colors hover:bg-surface-150 hover:text-accent-300"
   >
     <Icon className="h-4 w-4" aria-hidden="true" />
     {label}
@@ -350,7 +353,7 @@ const MobileLink = ({ to, label, icon: Icon }) => (
     className={({ isActive }) =>
       clsx(
         'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[0.95rem] transition-colors',
-        isActive ? 'bg-charcoal-850 text-accent-300' : 'text-parchment/90 hover:bg-charcoal-850',
+        isActive ? 'bg-surface-0 text-accent-300' : 'text-ink/90 hover:bg-surface-0',
       )
     }
   >

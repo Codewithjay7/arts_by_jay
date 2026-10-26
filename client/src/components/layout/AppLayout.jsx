@@ -6,7 +6,6 @@ import { Footer } from './Footer';
 import { CartDrawer } from './CartDrawer';
 import { SearchOverlay } from './SearchOverlay';
 import { ToastStack } from '../ui';
-import { CurtainIntro, CursorGlow } from '../motion/Cinematic';
 import { useUi } from '../../store/ui';
 import { useAuth } from '../../store/auth';
 import { useCart, useWishlist } from '../../store/cart';
@@ -48,12 +47,7 @@ export const AppLayout = () => {
   }, [location.pathname, closeAll]);
 
   return (
-    // `grain` lays a resolution-independent film grain over everything, which
-    // keeps large charcoal fields from banding on cheap panels.
-    <div className="grain flex min-h-screen flex-col">
-      {/* Plays once per session, and not at all under reduced motion. */}
-      {!isGallery && <CurtainIntro />}
-      <CursorGlow />
+    <div className="flex min-h-screen flex-col">
       <Navbar />
 
       <main

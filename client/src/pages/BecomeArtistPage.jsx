@@ -98,7 +98,7 @@ export const BecomeArtistPage = () => {
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="border-b border-charcoal-700/70 bg-gallery-wall">
+      <section className="border-b border-line/70 bg-gallery-wall">
         <div className="mx-auto max-w-[1500px] px-4 py-20 sm:px-6 lg:px-10 lg:py-28">
           <div className="max-w-3xl space-y-6">
             <Reveal>
@@ -194,11 +194,11 @@ export const BecomeArtistPage = () => {
           <ol className="space-y-5">
             {STEPS.map((step, index) => (
               <Reveal key={step} delay={index * 60}>
-                <li className="flex gap-5 rounded-2xl border border-charcoal-700 bg-charcoal-850/40 p-5">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-300 font-mono text-[0.8rem] text-ink">
+                <li className="flex gap-5 rounded-2xl border border-line bg-surface-0/40 p-5">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-300 font-mono text-[0.8rem] text-white">
                     {index + 1}
                   </span>
-                  <p className="pt-1.5 text-[0.92rem] leading-relaxed text-parchment/90">{step}</p>
+                  <p className="pt-1.5 text-[0.92rem] leading-relaxed text-ink/90">{step}</p>
                 </li>
               </Reveal>
             ))}
@@ -217,14 +217,14 @@ export const BecomeArtistPage = () => {
             {alreadyArtist ? (
               <div className="space-y-5 rounded-2xl border border-accent-300/25 bg-accent-300/[0.05] p-6">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300 text-ink">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300 text-white">
                     <Check className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
                     <p className="font-display text-xl">{artistProfile.displayName}</p>
                     <p className="text-[0.8rem] text-muted">
                       Your artist account is{' '}
-                      <span className="text-parchment">
+                      <span className="text-ink">
                         {artistProfile.status === 'approved' ? 'approved and live' : artistProfile.status}
                       </span>
                       .
@@ -262,7 +262,7 @@ export const BecomeArtistPage = () => {
                 )}
 
                 <NoticeBanner tone="info">
-                  You are applying with <span className="text-parchment">{user.email}</span>. Your existing
+                  You are applying with <span className="text-ink">{user.email}</span>. Your existing
                   orders and wishlist stay exactly as they are.
                 </NoticeBanner>
 
@@ -318,7 +318,7 @@ export const BecomeArtistPage = () => {
                 </p>
               </form>
             ) : (
-              <div className="space-y-5 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-6 text-center">
+              <div className="space-y-5 rounded-2xl border border-line bg-surface-0/50 p-6 text-center">
                 <p className="text-[0.92rem] leading-relaxed text-muted">
                   Create an account to apply. It takes a minute, and you can start uploading drafts
                   immediately.

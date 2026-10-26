@@ -48,7 +48,7 @@ export const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-24 border-t border-charcoal-700/70 bg-charcoal-950/60">
+    <footer className="mt-24 border-t border-line/70 bg-surface-300/60">
       <div className="mx-auto max-w-[1500px] px-4 py-14 sm:px-6 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           {/* ── Identity ── */}
@@ -66,14 +66,14 @@ export const Footer = () => {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
+                className="grid h-9 w-9 place-items-center rounded-full border border-line-strong text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                 aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
                 href="mailto:studio@artsbyjay.example"
-                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
+                className="grid h-9 w-9 place-items-center rounded-full border border-line-strong text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                 aria-label="Email the studio"
               >
                 <Mail className="h-4 w-4" aria-hidden="true" />
@@ -82,7 +82,7 @@ export const Footer = () => {
                 href="https://artsbyjay.example"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
+                className="grid h-9 w-9 place-items-center rounded-full border border-line-strong text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                 aria-label="Website"
               >
                 <Globe className="h-4 w-4" aria-hidden="true" />
@@ -110,7 +110,7 @@ export const Footer = () => {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-charcoal-700/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-line/70 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-[0.78rem] text-muted">© {year} Arts by Jay. All artwork belongs to its artist.</p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.75rem] text-muted">
@@ -122,7 +122,7 @@ export const Footer = () => {
                       ? capabilities.payment.isSimulated
                         ? 'bg-amber-400'
                         : 'bg-accent-300'
-                      : 'bg-charcoal-500'
+                      : 'bg-surface-400'
                   }`}
                   aria-hidden="true"
                 />

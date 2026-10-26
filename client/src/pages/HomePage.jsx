@@ -47,120 +47,109 @@ export const HomePage = () => {
   return (
     <>
       {/* ───────────────────────── Hero ───────────────────────── */}
-      <section className="relative overflow-hidden">
-        {/* A single large work, bled off the edge and heavily darkened, so the
-            page opens on art rather than on a stock photograph. */}
-        <div className="absolute inset-0 -z-10">
-          {hero?.image && (
-            <img
-              src={imageSource(hero.image)}
-              alt=""
-              className="h-full w-full scale-105 object-cover opacity-30 blur-[2px]"
-              fetchPriority="high"
-            />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal-950/80 via-charcoal-950/90 to-charcoal-900" />
+      {/*
+        A product launch, for a painting.
+
+        Centred type over white, then the work itself presented large and
+        uncropped below it. No background image behind the headline: a blurred
+        painting under text is decoration, and it fights the artwork it is
+        supposed to be selling.
+      */}
+      <section className="relative overflow-hidden bg-surface-0">
+        <div className="mx-auto max-w-[1024px] px-4 pb-10 pt-20 text-center sm:px-6 sm:pt-28">
+          <Reveal>
+            <p className="eyebrow">New works, every week</p>
+          </Reveal>
+
+          <Reveal delay={70}>
+            <h1 className="mt-3 text-display-xl">Art that moves you.</h1>
+          </Reveal>
+
+          <Reveal delay={140}>
+            <p className="lede mx-auto mt-5 max-w-2xl text-balance">
+              Discover original works by independent artists. Find a piece that feels like yours.
+            </p>
+          </Reveal>
+
+          <Reveal delay={210}>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+              <Button variant="primary" size="lg" to="/shop">
+                Explore the collection
+              </Button>
+              {/* A text link, not a second button. Apple's secondary action is
+                  always lighter in weight than the primary one. */}
+              <Link
+                to="/artists"
+                className="inline-flex items-center gap-1.5 text-[1.0625rem] text-accent-300 transition-colors hover:text-accent-200"
+              >
+                Meet the artists
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </Reveal>
         </div>
 
-        <div className="mx-auto grid max-w-[1500px] items-center gap-12 px-4 pb-20 pt-24 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16 lg:px-10 lg:pb-28 lg:pt-32">
-          <div className="space-y-7">
-            <Reveal>
-              <p className="eyebrow">An art marketplace and virtual exhibition</p>
-            </Reveal>
-
-            <Reveal delay={80}>
-              <h1 className="text-display-xl">
-                Art you can
-                <br />
-                <span className="text-accent-300">walk up to.</span>
-              </h1>
-            </Reveal>
-
-            <Reveal delay={160}>
-              <p className="lede max-w-xl">
-                Original paintings, limited prints and digital work, sold directly by the artists who made
-                them. Browse it like a shop, or step inside the gallery and walk the rooms.
-              </p>
-            </Reveal>
-
-            {/* ── Search, prominent as asked ── */}
-            <Reveal delay={220}>
-              <button
-                type="button"
-                onClick={openSearch}
-                className="group flex w-full max-w-lg items-center gap-3 rounded-full border border-charcoal-600 bg-charcoal-900/70 px-5 py-3.5 text-left backdrop-blur transition-colors hover:border-accent-300/50"
-              >
-                <Search className="h-4.5 w-4.5 shrink-0 text-muted transition-colors group-hover:text-accent-300" aria-hidden="true" />
-                <span className="flex-1 text-[0.9rem] text-muted">
-                  Search by title, artist, medium or style…
-                </span>
-                <kbd className="hidden shrink-0 rounded border border-charcoal-600 px-1.5 py-0.5 font-mono text-[0.68rem] text-muted sm:block">
-                  /
-                </kbd>
-              </button>
-            </Reveal>
-
-            <Reveal delay={280}>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="primary" size="lg" to="/gallery">
-                  Enter the virtual gallery
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Button>
-                <Button variant="outline" size="lg" to="/shop">
-                  Explore all artwork
-                </Button>
-              </div>
-            </Reveal>
-
-            <Reveal delay={340}>
-              <p className="text-[0.8rem] text-muted">
-                An artist?{' '}
-                <Link to="/become-an-artist" className="text-accent-300 underline-offset-4 hover:underline">
-                  Open your storefront
-                </Link>{' '}
-                and sell your work here.
-              </p>
-            </Reveal>
-          </div>
-
-          {/* ── Featured piece, presented as a hung canvas ── */}
-          <Reveal delay={200} direction="left">
-            {collections.isLoading ? (
-              <Skeleton className="aspect-[4/5] w-full max-w-md lg:ml-auto" />
-            ) : (
-              hero && (
-                <div className="w-full max-w-md lg:ml-auto">
-                  <Link to={`/art/${hero.slug}`} className="group block">
-                    <div className="art-frame aspect-[4/5] transition-transform duration-700 ease-gallery group-hover:-translate-y-2">
+        {/* ── The featured work, full width and uncropped ── */}
+        <div className="mx-auto max-w-[1280px] px-4 pb-20 sm:px-6">
+          {collections.isLoading ? (
+            <Skeleton className="aspect-[16/10] w-full rounded-panel" />
+          ) : (
+            hero && (
+              <Reveal delay={260}>
+                <Link to={`/art/${hero.slug}`} className="group block">
+                  <figure className="overflow-hidden rounded-panel bg-surface-100">
+                    <div className="aspect-[16/10] overflow-hidden">
                       <img
                         src={imageSource(hero.image)}
                         alt={hero.image?.alt || hero.title}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-[1200ms] ease-gallery group-hover:scale-[1.03]"
                         fetchPriority="high"
                       />
                     </div>
-                    <div className="mt-4 flex items-start justify-between gap-4 border-l-2 border-accent-300/40 pl-3.5">
+
+                    <figcaption className="flex flex-wrap items-end justify-between gap-4 px-5 py-5 sm:px-7">
                       <div className="min-w-0">
-                        <p className="eyebrow mb-1">Featured work</p>
-                        <h2 className="truncate font-display text-xl group-hover:text-accent-300">
-                          {hero.title}
-                        </h2>
-                        <p className="truncate text-[0.82rem] text-muted">{hero.artist?.displayName}</p>
+                        <p className="eyebrow">Featured</p>
+                        <h2 className="mt-1 truncate text-display-md">{hero.title}</h2>
+                        <p className="mt-1 truncate text-[0.9375rem] text-muted">
+                          {hero.artist?.displayName}
+                          {hero.medium ? ` · ${hero.medium}` : ''}
+                        </p>
                       </div>
-                      <p className="shrink-0 font-mono text-sm text-accent-300">
+                      <p className="shrink-0 text-[1.0625rem] font-medium text-ink">
                         {formatMoney(hero.priceMinor, hero.currency)}
                       </p>
-                    </div>
-                  </Link>
-                </div>
-              )
-            )}
-          </Reveal>
+                    </figcaption>
+                  </figure>
+                </Link>
+              </Reveal>
+            )
+          )}
+        </div>
+
+        {/* ── Search, kept but demoted to a quiet row ── */}
+        <div className="mx-auto max-w-[1024px] px-4 pb-16 sm:px-6">
+          <button
+            type="button"
+            onClick={openSearch}
+            className="group mx-auto flex w-full max-w-xl items-center gap-3 rounded-full border border-line bg-surface-0 px-5 py-3 text-left transition-colors hover:border-line-strong"
+          >
+            <Search
+              className="h-4 w-4 shrink-0 text-muted transition-colors group-hover:text-ink"
+              aria-hidden="true"
+            />
+            <span className="flex-1 text-[0.9375rem] text-muted">
+              Search by title, artist, medium or style
+            </span>
+            <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 text-[0.7rem] text-muted sm:block">
+              /
+            </kbd>
+          </button>
         </div>
       </section>
 
       {/* ──────────────────── Gallery invitation ──────────────────── */}
-      <section className="border-y border-charcoal-700/70 bg-charcoal-950/50">
+      <section className="border-y border-line/70 bg-surface-300/50">
         <div className="mx-auto max-w-[1500px] px-4 py-16 sm:px-6 lg:px-10">
           <Reveal>
             <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
@@ -246,9 +235,9 @@ export const HomePage = () => {
               <Reveal key={category.id} delay={index * 60}>
                 <Link
                   to={`/shop?category=${category.slug}`}
-                  className="group relative flex aspect-[3/2] flex-col justify-end overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850 p-5 transition-colors hover:border-accent-300/40"
+                  className="group relative flex aspect-[3/2] flex-col justify-end overflow-hidden rounded-2xl border border-line bg-surface-0 p-5 transition-colors hover:border-accent-300/40"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-charcoal-950/40 to-transparent opacity-80" />
+                  <span className="absolute inset-0 bg-gradient-to-t from-surface-300 via-surface-300/40 to-transparent opacity-80" />
                   <span className="relative">
                     <span className="block font-display text-xl transition-colors group-hover:text-accent-300">
                       {category.name}
@@ -288,10 +277,10 @@ export const HomePage = () => {
               <Reveal key={artist.id} delay={index * 70}>
                 <Link
                   to={`/artists/${artist.slug}`}
-                  className="group block rounded-2xl border border-charcoal-700 bg-charcoal-850/60 p-5 transition-colors hover:border-accent-300/40"
+                  className="group block rounded-2xl border border-line bg-surface-0/60 p-5 transition-colors hover:border-accent-300/40"
                 >
                   <div className="flex items-center gap-3.5">
-                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-charcoal-800">
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-surface-150">
                       {artist.avatarUrl && (
                         <img
                           src={imageSource({ url: artist.avatarUrl })}
@@ -312,7 +301,7 @@ export const HomePage = () => {
                   {/* Three thumbnails, so an artist card shows work not words. */}
                   <div className="mt-4 grid grid-cols-3 gap-1.5">
                     {artist.preview.map((piece) => (
-                      <div key={piece.id} className="aspect-square overflow-hidden rounded-sm bg-charcoal-800">
+                      <div key={piece.id} className="aspect-square overflow-hidden rounded-sm bg-surface-150">
                         {piece.image && (
                           <img
                             src={imageSource({ url: piece.image })}
@@ -338,7 +327,7 @@ export const HomePage = () => {
       {/* ──────────────────── Studio ──────────────────── */}
       <section className="mx-auto max-w-[1500px] px-4 py-16 sm:px-6 lg:px-10">
         <Reveal>
-          <div className="relative overflow-hidden rounded-3xl border border-charcoal-700 bg-gallery-wall p-8 sm:p-12">
+          <div className="relative overflow-hidden rounded-3xl border border-line bg-gallery-wall p-8 sm:p-12">
             <div className="max-w-2xl space-y-5">
               <p className="eyebrow">The Photo-to-Art studio</p>
               <h2 className="text-display-md">Turn your own photograph into a commission</h2>

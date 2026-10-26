@@ -118,7 +118,7 @@ export const ProfilePage = () => {
         <SectionHeader eyebrow="Details" title="Your profile" className="mb-7" />
 
         <div className="mb-7 flex items-center gap-5">
-          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-charcoal-800">
+          <div className="h-20 w-20 shrink-0 overflow-hidden rounded-full bg-surface-150">
             {user?.avatarUrl ? (
               <img src={imageSource({ url: user.avatarUrl })} alt="" className="h-full w-full object-cover" />
             ) : (
@@ -130,7 +130,7 @@ export const ProfilePage = () => {
           <div className="space-y-2">
             <label
               htmlFor="avatar-upload"
-              className="inline-flex h-9 cursor-pointer items-center rounded-full bg-charcoal-750 px-4 text-[0.8rem] text-parchment transition-colors hover:bg-charcoal-700"
+              className="inline-flex h-9 cursor-pointer items-center rounded-full bg-surface-200 px-4 text-[0.8rem] text-ink transition-colors hover:bg-line"
             >
               {uploadAvatar.isPending ? 'Uploading…' : 'Change picture'}
             </label>
@@ -314,11 +314,11 @@ export const OrdersPage = () => {
               <li key={order.id}>
                 <Link
                   to={`/account/orders/${order.orderNumber}`}
-                  className="flex flex-wrap items-center gap-5 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-5 transition-colors hover:border-accent-300/40"
+                  className="flex flex-wrap items-center gap-5 rounded-2xl border border-line bg-surface-0/50 p-5 transition-colors hover:border-accent-300/40"
                 >
                   <div className="flex shrink-0 gap-1.5">
                     {order.thumbnails.slice(0, 3).map((url, index) => (
-                      <div key={index} className="h-16 w-13 overflow-hidden rounded-sm bg-charcoal-800">
+                      <div key={index} className="h-16 w-13 overflow-hidden rounded-sm bg-surface-150">
                         <img
                           src={imageSource({ url })}
                           alt=""
@@ -330,7 +330,7 @@ export const OrdersPage = () => {
                   </div>
 
                   <div className="min-w-0 flex-1 space-y-1.5">
-                    <p className="font-mono text-[0.84rem] text-parchment">{order.orderNumber}</p>
+                    <p className="font-mono text-[0.84rem] text-ink">{order.orderNumber}</p>
                     <p className="text-[0.78rem] text-muted">
                       {formatDate(order.createdAt)} · {order.itemCount}{' '}
                       {order.itemCount === 1 ? 'piece' : 'pieces'}
@@ -456,10 +456,10 @@ export const OrderDetailPage = () => {
           Items
         </h2>
 
-        <ul className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+        <ul className="divide-y divide-line border-y border-line">
           {order.items.map((item) => (
             <li key={item.id} className="flex flex-wrap gap-4 py-5">
-              <div className="h-24 w-20 shrink-0 overflow-hidden rounded-sm bg-charcoal-800">
+              <div className="h-24 w-20 shrink-0 overflow-hidden rounded-sm bg-surface-150">
                 {item.imageUrl && (
                   <img src={imageSource({ url: item.imageUrl })} alt="" className="h-full w-full object-cover" loading="lazy" />
                 )}
@@ -495,7 +495,7 @@ export const OrderDetailPage = () => {
                 )}
               </div>
 
-              <p className="shrink-0 font-mono text-[0.9rem] text-parchment">
+              <p className="shrink-0 font-mono text-[0.9rem] text-ink">
                 {formatMoney(item.lineTotalMinor, order.currency)}
               </p>
             </li>
@@ -512,16 +512,16 @@ export const OrderDetailPage = () => {
           <dl className="space-y-2.5 text-[0.86rem]">
             <div className="flex justify-between">
               <dt className="text-muted">Subtotal</dt>
-              <dd className="text-parchment">{formatMoney(order.subtotalMinor, order.currency)}</dd>
+              <dd className="text-ink">{formatMoney(order.subtotalMinor, order.currency)}</dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-muted">Shipping ({order.shippingMethod})</dt>
-              <dd className="text-parchment">
+              <dd className="text-ink">
                 {order.shippingTotalMinor > 0 ? formatMoney(order.shippingTotalMinor, order.currency) : 'Free'}
               </dd>
             </div>
-            <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-2.5">
-              <dt className="text-base text-parchment">Total</dt>
+            <div className="flex items-baseline justify-between border-t border-line pt-2.5">
+              <dt className="text-base text-ink">Total</dt>
               <dd className="font-mono text-xl text-accent-300">{formatMoney(order.totalMinor, order.currency)}</dd>
             </div>
             {order.paidAt && (
@@ -535,7 +535,7 @@ export const OrderDetailPage = () => {
             Delivering to
           </h2>
           <address className="space-y-0.5 text-[0.86rem] not-italic leading-relaxed text-muted">
-            <p className="text-parchment">{order.shippingAddress.fullName}</p>
+            <p className="text-ink">{order.shippingAddress.fullName}</p>
             <p>{order.shippingAddress.line1}</p>
             {order.shippingAddress.line2 && <p>{order.shippingAddress.line2}</p>}
             <p>
@@ -560,14 +560,14 @@ export const OrderDetailPage = () => {
           <h2 id="order-history-heading" className="eyebrow mb-4">
             Timeline
           </h2>
-          <ol className="space-y-3 border-l border-charcoal-700 pl-5">
+          <ol className="space-y-3 border-l border-line pl-5">
             {[...order.history].reverse().map((entry, index) => (
               <li key={index} className="relative">
                 <span
                   className="absolute -left-[1.4rem] top-1.5 h-2 w-2 rounded-full bg-accent-300"
                   aria-hidden="true"
                 />
-                <p className="text-[0.86rem] text-parchment">{statusLabel(entry.status)}</p>
+                <p className="text-[0.86rem] text-ink">{statusLabel(entry.status)}</p>
                 <p className="text-[0.76rem] text-muted">
                   {formatDateTime(entry.at)}
                   {entry.note ? ` · ${entry.note}` : ''}
@@ -579,7 +579,7 @@ export const OrderDetailPage = () => {
       )}
 
       {canCancel && (
-        <div className="border-t border-charcoal-700 pt-6">
+        <div className="border-t border-line pt-6">
           <Button variant="ghost" onClick={() => setCancelOpen(true)}>
             Cancel this order
           </Button>
@@ -864,14 +864,14 @@ export const AddressesPage = () => {
             <li key={address.id} className="panel space-y-3 p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-0.5">
-                  <p className="text-[0.92rem] text-parchment">{address.label}</p>
+                  <p className="text-[0.92rem] text-ink">{address.label}</p>
                   {address.isDefault && <Badge tone="accent">Default</Badge>}
                 </div>
                 <div className="flex gap-1">
                   <button
                     type="button"
                     onClick={() => openEdit(address)}
-                    className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-charcoal-800 hover:text-parchment"
+                    className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-surface-150 hover:text-ink"
                     aria-label={`Edit ${address.label}`}
                   >
                     <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
@@ -879,7 +879,7 @@ export const AddressesPage = () => {
                   <button
                     type="button"
                     onClick={() => remove.mutate(address.id)}
-                    className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-charcoal-800 hover:text-red-300"
+                    className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-surface-150 hover:text-red-300"
                     aria-label={`Remove ${address.label}`}
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
@@ -888,7 +888,7 @@ export const AddressesPage = () => {
               </div>
 
               <address className="space-y-0.5 text-[0.82rem] not-italic leading-relaxed text-muted">
-                <p className="text-parchment">{address.fullName}</p>
+                <p className="text-ink">{address.fullName}</p>
                 <p>{address.line1}</p>
                 {address.line2 && <p>{address.line2}</p>}
                 <p>
@@ -1040,11 +1040,11 @@ export const MyCommissionsPage = () => {
               )}
 
               {request.messages?.length > 0 && (
-                <div className="space-y-3 border-t border-charcoal-700 pt-4">
+                <div className="space-y-3 border-t border-line pt-4">
                   <p className="eyebrow">Replies</p>
                   {request.messages.map((message, index) => (
-                    <div key={index} className="rounded-xl bg-charcoal-900/60 p-3.5">
-                      <p className="text-[0.84rem] leading-relaxed text-parchment/90">{message.body}</p>
+                    <div key={index} className="rounded-xl bg-surface-100/60 p-3.5">
+                      <p className="text-[0.84rem] leading-relaxed text-ink/90">{message.body}</p>
                       <p className="mt-1.5 text-[0.72rem] text-muted">
                         {message.fromRole === 'artist' ? 'The artist' : 'Arts by Jay'} ·{' '}
                         {formatRelative(message.at)}
@@ -1055,9 +1055,9 @@ export const MyCommissionsPage = () => {
               )}
 
               {request.referenceImages?.length > 0 && (
-                <div className="flex gap-2 border-t border-charcoal-700 pt-4">
+                <div className="flex gap-2 border-t border-line pt-4">
                   {request.referenceImages.map((image) => (
-                    <div key={image.url} className="h-16 w-16 overflow-hidden rounded-sm bg-charcoal-800">
+                    <div key={image.url} className="h-16 w-16 overflow-hidden rounded-sm bg-surface-150">
                       <img
                         src={imageSource({ url: image.url })}
                         alt="Reference you supplied"
@@ -1128,7 +1128,7 @@ export const MyReviewsPage = () => {
             <li key={review.id} className="panel flex gap-4 p-5">
               {review.artwork && (
                 <Link to={`/art/${review.artwork.slug}`} className="shrink-0">
-                  <div className="h-20 w-16 overflow-hidden rounded-sm bg-charcoal-800">
+                  <div className="h-20 w-16 overflow-hidden rounded-sm bg-surface-150">
                     {review.artwork.image && (
                       <img
                         src={imageSource({ url: review.artwork.image })}
@@ -1154,7 +1154,7 @@ export const MyReviewsPage = () => {
                     {review.artwork.title}
                   </Link>
                 )}
-                {review.title && <p className="text-[0.88rem] text-parchment">{review.title}</p>}
+                {review.title && <p className="text-[0.88rem] text-ink">{review.title}</p>}
                 {review.body && <p className="text-[0.84rem] leading-relaxed text-muted">{review.body}</p>}
                 <p className="text-[0.74rem] text-muted">{formatDate(review.createdAt)}</p>
               </div>
@@ -1162,7 +1162,7 @@ export const MyReviewsPage = () => {
               <button
                 type="button"
                 onClick={() => remove.mutate(review.id)}
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-charcoal-800 hover:text-red-300"
+                className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-surface-150 hover:text-red-300"
                 aria-label="Delete this review"
               >
                 <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
@@ -1237,19 +1237,19 @@ export const NotificationsPage = () => {
                   className={clsx(
                     'flex items-start gap-3.5 rounded-2xl border p-4 transition-colors',
                     notification.readAt
-                      ? 'border-charcoal-700 bg-charcoal-850/40'
+                      ? 'border-line bg-surface-0/40'
                       : 'border-accent-300/25 bg-accent-300/[0.04]',
                   )}
                 >
                   <span
                     className={clsx(
                       'mt-1.5 h-2 w-2 shrink-0 rounded-full',
-                      notification.readAt ? 'bg-charcoal-600' : 'bg-accent-300',
+                      notification.readAt ? 'bg-line-strong' : 'bg-accent-300',
                     )}
                     aria-hidden="true"
                   />
                   <div className="min-w-0 flex-1 space-y-1">
-                    <p className="text-[0.9rem] text-parchment">{notification.title}</p>
+                    <p className="text-[0.9rem] text-ink">{notification.title}</p>
                     {notification.body && (
                       <p className="text-[0.82rem] leading-relaxed text-muted">{notification.body}</p>
                     )}

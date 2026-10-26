@@ -196,7 +196,7 @@ export const GalleryPage = () => {
           <div className="fixed inset-0 z-40">
             <button
               type="button"
-              className="absolute inset-0 bg-charcoal-950/85 backdrop-blur-sm"
+              className="absolute inset-0 bg-surface-300/85 backdrop-blur-sm"
               onClick={onClose}
               aria-label="Close artwork details"
               tabIndex={-1}
@@ -242,7 +242,7 @@ export const GalleryPage = () => {
 
           {/* ── Entry overlay ── */}
           {!hasEntered && (
-            <div className="absolute inset-0 z-20 grid place-items-center bg-gradient-to-b from-charcoal-950/90 via-charcoal-950/70 to-charcoal-950/95 px-6 backdrop-blur-sm">
+            <div className="absolute inset-0 z-20 grid place-items-center bg-gradient-to-b from-surface-300/90 via-surface-300/70 to-surface-300/95 px-6 backdrop-blur-sm">
               <div className="max-w-xl space-y-6 text-center">
                 <p className="eyebrow">Arts by Jay · Exhibition</p>
                 <h1 className="text-display-lg">Walk the gallery</h1>
@@ -289,7 +289,7 @@ export const GalleryPage = () => {
               </div>
 
               {/* Progress rail */}
-              <div className="pointer-events-none absolute right-5 top-1/2 z-20 hidden h-44 w-[2px] -translate-y-1/2 bg-charcoal-700 lg:block">
+              <div className="pointer-events-none absolute right-5 top-1/2 z-20 hidden h-44 w-[2px] -translate-y-1/2 bg-line lg:block">
                 <div
                   className="w-full rounded-full bg-accent-300 transition-[height] duration-150"
                   style={{ height: `${progressDisplay * 100}%` }}
@@ -301,7 +301,7 @@ export const GalleryPage = () => {
                       key={room}
                       type="button"
                       onClick={() => jumpToRoom(room)}
-                      className="absolute -left-1.5 h-3 w-3 rounded-full border border-charcoal-500 bg-charcoal-900 transition-colors hover:border-accent-300"
+                      className="absolute -left-1.5 h-3 w-3 rounded-full border border-surface-400 bg-surface-100 transition-colors hover:border-accent-300"
                       style={{ top: `${(room / Math.max(1, roomCount)) * 100}%` }}
                       aria-label={`Jump to room ${room + 1}`}
                     />
@@ -349,7 +349,7 @@ export const GalleryPage = () => {
       </div>
 
       {/* After the corridor ends, the page continues into the ordinary shop. */}
-      <section className="relative z-10 border-t border-charcoal-700 bg-charcoal-950 px-4 py-20 text-center sm:px-6">
+      <section className="relative z-10 border-t border-line bg-surface-300 px-4 py-20 text-center sm:px-6">
         <p className="eyebrow">End of the exhibition</p>
         <h2 className="mt-3 text-display-md">Everything here is for sale</h2>
         <p className="lede mx-auto mt-4 max-w-xl">
@@ -370,7 +370,7 @@ export const GalleryPage = () => {
 };
 
 const GalleryHeader = ({ viewMode, onViewModeChange, canUse3D, total, roomCount }) => (
-  <header className="border-b border-charcoal-700 bg-charcoal-950/60">
+  <header className="border-b border-line bg-surface-300/60">
     <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-5 px-4 py-10 sm:px-6">
       <div className="space-y-2">
         <p className="eyebrow">Arts by Jay · Exhibition</p>
@@ -381,13 +381,13 @@ const GalleryHeader = ({ viewMode, onViewModeChange, canUse3D, total, roomCount 
       </div>
 
       {canUse3D && (
-        <div className="flex items-center gap-1 rounded-full border border-charcoal-600 p-1">
+        <div className="flex items-center gap-1 rounded-full border border-line-strong p-1">
           <button
             type="button"
             onClick={() => onViewModeChange('3d')}
             className={clsx(
               'rounded-full px-3.5 py-1.5 text-[0.78rem] transition-colors',
-              viewMode === '3d' ? 'bg-accent-300 text-ink' : 'text-muted hover:text-parchment',
+              viewMode === '3d' ? 'bg-accent-300 text-white' : 'text-muted hover:text-ink',
             )}
           >
             Immersive
@@ -397,7 +397,7 @@ const GalleryHeader = ({ viewMode, onViewModeChange, canUse3D, total, roomCount 
             onClick={() => onViewModeChange('flat')}
             className={clsx(
               'rounded-full px-3.5 py-1.5 text-[0.78rem] transition-colors',
-              viewMode === 'flat' ? 'bg-accent-300 text-ink' : 'text-muted hover:text-parchment',
+              viewMode === 'flat' ? 'bg-accent-300 text-white' : 'text-muted hover:text-ink',
             )}
           >
             Lighter view

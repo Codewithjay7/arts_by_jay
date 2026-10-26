@@ -80,7 +80,7 @@ export const CartPage = () => {
       <div className="grid gap-10 lg:grid-cols-[1fr_22rem] lg:gap-14">
         {/* ── Line items ── */}
         <div>
-          <ul className="divide-y divide-charcoal-700 border-y border-charcoal-700">
+          <ul className="divide-y divide-line border-y border-line">
             {items.map(({ artwork, quantity, unitPriceMinor, lineTotalMinor, shippingMinor, isDigital }) => {
               const pending = isPending(artwork.id);
               const atLimit = artwork.type === 'original' || (artwork.stock > 0 && quantity >= artwork.stock);
@@ -123,24 +123,24 @@ export const CartPage = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                      <div className="flex items-center rounded-full border border-charcoal-600">
+                      <div className="flex items-center rounded-full border border-line-strong">
                         <button
                           type="button"
                           onClick={() => setQuantity(artwork.id, quantity - 1)}
                           disabled={pending}
-                          className="grid h-9 w-9 place-items-center rounded-l-full text-muted transition-colors hover:text-parchment disabled:opacity-40"
+                          className="grid h-9 w-9 place-items-center rounded-l-full text-muted transition-colors hover:text-ink disabled:opacity-40"
                           aria-label={`Decrease quantity of ${artwork.title}`}
                         >
                           <Minus className="h-3.5 w-3.5" aria-hidden="true" />
                         </button>
-                        <span className="min-w-10 text-center font-mono text-sm text-parchment" aria-live="polite">
+                        <span className="min-w-10 text-center font-mono text-sm text-ink" aria-live="polite">
                           {pending ? '…' : quantity}
                         </span>
                         <button
                           type="button"
                           onClick={() => setQuantity(artwork.id, quantity + 1)}
                           disabled={pending || atLimit}
-                          className="grid h-9 w-9 place-items-center rounded-r-full text-muted transition-colors hover:text-parchment disabled:opacity-40"
+                          className="grid h-9 w-9 place-items-center rounded-r-full text-muted transition-colors hover:text-ink disabled:opacity-40"
                           aria-label={`Increase quantity of ${artwork.title}`}
                         >
                           <Plus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -165,7 +165,7 @@ export const CartPage = () => {
                     </div>
                   </div>
 
-                  <p className="shrink-0 font-mono text-lg text-parchment sm:text-right">
+                  <p className="shrink-0 font-mono text-lg text-ink sm:text-right">
                     {formatMoney(lineTotalMinor, artwork.currency)}
                   </p>
                 </li>
@@ -195,11 +195,11 @@ export const CartPage = () => {
             <dl className="space-y-2.5 text-[0.88rem]">
               <div className="flex justify-between">
                 <dt className="text-muted">Subtotal</dt>
-                <dd className="text-parchment">{formatMoney(totals.subtotalMinor, totals.currency)}</dd>
+                <dd className="text-ink">{formatMoney(totals.subtotalMinor, totals.currency)}</dd>
               </div>
               <div className="flex justify-between">
                 <dt className="text-muted">Shipping</dt>
-                <dd className="text-parchment">
+                <dd className="text-ink">
                   {totals.shippingTotalMinor > 0
                     ? formatMoney(totals.shippingTotalMinor, totals.currency)
                     : 'Free'}
@@ -211,8 +211,8 @@ export const CartPage = () => {
                   <dd>−{formatMoney(totals.discountMinor, totals.currency)}</dd>
                 </div>
               )}
-              <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-3">
-                <dt className="text-base text-parchment">Total</dt>
+              <div className="flex items-baseline justify-between border-t border-line pt-3">
+                <dt className="text-base text-ink">Total</dt>
                 <dd className="font-mono text-2xl text-accent-300">
                   {formatMoney(totals.totalMinor, totals.currency)}
                 </dd>

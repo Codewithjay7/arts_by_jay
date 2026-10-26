@@ -78,15 +78,15 @@ export const ArtworkCard = memo(function ArtworkCard({ artwork, priority = false
               className="h-full w-full object-cover transition-transform duration-700 ease-gallery group-hover:scale-[1.03]"
             />
           ) : (
-            <div className="grid h-full w-full place-items-center bg-charcoal-800 text-xs text-muted">
+            <div className="grid h-full w-full place-items-center bg-surface-150 text-xs text-muted">
               No image
             </div>
           )}
 
           {/* ── Status overlay ── */}
           {artwork.isSoldOut && (
-            <div className="absolute inset-0 z-10 grid place-items-center bg-charcoal-950/65 backdrop-blur-[1px]">
-              <span className="rounded-full border border-parchment/25 px-4 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-parchment">
+            <div className="absolute inset-0 z-10 grid place-items-center bg-surface-300/65 backdrop-blur-[1px]">
+              <span className="rounded-full border border-ink/25 px-4 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink">
                 Sold
               </span>
             </div>
@@ -120,8 +120,8 @@ export const ArtworkCard = memo(function ArtworkCard({ artwork, priority = false
               className={clsx(
                 'grid h-9 w-9 place-items-center rounded-full border backdrop-blur transition-all',
                 isWishlisted
-                  ? 'border-accent-300 bg-accent-300 text-ink'
-                  : 'border-parchment/20 bg-charcoal-950/70 text-parchment hover:border-accent-300/60 hover:text-accent-300',
+                  ? 'border-accent-300 bg-accent-300 text-white'
+                  : 'border-ink/20 bg-surface-300/70 text-ink hover:border-accent-300/60 hover:text-accent-300',
               )}
             >
               <Heart className={clsx('h-4 w-4', isWishlisted && 'fill-current')} aria-hidden="true" />
@@ -133,7 +133,7 @@ export const ArtworkCard = memo(function ArtworkCard({ artwork, priority = false
                 onClick={onAddToCart}
                 disabled={cartPending}
                 aria-label={`Add ${artwork.title} to cart`}
-                className="grid h-9 w-9 place-items-center rounded-full border border-parchment/20 bg-charcoal-950/70 text-parchment backdrop-blur transition-all hover:border-accent-300/60 hover:text-accent-300 disabled:opacity-50"
+                className="grid h-9 w-9 place-items-center rounded-full border border-ink/20 bg-surface-300/70 text-ink backdrop-blur transition-all hover:border-accent-300/60 hover:text-accent-300 disabled:opacity-50"
               >
                 <ShoppingBag className="h-4 w-4" aria-hidden="true" />
               </button>
@@ -144,7 +144,7 @@ export const ArtworkCard = memo(function ArtworkCard({ artwork, priority = false
         {/* ── Caption, set like a gallery label ── */}
         <div className="mt-3.5 space-y-1">
           <div className="flex items-baseline justify-between gap-3">
-            <h3 className="truncate font-display text-lg leading-snug text-parchment transition-colors group-hover:text-accent-300">
+            <h3 className="truncate font-display text-lg leading-snug text-ink transition-colors group-hover:text-accent-300">
               {artwork.title}
             </h3>
             <p className="shrink-0 font-mono text-[0.8rem] text-accent-300">

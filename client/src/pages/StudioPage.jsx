@@ -279,13 +279,13 @@ export const StudioPage = () => {
                 event.preventDefault();
                 onPickFile(event.dataTransfer.files?.[0]);
               }}
-              className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-charcoal-600 px-6 py-20 text-center transition-colors hover:border-accent-300/40"
+              className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-line-strong px-6 py-20 text-center transition-colors hover:border-accent-300/40"
             >
-              <span className="grid h-14 w-14 place-items-center rounded-full bg-charcoal-800 text-muted">
+              <span className="grid h-14 w-14 place-items-center rounded-full bg-surface-150 text-muted">
                 <ImageIcon className="h-6 w-6" aria-hidden="true" />
               </span>
               <div className="space-y-1.5">
-                <p className="text-parchment">Drop a photograph here</p>
+                <p className="text-ink">Drop a photograph here</p>
                 <p className="text-[0.8rem] text-muted">
                   JPEG, PNG or WebP, up to {config.data?.maxUploadMb ?? 8} MB. It stays on your device.
                 </p>
@@ -364,12 +364,12 @@ export const StudioPage = () => {
                     'group overflow-hidden rounded-xl border text-left transition-all',
                     styleKey === style.key
                       ? 'border-accent-300 ring-1 ring-accent-300/40'
-                      : 'border-charcoal-600 hover:border-charcoal-500',
+                      : 'border-line-strong hover:border-surface-400',
                   )}
                 >
                   {/* Each swatch previews the visitor's own photo when there
                       is one, so the choice is meaningful rather than abstract. */}
-                  <div className="relative aspect-square overflow-hidden bg-charcoal-800">
+                  <div className="relative aspect-square overflow-hidden bg-surface-150">
                     {photo ? (
                       <>
                         <img
@@ -392,12 +392,12 @@ export const StudioPage = () => {
                       />
                     )}
                     {styleKey === style.key && (
-                      <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-accent-300 text-ink">
+                      <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-accent-300 text-white">
                         <Check className="h-3 w-3" aria-hidden="true" />
                       </span>
                     )}
                   </div>
-                  <p className="px-2.5 py-2 text-[0.8rem] text-parchment">{style.name}</p>
+                  <p className="px-2.5 py-2 text-[0.8rem] text-ink">{style.name}</p>
                 </button>
               ))}
             </div>
@@ -419,7 +419,7 @@ export const StudioPage = () => {
           {submitted ? (
             <div className="space-y-5 rounded-2xl border border-accent-300/25 bg-accent-300/[0.05] p-6">
               <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300 text-ink">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300 text-white">
                   <Check className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <div>
@@ -552,7 +552,7 @@ export const StudioPage = () => {
                    A private photograph is only stored, or passed on, when the
                    visitor explicitly asks for it. */}
               {photo && (
-                <div className="space-y-3 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-5">
+                <div className="space-y-3 rounded-2xl border border-line bg-surface-0/50 p-5">
                   <p className="eyebrow">Your photograph</p>
                   <Checkbox
                     checked={sendPhoto}
@@ -593,7 +593,7 @@ export const StudioPage = () => {
           )}
 
           {/* ── How it works ── */}
-          <div className="space-y-4 rounded-2xl border border-charcoal-700 bg-charcoal-850/40 p-6">
+          <div className="space-y-4 rounded-2xl border border-line bg-surface-0/40 p-6">
             <p className="eyebrow">How a commission works</p>
             <ol className="space-y-3 text-[0.84rem] leading-relaxed text-muted">
               {[
@@ -603,7 +603,7 @@ export const StudioPage = () => {
                 'It is dispatched insured, and appears in your order history.',
               ].map((line, index) => (
                 <li key={line} className="flex gap-3">
-                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-charcoal-600 font-mono text-[0.7rem]">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-line-strong font-mono text-[0.7rem]">
                     {index + 1}
                   </span>
                   {line}

@@ -102,7 +102,7 @@ export const SearchOverlay = () => {
     <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-20 sm:pt-28">
       <button
         type="button"
-        className="absolute inset-0 animate-fade-in bg-charcoal-950/88 backdrop-blur-md"
+        className="absolute inset-0 animate-fade-in bg-surface-300/88 backdrop-blur-md"
         onClick={closeSearch}
         aria-label="Close search"
         tabIndex={-1}
@@ -114,8 +114,8 @@ export const SearchOverlay = () => {
         aria-label="Search artwork"
         className="relative w-full max-w-2xl animate-fade-up"
       >
-        <div className="overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850 shadow-frame">
-          <div className="flex items-center gap-3 border-b border-charcoal-700 px-4">
+        <div className="overflow-hidden rounded-2xl border border-line bg-surface-0 shadow-frame">
+          <div className="flex items-center gap-3 border-b border-line px-4">
             <Search className="h-4.5 w-4.5 shrink-0 text-muted" aria-hidden="true" />
             <input
               ref={inputRef}
@@ -127,13 +127,13 @@ export const SearchOverlay = () => {
               aria-label="Search artwork"
               aria-controls="search-results"
               autoComplete="off"
-              className="h-14 flex-1 bg-transparent text-[0.95rem] text-parchment placeholder:text-muted/70 focus:outline-none"
+              className="h-14 flex-1 bg-transparent text-[0.95rem] text-ink placeholder:text-muted/70 focus:outline-none"
             />
             {isFetching && <Spinner label="Searching" />}
             <button
               type="button"
               onClick={closeSearch}
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-charcoal-800 hover:text-parchment"
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-surface-150 hover:text-ink"
               aria-label="Close"
             >
               <X className="h-4 w-4" aria-hidden="true" />
@@ -153,7 +153,7 @@ export const SearchOverlay = () => {
                         navigate(link.to);
                         closeSearch();
                       }}
-                      className="rounded-full border border-charcoal-600 px-3.5 py-1.5 text-[0.8rem] text-parchment/90 transition-colors hover:border-accent-300/50 hover:text-accent-300"
+                      className="rounded-full border border-line-strong px-3.5 py-1.5 text-[0.8rem] text-ink/90 transition-colors hover:border-accent-300/50 hover:text-accent-300"
                     >
                       {link.label}
                     </button>
@@ -165,7 +165,7 @@ export const SearchOverlay = () => {
               </div>
             ) : results.length === 0 && !isFetching ? (
               <div className="px-4 py-10 text-center">
-                <p className="text-sm text-parchment">Nothing matched “{debounced}”.</p>
+                <p className="text-sm text-ink">Nothing matched “{debounced}”.</p>
                 <p className="mt-1.5 text-[0.8rem] text-muted">
                   Try a shorter term, or browse the full collection.
                 </p>
@@ -192,10 +192,10 @@ export const SearchOverlay = () => {
                         onClick={() => openResult(artwork)}
                         onMouseEnter={() => setHighlighted(index)}
                         className={`flex w-full items-center gap-3.5 px-4 py-3 text-left transition-colors ${
-                          index === highlighted ? 'bg-charcoal-800' : 'hover:bg-charcoal-800/60'
+                          index === highlighted ? 'bg-surface-150' : 'hover:bg-surface-150/60'
                         }`}
                       >
-                        <div className="h-14 w-11 shrink-0 overflow-hidden rounded-sm bg-charcoal-800">
+                        <div className="h-14 w-11 shrink-0 overflow-hidden rounded-sm bg-surface-150">
                           {artwork.image && (
                             <img
                               src={artwork.image.thumbUrl || artwork.image.url}
@@ -206,7 +206,7 @@ export const SearchOverlay = () => {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm text-parchment">{artwork.title}</p>
+                          <p className="truncate text-sm text-ink">{artwork.title}</p>
                           <p className="truncate text-[0.76rem] text-muted">
                             {artwork.artist?.displayName}
                             {artwork.medium ? ` · ${artwork.medium}` : ''}
@@ -228,7 +228,7 @@ export const SearchOverlay = () => {
                 <button
                   type="button"
                   onClick={goToSearch}
-                  className="w-full border-t border-charcoal-700 px-4 py-3 text-[0.82rem] text-accent-300 transition-colors hover:bg-charcoal-800"
+                  className="w-full border-t border-line px-4 py-3 text-[0.82rem] text-accent-300 transition-colors hover:bg-surface-150"
                 >
                   See all results for “{debounced}”
                 </button>
