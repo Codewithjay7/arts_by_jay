@@ -26,6 +26,12 @@ const OrderConfirmationPage = lazy(() => import('./pages/OrderConfirmationPage')
 
 const LoginPage = lazy(() => import('./pages/auth/AuthPages').then((m) => ({ default: m.LoginPage })));
 const RegisterPage = lazy(() => import('./pages/auth/AuthPages').then((m) => ({ default: m.RegisterPage })));
+const ForgotPasswordPage = lazy(() =>
+  import('./pages/auth/PasswordPages').then((m) => ({ default: m.ForgotPasswordPage })),
+);
+const ResetPasswordPage = lazy(() =>
+  import('./pages/auth/PasswordPages').then((m) => ({ default: m.ResetPasswordPage })),
+);
 
 const AccountLayout = lazy(() => import('./pages/account/AccountLayout'));
 const AccountPages = {
@@ -212,6 +218,19 @@ export const App = () => {
               </RedirectIfAuthenticated>
             }
           />
+          <Route
+            path="/forgot-password"
+            element={
+              <RedirectIfAuthenticated>
+                <ForgotPasswordPage />
+              </RedirectIfAuthenticated>
+            }
+          />
+          {/* NOT behind RedirectIfAuthenticated, and that is the point: the
+              emailed recovery link establishes a session before this page
+              renders, so guarding it would redirect away the very visitor it
+              exists for. That is what made the old /login target unusable. */}
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Routes>
       </Suspense>
     </>

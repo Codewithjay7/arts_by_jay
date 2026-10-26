@@ -7,8 +7,11 @@ import { useAuth } from '../../store/auth';
 import { useDocumentTitle } from '../../lib/hooks';
 import { useUi } from '../../store/ui';
 
-/** Shared two-column shell: form on the left, editorial panel on the right. */
-const AuthShell = ({ title, subtitle, children, footer }) => (
+/**
+ * Shared two-column shell: form on the left, editorial panel on the right.
+ * Exported so the password pages wear the same frame without duplicating it.
+ */
+export const AuthShell = ({ title, subtitle, children, footer }) => (
   <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-[1500px] lg:grid-cols-2">
     <div className="flex items-center justify-center px-4 py-14 sm:px-8">
       <div className="w-full max-w-md space-y-7">
@@ -50,7 +53,7 @@ const AuthShell = ({ title, subtitle, children, footer }) => (
   </div>
 );
 
-const PasswordInput = ({ id, value, onChange, error, autoComplete, placeholder }) => {
+export const PasswordInput = ({ id, value, onChange, error, autoComplete, placeholder }) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -161,6 +164,18 @@ export const LoginPage = () => {
         <Button type="submit" variant="primary" size="lg" loading={submitting} className="w-full">
           Sign in
         </Button>
+
+        {/* Until this link existed, requestPasswordReset had no caller
+            anywhere in the UI and anyone who forgot their password was
+            locked out for good. */}
+        <p className="text-center text-[0.82rem]">
+          <Link
+            to="/forgot-password"
+            className="text-muted underline-offset-4 hover:text-ink hover:underline"
+          >
+            Forgotten your password?
+          </Link>
+        </p>
       </form>
     </AuthShell>
   );
@@ -184,6 +199,9 @@ export const RegisterPage = () => {
   // Set when Supabase accepts the signup but issues no session, because
   // email confirmation is required.
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  // Set when the account was created but its profile row — and therefore its
+  // role — is not readable yet.
+  const [profilePending, setProfilePending] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -220,9 +238,45 @@ export const RegisterPage = () => {
       return;
     }
 
+    /**
+     * Created, but we could not read the profile that holds the role.
+     * Announcing "your account is ready" and navigating would land an artist
+     * on a page the role guard immediately bounces them out of, with no
+     * explanation — a success message followed by a locked door.
+     */
+    if (result.profilePending) {
+      setProfilePending(true);
+      return;
+    }
+
     success('Your account is ready');
     navigate(intent === 'artist' ? '/artist/storefront' : '/');
   };
+
+  if (profilePending) {
+    return (
+      <AuthShell
+        title="Account created"
+        subtitle="One short step before you can use it."
+      >
+        <div className="space-y-5">
+          <NoticeBanner tone="info" title="Please sign in">
+            Your account was created, but we could not finish reading it just now, so we have not
+            guessed at what you should see. Signing in resolves it.
+          </NoticeBanner>
+
+          <p className="text-[0.9rem] leading-relaxed text-muted">
+            Nothing is wrong with the account itself — the email <strong>{form.email}</strong> is
+            registered. Do not register again; that address is taken now.
+          </p>
+
+          <Button variant="primary" to="/login">
+            Go to sign in
+          </Button>
+        </div>
+      </AuthShell>
+    );
+  }
 
   if (awaitingConfirmation) {
     return (

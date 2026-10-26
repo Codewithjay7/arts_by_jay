@@ -75,6 +75,13 @@ export const useAuth = create((set, get) => ({
         return { ok: true, needsEmailConfirmation: true, user: null };
       }
 
+      // Created, but the profile row is not readable yet, so the role is not
+      // known. Do not apply a session with a guessed role — ask them to sign
+      // in, by which point the trigger will have run.
+      if (result.profilePending) {
+        return { ok: true, profilePending: true, user: null };
+      }
+
       get().applySession(result);
       return { ok: true, user: result.user };
     } catch (error) {
@@ -95,9 +102,19 @@ export const useAuth = create((set, get) => ({
   refreshUser: async () => {
     try {
       const session = await auth.getSession();
-      set({ user: session?.user ?? null, artistProfile: session?.artistProfile ?? null });
+      set({
+        user: session?.user ?? null,
+        artistProfile: session?.artistProfile ?? null,
+        status: session?.user ? 'authenticated' : 'anonymous',
+      });
       return session?.user ?? null;
-    } catch {
+    } catch (error) {
+      // getSession throws for a suspended account and for an unreadable
+      // profile, and in both cases it has already signed the user out of
+      // Supabase. Swallowing that left the store believing they were still
+      // signed in: the navigation kept showing their dashboard while every
+      // request behind it failed. Clear the session and surface the reason.
+      set({ user: null, artistProfile: null, status: 'anonymous', error: error.message });
       return null;
     }
   },

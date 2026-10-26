@@ -63,6 +63,51 @@ const loadProfile = async (userId, { retries = 3 } = {}) => {
   return null;
 };
 
+/**
+ * The profile row is the only source of the role and of `is_active`, so a
+ * session cannot be built without it.
+ *
+ * `loadProfile` returning null used to flow straight into `toSession`, which
+ * defaults the role to 'customer'. Two things followed: an artist or admin
+ * whose profile read came back empty was quietly downgraded and sent to the
+ * customer app, and — worse — the `is_active === false` check was skipped
+ * entirely, so a SUSPENDED account could be signed in whenever its profile
+ * row failed to load.
+ *
+ * Failing closed is the only safe answer. The retries above already absorb
+ * the real race, which is the signup trigger not having run yet; by the time
+ * this throws, something is genuinely wrong.
+ */
+const requireProfile = async (db, userId, context) => {
+  const profile = await loadProfile(userId);
+
+  if (!profile) {
+    // Do not leave a usable token behind for an identity we cannot resolve.
+    await db.auth.signOut().catch(() => {});
+    const error = new Error(
+      `${context} Your account exists but its profile could not be read, so we have signed you out rather than guess at your permissions. Please try again.`,
+    );
+    error.code = 'PROFILE_UNAVAILABLE';
+    throw error;
+  }
+
+  return profile;
+};
+
+/** Signs out and throws when the account is suspended. */
+const refuseIfSuspended = async (db, profile) => {
+  if (profile.is_active !== false) return;
+
+  await db.auth.signOut().catch(() => {});
+  const suspended = new Error(
+    profile.suspended_reason
+      ? `This account is suspended: ${profile.suspended_reason}`
+      : 'This account has been suspended. Please contact support.',
+  );
+  suspended.code = 'ACCOUNT_SUSPENDED';
+  throw suspended;
+};
+
 const loadArtistProfile = async (userId) => {
   const db = client();
 
@@ -83,23 +128,14 @@ export const getSession = async () => {
   const user = data?.session?.user;
   if (!user) return null;
 
-  const profile = await loadProfile(user.id);
+  const profile = await requireProfile(db, user.id, 'We could not restore your session.');
 
   // A suspended account must not be treated as signed in, even though
   // Supabase still holds a valid token for it.
-  if (profile && profile.is_active === false) {
-    await db.auth.signOut();
-    const suspended = new Error(
-      profile.suspended_reason
-        ? `This account is suspended: ${profile.suspended_reason}`
-        : 'This account has been suspended. Please contact support.',
-    );
-    suspended.code = 'ACCOUNT_SUSPENDED';
-    throw suspended;
-  }
+  await refuseIfSuspended(db, profile);
 
   const artistProfile =
-    profile?.role === 'artist' || profile?.role === 'admin' ? await loadArtistProfile(user.id) : null;
+    profile.role === 'artist' || profile.role === 'admin' ? await loadArtistProfile(user.id) : null;
 
   return toSession(user, profile, artistProfile);
 };
@@ -121,16 +157,9 @@ export const signIn = async ({ email, password }) => {
     throw new Error(supabaseError(error, 'We could not sign you in.'));
   }
 
-  const profile = await loadProfile(data.user.id);
+  const profile = await requireProfile(db, data.user.id, 'We could not complete your sign-in.');
 
-  if (profile?.is_active === false) {
-    await db.auth.signOut();
-    throw new Error(
-      profile.suspended_reason
-        ? `This account is suspended: ${profile.suspended_reason}`
-        : 'This account has been suspended. Please contact support.',
-    );
-  }
+  await refuseIfSuspended(db, profile);
 
   // Advisory; a failure here must not block the sign-in.
   db.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', data.user.id).then(
@@ -139,7 +168,7 @@ export const signIn = async ({ email, password }) => {
   );
 
   const artistProfile =
-    profile?.role === 'artist' || profile?.role === 'admin' ? await loadArtistProfile(data.user.id) : null;
+    profile.role === 'artist' || profile.role === 'admin' ? await loadArtistProfile(data.user.id) : null;
 
   return toSession(data.user, profile, artistProfile);
 };
@@ -184,8 +213,33 @@ export const signUp = async ({ name, email, password, intent = 'customer', artis
     return { needsEmailConfirmation: true, user: null, artistProfile: null };
   }
 
-  const profile = await loadProfile(data.user.id);
-  const artistProfile = intent === 'artist' ? await loadArtistProfile(data.user.id) : null;
+  // More retries than elsewhere: this is the one moment the `handle_new_user`
+  // trigger may genuinely not have run yet.
+  const profile = await loadProfile(data.user.id, { retries: 6 });
+
+  /**
+   * No profile row, but the account WAS created.
+   *
+   * Reporting a failure here would be a lie — the email is now taken, and a
+   * second attempt would be refused as "already registered". Building a
+   * session instead would be worse: `toSession` defaults the role to
+   * 'customer', so a new artist would be sent to /artist and bounced straight
+   * back out by the role guard with no explanation.
+   *
+   * So: say the account exists and ask them to sign in, which re-reads the
+   * profile by then.
+   */
+  if (!profile) {
+    return {
+      needsEmailConfirmation: false,
+      profilePending: true,
+      user: null,
+      artistProfile: null,
+    };
+  }
+
+  const artistProfile =
+    profile.role === 'artist' || profile.role === 'admin' ? await loadArtistProfile(data.user.id) : null;
 
   return { needsEmailConfirmation: false, ...toSession(data.user, profile, artistProfile) };
 };
@@ -215,8 +269,12 @@ export const verifyCurrentPassword = async (email, password) => {
 export const requestPasswordReset = async (email) => {
   const db = client();
 
+  // /reset-password, not /login. The recovery link establishes a session, and
+  // /login is wrapped in RedirectIfAuthenticated — so a link pointing there
+  // bounced the visitor to the home page, signed in, with no chance to set a
+  // password. The flow could not be completed at all.
   const { error } = await db.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/login`,
+    redirectTo: `${window.location.origin}/reset-password`,
   });
 
   // Never reveal whether the address exists.
@@ -227,24 +285,42 @@ export const requestPasswordReset = async (email) => {
   return { ok: true };
 };
 
-export const updateProfile = async ({ name, phone }) => {
+export const updateProfile = async ({ name, phone, avatarUrl }) => {
   const db = client();
 
   const { data: session } = await db.auth.getSession();
   const userId = session?.session?.user?.id;
   if (!userId) throw new Error('Please sign in to continue.');
 
-  // Only these two columns. The RLS policy allows an update on the caller's
+  // Only these three columns. The RLS policy allows an update on the caller's
   // own row, and the `profiles_guard` trigger rejects any attempt to change
   // role, is_active or suspended_reason — so passing extra fields gains
   // nothing even if a caller tried.
+  //
+  // `avatarUrl` used to be missing from this list while the account page
+  // called updateProfile({ avatarUrl }) after uploading a picture. The patch
+  // body came out empty, PostgREST matched no rows, `.single()` raised, and
+  // the page reported "Upload failed" — after the file had already been
+  // stored. The picture could never be saved.
+  const patch = {
+    ...(name !== undefined ? { full_name: name } : {}),
+    ...(phone !== undefined ? { phone } : {}),
+    // The column is `not null default ''`, so a cleared avatar is an empty
+    // string. Sending null raises 23502.
+    ...(avatarUrl !== undefined ? { avatar_url: avatarUrl ?? '' } : {}),
+  };
+
+  // An empty patch is a caller bug, not a save. PostgREST answers 200 with no
+  // rows, which reads as success to everything downstream, so refuse it here
+  // where the reason is still known.
+  if (Object.keys(patch).length === 0) {
+    throw new Error('Nothing was supplied to update.');
+  }
+
   const updated = unwrap(
     await db
       .from('profiles')
-      .update({
-        ...(name !== undefined ? { full_name: name } : {}),
-        ...(phone !== undefined ? { phone } : {}),
-      })
+      .update(patch)
       .eq('id', userId)
       .select('id, email, full_name, role, avatar_url, phone, is_active, created_at')
       .single(),
