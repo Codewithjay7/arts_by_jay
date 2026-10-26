@@ -16,7 +16,23 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import api, { errorMessage } from '../../lib/api';
+import {
+  getOverview,
+  listUsers,
+  updateUser,
+  listArtistApplications,
+  reviewArtistApplication,
+  listArtworksForModeration,
+  moderateArtwork,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  listAllOrders,
+  getSalesReport,
+  getPlatformSettings,
+} from '../../lib/data/admin';
+import { errorMessage } from '../../lib/supabase';
+import { listCategories } from '../../lib/data/artworks';
 import {
   Badge,
   Button,
@@ -54,10 +70,7 @@ export const AdminOverviewPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-overview'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/overview');
-      return result;
-    },
+    queryFn: getOverview,
   });
 
   if (isLoading) return <LoadingBlock label="Loading the marketplace" />;
@@ -222,20 +235,12 @@ export const AdminUsersPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-users', debounced, role, page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/users', {
-        params: { q: debounced || undefined, role: role || undefined, page, limit: 20 },
-      });
-      return result;
-    },
+    queryFn: () => listUsers({ q: debounced || undefined, role: role || undefined, page, limit: 20 }),
     placeholderData: (previous) => previous,
   });
 
   const update = useMutation({
-    mutationFn: async () => {
-      const { data: result } = await api.patch(`/admin/users/${editing.id}`, editForm);
-      return result;
-    },
+    mutationFn: () => updateUser(editing.id, editForm),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       queryClient.invalidateQueries({ queryKey: ['admin-overview'] });
@@ -438,20 +443,12 @@ export const AdminArtistsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-artists', status, page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/artists', {
-        params: { status: status || undefined, page, limit: 20 },
-      });
-      return result;
-    },
+    queryFn: () => listArtistApplications({ status: status || undefined, page, limit: 20 }),
     placeholderData: (previous) => previous,
   });
 
   const review = useMutation({
-    mutationFn: async () => {
-      const { data: result } = await api.post(`/admin/artists/${reviewing.id}/review`, decision);
-      return result;
-    },
+    mutationFn: () => reviewArtistApplication(reviewing.id, decision),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-artists'] });
       queryClient.invalidateQueries({ queryKey: ['admin-overview'] });
@@ -639,23 +636,13 @@ export const AdminModerationPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-moderation', status, page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/artworks', {
-        params: { status: status || undefined, page, limit: 12 },
-      });
-      return result;
-    },
+    queryFn: () => listArtworksForModeration({ status: status || undefined, page, limit: 12 }),
     placeholderData: (previous) => previous,
   });
 
   const moderate = useMutation({
-    mutationFn: async ({ id, decision, moderationNote }) => {
-      const { data: result } = await api.post(`/admin/artworks/${id}/moderate`, {
-        decision,
-        note: moderationNote ?? '',
-      });
-      return result;
-    },
+    mutationFn: ({ id, decision, moderationNote }) =>
+      moderateArtwork(id, { decision, note: moderationNote ?? '' }),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin-moderation'] });
       queryClient.invalidateQueries({ queryKey: ['admin-overview'] });
@@ -867,22 +854,20 @@ export const AdminOrdersPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-orders', debounced, status, page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/orders', {
-        params: { q: debounced || undefined, status: status || undefined, page, limit: 20 },
-      });
-      return result;
-    },
+    queryFn: () => listAllOrders({ q: debounced || undefined, status: status || undefined, page, limit: 20 }),
     placeholderData: (previous) => previous,
   });
 
   const refund = useMutation({
+    /**
+     * Refunds call the gateway, so they run in an Edge Function — `apply_refund`
+     * is revoked from browser roles entirely. Until that function is deployed
+     * this refuses rather than pretending to refund.
+     */
     mutationFn: async () => {
-      const { data: result } = await api.post(`/admin/orders/${refunding.orderNumber}/refund`, {
-        amount: refundForm.amount === '' ? null : Number(refundForm.amount),
-        reason: refundForm.reason,
-      });
-      return result;
+      throw new Error(
+        'Refunds need the payment Edge Function, which has not been deployed yet. Issue this refund from the Razorpay dashboard and it will reconcile on the next webhook.',
+      );
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
@@ -1066,21 +1051,14 @@ export const AdminCategoriesPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/categories');
-      return result;
-    },
+    queryFn: listCategories,
   });
 
   const save = useMutation({
     mutationFn: async () => {
       const payload = { ...form, parent: form.parent || null, sortOrder: Number(form.sortOrder) || 0 };
-      if (editing?.id) {
-        const { data: result } = await api.patch(`/admin/categories/${editing.id}`, payload);
-        return result;
-      }
-      const { data: result } = await api.post('/admin/categories', payload);
-      return result;
+      if (editing?.id) return updateCategory(editing.id, payload);
+      return createCategory(payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
@@ -1091,9 +1069,7 @@ export const AdminCategoriesPage = () => {
   });
 
   const remove = useMutation({
-    mutationFn: async (id) => {
-      await api.delete(`/admin/categories/${id}`);
-    },
+    mutationFn: (id) => deleteCategory(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       success('Category deleted');
@@ -1286,10 +1262,7 @@ export const AdminReportsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-reports', days],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/reports/sales', { params: { days } });
-      return result;
-    },
+    queryFn: () => getSalesReport({ days }),
   });
 
   if (isLoading) return <LoadingBlock label="Building the report" />;
@@ -1463,10 +1436,7 @@ export const AdminSettingsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['admin-settings'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/admin/settings');
-      return result;
-    },
+    queryFn: getPlatformSettings,
   });
 
   if (isLoading) return <LoadingBlock label="Loading settings" />;

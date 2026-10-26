@@ -451,3 +451,30 @@ export const getAccountSummary = async () => {
     unreadNotifications: unread.count ?? 0,
   };
 };
+
+/**
+ * Cancels the caller's own order, before anything ships.
+ *
+ * Goes through an RPC because RLS gives a customer no UPDATE on `orders` —
+ * order status is money-adjacent, so a broad write policy would be the wrong
+ * trade. The function enforces exactly when cancelling is allowed.
+ *
+ * It reports whether a refund is now owed but never marks one as issued:
+ * money only comes back through the gateway.
+ */
+export const cancelMyOrder = async (orderNumber, reason = '') => {
+  const db = client();
+
+  const { data, error } = await db.rpc('cancel_my_order', {
+    p_order_number: orderNumber,
+    p_reason: reason,
+  });
+
+  if (error) throw new Error(supabaseError(error, 'That order could not be cancelled.'));
+
+  return {
+    order: { orderNumber: data.order_number, status: data.status },
+    refundRequired: data.refund_required,
+    refundNote: data.refund_note,
+  };
+};

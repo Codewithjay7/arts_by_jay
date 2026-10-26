@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, X } from 'lucide-react';
-import api, { errorMessage } from '../lib/api';
+import { browseArtworks, getFacets, listCategories } from '../lib/data/artworks';
 import { Button, Input, Modal, Pagination } from '../components/ui';
 import { ArtworkGrid } from '../components/art/ArtworkGrid';
 import {
@@ -84,10 +84,7 @@ export const ShopPage = () => {
 
   const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: ['artworks', queryParams],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artworks', { params: queryParams });
-      return result;
-    },
+    queryFn: () => browseArtworks(queryParams),
     // Keeps the previous page visible while the next one loads, instead of
     // flashing an empty grid on every page change.
     placeholderData: (previous) => previous,
@@ -96,19 +93,13 @@ export const ShopPage = () => {
 
   const facets = useQuery({
     queryKey: ['artwork-facets'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artworks/facets');
-      return result;
-    },
+    queryFn: getFacets,
     staleTime: 10 * 60 * 1000,
   });
 
   const categories = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/categories');
-      return result;
-    },
+    queryFn: listCategories,
     staleTime: 10 * 60 * 1000,
   });
 
@@ -239,7 +230,7 @@ export const ShopPage = () => {
               artworks={data?.items ?? []}
               isLoading={isLoading}
               isError={isError}
-              error={errorMessage(error)}
+              error={error?.message}
               onRetry={refetch}
               emptyTitle={filters.q ? `Nothing matched “${filters.q}”` : 'No artwork matches those filters'}
               emptyMessage={

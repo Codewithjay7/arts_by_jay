@@ -1,7 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Check, Mail, Package, Truck } from 'lucide-react';
-import api, { errorMessage } from '../lib/api';
+import { getMyOrder } from '../lib/data/orders';
+import { getCapabilities } from '../lib/data';
 import { Badge, Button, ErrorState, LoadingBlock, NoticeBanner } from '../components/ui';
 import { formatDate, formatMoney, statusLabel, statusTone } from '../lib/format';
 import { imageSource } from '../lib/images';
@@ -16,19 +17,13 @@ export const OrderConfirmationPage = () => {
   // link shows the real, current order.
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['order', orderNumber],
-    queryFn: async () => {
-      const { data: result } = await api.get(`/orders/${orderNumber}`);
-      return result;
-    },
+    queryFn: () => getMyOrder(orderNumber),
     retry: false,
   });
 
   const capabilities = useQuery({
     queryKey: ['capabilities'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/capabilities');
-      return result;
-    },
+    queryFn: getCapabilities,
     staleTime: 10 * 60 * 1000,
   });
 
@@ -39,7 +34,7 @@ export const OrderConfirmationPage = () => {
       <div className="mx-auto max-w-2xl px-4 py-20">
         <ErrorState
           title="We could not find that order"
-          message={errorMessage(error, 'That order number does not match anything in your account.')}
+          message={error?.message || 'That order number does not match anything in your account.'}
           onRetry={refetch}
         />
         <div className="mt-6 text-center">

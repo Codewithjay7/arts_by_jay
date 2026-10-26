@@ -10,7 +10,7 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
-import api from '../../lib/api';
+import { getArtistOverview } from '../../lib/data/artist';
 import { Badge, Button, NoticeBanner } from '../../components/ui';
 import { useAuth } from '../../store/auth';
 
@@ -29,10 +29,7 @@ export const ArtistLayout = () => {
 
   const overview = useQuery({
     queryKey: ['artist-overview'],
-    queryFn: async () => {
-      const { data } = await api.get('/artist/overview');
-      return data;
-    },
+    queryFn: getArtistOverview,
     staleTime: 30_000,
     retry: false,
   });

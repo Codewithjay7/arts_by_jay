@@ -15,7 +15,30 @@ import {
   Trash2,
   Truck,
 } from 'lucide-react';
-import api, { errorDetails, errorMessage } from '../../lib/api';
+import {
+  updateProfile,
+  // Aliased: a local `changePassword` mutation below would shadow it.
+  changePassword as requestPasswordChange,
+  verifyCurrentPassword,
+} from '../../lib/data/auth';
+import {
+  listMyOrders,
+  getMyOrder,
+  createReview,
+  listMyReviews,
+  deleteReview,
+  listNotifications,
+  markNotificationsRead,
+  cancelMyOrder,
+} from '../../lib/data/orders';
+import {
+  listAddresses,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+} from '../../lib/data/cart';
+import { listMyCommissionRequests } from '../../lib/data/artist';
+import { uploadImage, errorMessage, errorDetails } from '../../lib/supabase';
 import {
   Badge,
   Button,
@@ -66,8 +89,8 @@ export const ProfilePage = () => {
 
   const saveProfile = useMutation({
     mutationFn: async (payload) => {
-      const { data } = await api.patch('/account/profile', payload);
-      return data;
+      const user = await updateProfile(payload);
+      return { user };
     },
     onSuccess: (data) => {
       setUser(data.user);
@@ -81,9 +104,15 @@ export const ProfilePage = () => {
   });
 
   const changePassword = useMutation({
-    mutationFn: async (payload) => {
-      const { data } = await api.post('/auth/change-password', payload);
-      return data;
+    /**
+      * Supabase verifies the current SESSION rather than the old password, so
+      * the old password is confirmed explicitly first. Without that, anyone
+      * with a live session could change it without knowing it.
+      */
+     mutationFn: async (payload) => {
+      const ok = await verifyCurrentPassword(user.email, payload.currentPassword);
+      if (!ok) throw new Error('Your current password is not correct.');
+      return requestPasswordChange({ newPassword: payload.newPassword });
     },
     onSuccess: () => {
       setPasswordForm({ currentPassword: '', newPassword: '' });
@@ -98,12 +127,9 @@ export const ProfilePage = () => {
 
   const uploadAvatar = useMutation({
     mutationFn: async (file) => {
-      const payload = new FormData();
-      payload.append('image', file);
-      const { data } = await api.post('/account/avatar', payload, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      return data;
+      const stored = await uploadImage('avatars', user.id, file);
+      const updated = await updateProfile({ avatarUrl: stored.url });
+      return { user: updated, image: stored };
     },
     onSuccess: (data) => {
       setUser(data.user);
@@ -250,12 +276,7 @@ export const OrdersPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['orders', page, status],
-    queryFn: async () => {
-      const { data: result } = await api.get('/orders', {
-        params: { page, limit: 10, status: status || undefined },
-      });
-      return result;
-    },
+    queryFn: () => listMyOrders({ page, limit: 10, status: status || undefined }),
     placeholderData: (previous) => previous,
   });
 
@@ -372,18 +393,12 @@ export const OrderDetailPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['order', orderNumber],
-    queryFn: async () => {
-      const { data: result } = await api.get(`/orders/${orderNumber}`);
-      return result;
-    },
+    queryFn: () => getMyOrder(orderNumber),
     retry: false,
   });
 
   const cancelOrder = useMutation({
-    mutationFn: async () => {
-      const { data: result } = await api.post(`/orders/${orderNumber}/cancel`, { reason: cancelReason });
-      return result;
-    },
+    mutationFn: () => cancelMyOrder(orderNumber, cancelReason),
     onSuccess: (result) => {
       setCancelOpen(false);
       queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
@@ -648,15 +663,14 @@ const ReviewModal = ({ item, onClose, orderNumber }) => {
   }, [item]);
 
   const submit = useMutation({
-    mutationFn: async () => {
-      const { data } = await api.post('/reviews', {
+    mutationFn: () =>
+      createReview({
         artworkId: item.artworkId,
+        orderId: item.orderId,
         rating,
         title: form.title,
         body: form.body,
-      });
-      return data;
-    },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['order', orderNumber] });
       queryClient.invalidateQueries({ queryKey: ['my-reviews'] });
@@ -785,20 +799,13 @@ export const AddressesPage = () => {
 
   const { data, isLoading } = useQuery({
     queryKey: ['addresses'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/account/addresses');
-      return result;
-    },
+    queryFn: listAddresses,
   });
 
   const save = useMutation({
     mutationFn: async () => {
-      if (editing?.id) {
-        const { data: result } = await api.patch(`/account/addresses/${editing.id}`, form);
-        return result;
-      }
-      const { data: result } = await api.post('/account/addresses', form);
-      return result;
+      if (editing?.id) return { address: await updateAddress(editing.id, form) };
+      return { address: await createAddress(form) };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] });
@@ -813,9 +820,7 @@ export const AddressesPage = () => {
   });
 
   const remove = useMutation({
-    mutationFn: async (id) => {
-      await api.delete(`/account/addresses/${id}`);
-    },
+    mutationFn: (id) => deleteAddress(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] });
       success('Address removed');
@@ -978,10 +983,7 @@ export const MyCommissionsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['my-commissions'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/account/commissions');
-      return result;
-    },
+    queryFn: listMyCommissionRequests,
   });
 
   if (isLoading) return <LoadingBlock label="Loading your enquiries" />;
@@ -1087,16 +1089,11 @@ export const MyReviewsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['my-reviews'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/account/reviews');
-      return result;
-    },
+    queryFn: listMyReviews,
   });
 
   const remove = useMutation({
-    mutationFn: async (id) => {
-      await api.delete(`/reviews/${id}`);
-    },
+    mutationFn: (id) => deleteReview(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-reviews'] });
       success('Review removed');
@@ -1185,18 +1182,12 @@ export const NotificationsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['notifications', page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/notifications', { params: { page, limit: 20 } });
-      return result;
-    },
+    queryFn: () => listNotifications({ page, limit: 20 }),
     placeholderData: (previous) => previous,
   });
 
   const markRead = useMutation({
-    mutationFn: async (ids) => {
-      const { data: result } = await api.post('/notifications/read', ids ? { ids } : {});
-      return result;
-    },
+    mutationFn: (ids) => markNotificationsRead(ids),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
       queryClient.invalidateQueries({ queryKey: ['account-summary'] });

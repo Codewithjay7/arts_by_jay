@@ -160,3 +160,30 @@ export const removeImage = async (bucket, path) => {
     .remove([path])
     .catch(() => {});
 };
+
+/* ───────────────────── Error helpers for components ───────────────────── */
+
+/**
+ * Reads a displayable message off anything thrown by the data layer.
+ *
+ * The data layer throws plain `Error`s whose message has already been made
+ * readable by `supabaseError`, so this is mostly a null-safe accessor. It
+ * exists as a named helper because the components call it in ~35 places and a
+ * single function is easier to change than 35 call sites.
+ */
+export const errorMessage = (error, fallback = 'Something went wrong. Please try again.') => {
+  if (!error) return fallback;
+  if (typeof error === 'string') return error;
+  return error.message || fallback;
+};
+
+/**
+ * Field-level validation errors.
+ *
+ * Always null, and deliberately so. The Express build validated with Zod and
+ * could say "price: must be positive"; Postgres raises one error for the
+ * whole statement, so there is nothing to map to a field. The forms already
+ * handle null by showing the message at the top instead, which is honest —
+ * inventing a field attribution would point at the wrong input.
+ */
+export const errorDetails = () => null;

@@ -14,7 +14,7 @@ import {
   ShoppingBag,
   Truck,
 } from 'lucide-react';
-import api, { errorMessage } from '../lib/api';
+import { getArtworkDetail } from '../lib/data/artworks';
 import {
   Badge,
   Button,
@@ -48,10 +48,7 @@ export const ArtworkDetailPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artwork', slug],
-    queryFn: async () => {
-      const { data: result } = await api.get(`/artworks/${slug}`);
-      return result;
-    },
+    queryFn: () => getArtworkDetail(slug),
     retry: false,
   });
 
@@ -64,7 +61,7 @@ export const ArtworkDetailPage = () => {
   if (isLoading) return <LoadingBlock label="Bringing the work out" className="min-h-[70vh]" />;
 
   if (isError) {
-    const notFound = error?.response?.status === 404;
+    const notFound = error?.status === 404;
 
     return (
       <div className="mx-auto max-w-3xl px-4 py-24">
@@ -85,7 +82,7 @@ export const ArtworkDetailPage = () => {
             }
           />
         ) : (
-          <ErrorState message={errorMessage(error)} onRetry={refetch} />
+          <ErrorState message={error?.message} onRetry={refetch} />
         )}
       </div>
     );

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, X } from 'lucide-react';
-import api from '../../lib/api';
+import { browseArtworks } from '../../lib/data/artworks';
 import { formatMoney } from '../../lib/format';
 import { useDebouncedValue } from '../../lib/hooks';
 import { useUi } from '../../store/ui';
@@ -30,10 +30,7 @@ export const SearchOverlay = () => {
 
   const { data, isFetching } = useQuery({
     queryKey: ['search', debounced],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artworks', { params: { q: debounced, limit: 6 } });
-      return result;
-    },
+    queryFn: () => browseArtworks({ q: debounced, limit: 6 }),
     enabled: debounced.length >= 2,
     staleTime: 30_000,
   });

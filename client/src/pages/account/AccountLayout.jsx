@@ -2,7 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Bell, Heart, MapPin, MessageSquare, Package, Star, User } from 'lucide-react';
-import api from '../../lib/api';
+import { getAccountSummary } from '../../lib/data/orders';
 import { Badge } from '../../components/ui';
 import { useAuth } from '../../store/auth';
 
@@ -21,10 +21,7 @@ export const AccountLayout = () => {
 
   const summary = useQuery({
     queryKey: ['account-summary'],
-    queryFn: async () => {
-      const { data } = await api.get('/account/summary');
-      return data;
-    },
+    queryFn: getAccountSummary,
     staleTime: 30_000,
   });
 

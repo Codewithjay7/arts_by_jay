@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Instagram, Globe, Mail } from 'lucide-react';
-import api from '../../lib/api';
+import { getCapabilities } from '../../lib/data';
 
 const COLUMNS = [
   {
@@ -38,10 +38,7 @@ export const Footer = () => {
   // that are not configured.
   const { data: capabilities } = useQuery({
     queryKey: ['capabilities'],
-    queryFn: async () => {
-      const { data } = await api.get('/capabilities');
-      return data;
-    },
+    queryFn: getCapabilities,
     staleTime: 10 * 60 * 1000,
   });
 

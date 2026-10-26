@@ -2,7 +2,7 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } fro
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { ChevronDown, Frame, Maximize2, MousePointer2, PanelsTopLeft } from 'lucide-react';
-import api, { errorMessage } from '../lib/api';
+import { supabase } from '../lib/supabase';
 import { Button, EmptyState, ErrorState, LoadingBlock } from '../components/ui';
 import { useDeviceTier, useDocumentTitle, useReducedMotion } from '../lib/hooks';
 import { GalleryFallback } from '../gallery/GalleryFallback';
@@ -41,9 +41,12 @@ export const GalleryPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['gallery'],
+    // The corridor layout is computed in SQL so the 3D client, the 2D
+    // fallback and any future client agree on where each piece hangs.
     queryFn: async () => {
-      const { data: result } = await api.get('/gallery', { params: { limit: 24 } });
-      return result;
+      const { data, error } = await supabase.rpc('gallery_layout', { p_limit: 24 });
+      if (error) throw new Error(error.message);
+      return data;
     },
     staleTime: 2 * 60 * 1000,
   });
@@ -146,7 +149,7 @@ export const GalleryPage = () => {
   if (isError) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24">
-        <ErrorState title="The gallery could not be opened" message={errorMessage(error)} onRetry={refetch} />
+        <ErrorState title="The gallery could not be opened" message={error?.message} onRetry={refetch} />
       </div>
     );
   }

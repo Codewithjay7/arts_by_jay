@@ -3,7 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { Check, Download, Image as ImageIcon, Send, Trash2, Upload } from 'lucide-react';
-import api, { errorDetails, errorMessage } from '../lib/api';
+import { getStudioConfig } from '../lib/data';
+import { listArtists, createCommissionRequest } from '../lib/data/artist';
 import {
   Badge,
   Button,
@@ -55,19 +56,13 @@ export const StudioPage = () => {
 
   const config = useQuery({
     queryKey: ['studio-config'],
-    queryFn: async () => {
-      const { data } = await api.get('/studio/config');
-      return data;
-    },
+    queryFn: getStudioConfig,
     staleTime: 10 * 60 * 1000,
   });
 
   const artists = useQuery({
     queryKey: ['commission-artists'],
-    queryFn: async () => {
-      const { data } = await api.get('/artists', { params: { limit: 40 } });
-      return data;
-    },
+    queryFn: () => listArtists({ limit: 40 }),
     staleTime: 5 * 60 * 1000,
   });
 
@@ -200,36 +195,36 @@ export const StudioPage = () => {
     setSubmitting(true);
 
     try {
-      // Multipart only when a photo is actually being sent, so a text-only
-      // enquiry never touches the upload path.
-      const payload = new FormData();
-      payload.append('kind', 'photo_to_art');
-      payload.append('contactName', form.contactName);
-      payload.append('contactEmail', form.contactEmail);
-      payload.append('contactPhone', form.contactPhone);
-      payload.append('subject', form.subject || `Photo-to-Art commission (${styleKey})`);
-      payload.append('message', form.message);
-      payload.append('styleKey', styleKey ?? '');
-      payload.append('preferredSize', form.preferredSize);
-      if (form.budget) payload.append('budget', form.budget);
-
       const artist = artists.data?.items?.find((entry) => entry.slug === form.artistSlug);
-      if (artist) payload.append('artistId', artist.id);
 
-      if (sendPhoto && photo) {
-        payload.append('photoConsent', 'true');
-        payload.append('photos', photo.file, photo.file.name);
-      }
+      /**
+       * The photograph is only passed along when the visitor ticked both
+       * boxes. Without consent the file never leaves the browser, and the
+       * data layer refuses to upload it even if it were passed.
+       */
+      const files = sendPhoto && photo ? [photo.file] : [];
 
-      const { data } = await api.post('/commissions', payload, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const data = await createCommissionRequest(
+        {
+          kind: 'photo_to_art',
+          contactName: form.contactName,
+          contactEmail: form.contactEmail,
+          contactPhone: form.contactPhone,
+          subject: form.subject || `Photo-to-Art commission (${styleKey})`,
+          message: form.message,
+          styleKey: styleKey ?? '',
+          preferredSize: form.preferredSize,
+          budget: form.budget || null,
+          artistId: artist?.id,
+          photoConsent: sendPhoto && photoConsent,
+        },
+        files,
+      );
 
       setSubmitted(data);
       toast({ title: 'Your brief has been sent', message: `Reference ${data.request.reference}`, tone: 'positive' });
     } catch (error) {
-      setFormError(errorMessage(error, 'That could not be sent. Please try again.'));
-      setFieldErrors(errorDetails(error) ?? {});
+      setFormError(error.message || 'That could not be sent. Please try again.');
     } finally {
       setSubmitting(false);
     }

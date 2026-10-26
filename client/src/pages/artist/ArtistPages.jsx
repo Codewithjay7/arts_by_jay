@@ -17,7 +17,24 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import api, { errorDetails, errorMessage } from '../../lib/api';
+import {
+  getArtistOverview,
+  listMyArtworks,
+  getMyArtwork,
+  createMyArtwork,
+  updateMyArtwork,
+  setMyArtworkStatus,
+  deleteMyArtwork,
+  uploadArtworkImages,
+  getMyArtistProfile,
+  updateMyArtistProfile,
+  uploadArtistImage,
+  listArtistEnquiries,
+  respondToEnquiry,
+} from '../../lib/data/artist';
+import { errorMessage, errorDetails } from '../../lib/supabase';
+import { listCategories } from '../../lib/data/artworks';
+import { listArtistOrders, updateArtistOrderItem } from '../../lib/data/orders';
 import {
   Badge,
   Button,
@@ -55,10 +72,7 @@ export const ArtistOverviewPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-overview'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artist/overview');
-      return result;
-    },
+    queryFn: getArtistOverview,
     retry: false,
   });
 
@@ -246,20 +260,12 @@ export const ArtistArtworksPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-artworks', status, page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artist/artworks', {
-        params: { status: status || undefined, page, limit: 12 },
-      });
-      return result;
-    },
+    queryFn: () => listMyArtworks({ status: status || undefined, page, limit: 12 }),
     placeholderData: (previous) => previous,
   });
 
   const setArtworkStatus = useMutation({
-    mutationFn: async ({ id, action }) => {
-      const { data: result } = await api.post(`/artist/artworks/${id}/status`, { action });
-      return result;
-    },
+    mutationFn: ({ id, action }) => setMyArtworkStatus(id, action),
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['artist-artworks'] });
       queryClient.invalidateQueries({ queryKey: ['artist-overview'] });
@@ -269,10 +275,7 @@ export const ArtistArtworksPage = () => {
   });
 
   const remove = useMutation({
-    mutationFn: async (id) => {
-      const { data: result } = await api.delete(`/artist/artworks/${id}`);
-      return result;
-    },
+    mutationFn: (id) => deleteMyArtwork(id),
     onSuccess: (result) => {
       setDeleting(null);
       queryClient.invalidateQueries({ queryKey: ['artist-artworks'] });
@@ -506,19 +509,13 @@ export const ArtworkFormPage = () => {
 
   const categories = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const { data } = await api.get('/categories');
-      return data;
-    },
+    queryFn: listCategories,
     staleTime: 10 * 60 * 1000,
   });
 
   const existing = useQuery({
     queryKey: ['artist-artwork', id],
-    queryFn: async () => {
-      const { data } = await api.get(`/artist/artworks/${id}`);
-      return data;
-    },
+    queryFn: () => getMyArtwork(id),
     enabled: isEditing,
     retry: false,
   });
@@ -573,12 +570,7 @@ export const ArtworkFormPage = () => {
 
     setUploading(true);
     try {
-      const payload = new FormData();
-      [...files].forEach((file) => payload.append('images', file));
-
-      const { data } = await api.post('/uploads/images', payload, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const data = await uploadArtworkImages([...files]);
 
       setImages((current) => [...current, ...data.images.map((image) => ({ ...image, alt: form.title }))]);
       success(`${data.images.length} ${data.images.length === 1 ? 'image' : 'images'} uploaded`);
@@ -635,16 +627,10 @@ export const ArtworkFormPage = () => {
     mutationFn: async ({ publish }) => {
       const payload = buildPayload();
 
-      const { data } = isEditing
-        ? await api.patch(`/artist/artworks/${id}`, payload)
-        : await api.post('/artist/artworks', payload);
-
-      const artworkId = data.artwork.id;
+      const data = isEditing ? await updateMyArtwork(id, payload) : await createMyArtwork(payload);
 
       if (publish) {
-        const { data: statusResult } = await api.post(`/artist/artworks/${artworkId}/status`, {
-          action: 'publish',
-        });
+        const statusResult = await setMyArtworkStatus(data.artwork.id, 'publish');
         return { ...data, statusMessage: statusResult.message };
       }
 
@@ -1130,18 +1116,12 @@ export const ArtistOrdersPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-orders', page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artist/orders', { params: { page, limit: 15 } });
-      return result;
-    },
+    queryFn: () => listArtistOrders({ page, limit: 15 }),
     placeholderData: (previous) => previous,
   });
 
   const updateItem = useMutation({
-    mutationFn: async ({ orderId, itemId, payload }) => {
-      const { data: result } = await api.patch(`/artist/orders/${orderId}/items/${itemId}`, payload);
-      return result;
-    },
+    mutationFn: ({ itemId, payload }) => updateArtistOrderItem(itemId, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['artist-orders'] });
       queryClient.invalidateQueries({ queryKey: ['artist-overview'] });
@@ -1335,10 +1315,7 @@ export const ArtistSalesPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-overview'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artist/overview');
-      return result;
-    },
+    queryFn: getArtistOverview,
     retry: false,
   });
 
@@ -1424,12 +1401,7 @@ export const ArtistEnquiriesPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-enquiries', page, status],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artist/enquiries', {
-        params: { page, limit: 15, status: status || undefined },
-      });
-      return result;
-    },
+    queryFn: () => listArtistEnquiries({ page, limit: 15, status: status || undefined }),
     placeholderData: (previous) => previous,
   });
 
@@ -1441,8 +1413,7 @@ export const ArtistEnquiriesPage = () => {
         status: replyForm.status || undefined,
         quotedAmount: replyForm.quotedAmount === '' ? undefined : Number(replyForm.quotedAmount),
       };
-      const { data: result } = await api.patch(`/artist/enquiries/${replying.id}`, payload);
-      return result;
+      return respondToEnquiry(replying.id, payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['artist-enquiries'] });
@@ -1707,10 +1678,7 @@ export const ArtistStorefrontPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-profile'],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artist/profile');
-      return result;
-    },
+    queryFn: getMyArtistProfile,
     retry: false,
   });
 
@@ -1743,8 +1711,7 @@ export const ArtistStorefrontPage = () => {
           .map((entry) => entry.trim())
           .filter(Boolean),
       };
-      const { data: result } = await api.patch('/artist/profile', payload);
-      return result;
+      return updateMyArtistProfile(payload);
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['artist-profile'] });
@@ -1762,11 +1729,7 @@ export const ArtistStorefrontPage = () => {
   const uploadImage = async (field, file) => {
     setUploadingField(field);
     try {
-      const payload = new FormData();
-      payload.append('image', file);
-      await api.post(`/artist/profile/image/${field}`, payload, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await uploadArtistImage(field, file);
       await queryClient.invalidateQueries({ queryKey: ['artist-profile'] });
       await refreshUser();
       success(field === 'cover' ? 'Cover image updated' : 'Portrait updated');

@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Brush, Frame, Palette, Search, Sparkles } from 'lucide-react';
-import api from '../lib/api';
+import { getHomeCollections, listCategories } from '../lib/data/artworks';
+import { listArtists } from '../lib/data/artist';
 import { Button, SectionHeader, Skeleton } from '../components/ui';
 import { ArtworkRail } from '../components/art/ArtworkGrid';
 import { ArtworkCard } from '../components/art/ArtworkCard';
@@ -17,28 +18,19 @@ export const HomePage = () => {
 
   const collections = useQuery({
     queryKey: ['home-collections'],
-    queryFn: async () => {
-      const { data } = await api.get('/artworks/collections');
-      return data;
-    },
+    queryFn: getHomeCollections,
     staleTime: 5 * 60 * 1000,
   });
 
   const categories = useQuery({
     queryKey: ['categories'],
-    queryFn: async () => {
-      const { data } = await api.get('/categories');
-      return data;
-    },
+    queryFn: listCategories,
     staleTime: 10 * 60 * 1000,
   });
 
   const artists = useQuery({
     queryKey: ['featured-artists'],
-    queryFn: async () => {
-      const { data } = await api.get('/artists', { params: { featured: true, limit: 4 } });
-      return data;
-    },
+    queryFn: () => listArtists({ featured: true, limit: 4 }),
     staleTime: 5 * 60 * 1000,
   });
 

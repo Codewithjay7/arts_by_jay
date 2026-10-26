@@ -376,3 +376,81 @@ export const listCategories = async () => {
 
   return { items: roots, flat: [...byId.values()] };
 };
+
+/**
+ * One artwork for the gallery's focus panel, by id.
+ *
+ * Reads the SAME product row the shop sells. There is no separate gallery
+ * catalogue, so adding to the cart from inside the corridor and from the shop
+ * are the same operation on the same record.
+ *
+ * A piece can sell or be unpublished while a visitor is mid-corridor, so a
+ * miss returns alternatives rather than a dead panel.
+ */
+export const getGalleryArtwork = async (artworkId) => {
+  const db = client();
+
+  const row = unwrap(
+    await db
+      .from('artworks')
+      .select(
+        `${CARD_COLUMNS}, description, story, year, tags, is_framed,
+         ships_from, processing_days,
+         artist:artist_profiles ( id, display_name, slug, bio, avatar_url,
+                                  accepts_commissions, commission_note )`,
+      )
+      .eq('id', artworkId)
+      .eq('status', 'published')
+      .maybeSingle(),
+    'Could not load that piece',
+  );
+
+  if (!row) {
+    const alternatives = unwrap(
+      await db
+        .from('artworks')
+        .select(CARD_COLUMNS)
+        .eq('status', 'published')
+        .eq('in_virtual_gallery', true)
+        .order('published_at', { ascending: false, nullsFirst: false })
+        .limit(4),
+    );
+
+    const gone = new Error('That piece is no longer on display.');
+    gone.code = 'ARTWORK_GONE';
+    gone.alternatives = (alternatives ?? []).map(toCard);
+    throw gone;
+  }
+
+  return {
+    artwork: {
+      ...toCard(row),
+      description: row.description,
+      story: row.story,
+      year: row.year,
+      tags: row.tags,
+      isFramed: row.is_framed,
+      images: (row.images ?? []).map((image) => ({
+        url: image.url,
+        thumbUrl: image.thumbUrl || image.url,
+        alt: image.alt || row.title,
+      })),
+      shipping: {
+        shipsFrom: row.ships_from ?? '',
+        processingDays: row.processing_days ?? 3,
+        isDigitalDelivery: Boolean(row.is_digital_delivery),
+      },
+      artist: row.artist
+        ? {
+            id: row.artist.id,
+            displayName: row.artist.display_name,
+            slug: row.artist.slug,
+            bio: row.artist.bio,
+            avatarUrl: row.artist.avatar_url,
+            acceptsCommissions: row.artist.accepts_commissions,
+            commissionNote: row.artist.commission_note,
+          }
+        : null,
+    },
+  };
+};

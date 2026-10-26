@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Check, Frame, LineChart, Palette, Upload } from 'lucide-react';
-import api, { errorDetails, errorMessage } from '../lib/api';
+import { createMyArtistProfile } from '../lib/data/artist';
+import { getCheckoutConfig } from '../lib/data';
 import {
   Button,
   Field,
@@ -64,10 +65,7 @@ export const BecomeArtistPage = () => {
 
   const config = useQuery({
     queryKey: ['checkout-config'],
-    queryFn: async () => {
-      const { data } = await api.get('/checkout/config');
-      return data;
-    },
+    queryFn: getCheckoutConfig,
     staleTime: 10 * 60 * 1000,
   });
 
@@ -81,13 +79,12 @@ export const BecomeArtistPage = () => {
     setFieldErrors({});
 
     try {
-      await api.post('/artist/profile', form);
+      await createMyArtistProfile(form);
       await refreshUser();
       success('Your application is in', 'Set up your storefront while a curator reviews it.');
       navigate('/artist/storefront');
     } catch (requestError) {
-      setError(errorMessage(requestError, 'That application could not be sent.'));
-      setFieldErrors(errorDetails(requestError) ?? {});
+      setError(requestError.message || 'That application could not be sent.');
     } finally {
       setSubmitting(false);
     }

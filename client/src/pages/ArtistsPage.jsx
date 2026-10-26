@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Globe, Instagram, MapPin, Search, Users } from 'lucide-react';
-import api, { errorMessage } from '../lib/api';
+import { listArtists, getArtistStorefront } from '../lib/data/artist';
 import {
   Badge,
   Button,
@@ -31,12 +31,7 @@ export const ArtistsPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artists', debounced, page],
-    queryFn: async () => {
-      const { data: result } = await api.get('/artists', {
-        params: { q: debounced || undefined, page, limit: 12 },
-      });
-      return result;
-    },
+    queryFn: () => listArtists({ q: debounced || undefined, page, limit: 12 }),
     placeholderData: (previous) => previous,
   });
 
@@ -79,7 +74,7 @@ export const ArtistsPage = () => {
             ))}
           </div>
         ) : isError ? (
-          <ErrorState message={errorMessage(error)} onRetry={refetch} />
+          <ErrorState message={error?.message} onRetry={refetch} />
         ) : !data?.items?.length ? (
           <EmptyState
             icon={Users}
@@ -199,10 +194,7 @@ export const ArtistStorefrontPage = () => {
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['artist-storefront', slug, page],
-    queryFn: async () => {
-      const { data: result } = await api.get(`/artists/${slug}`, { params: { page, limit: 12 } });
-      return result;
-    },
+    queryFn: () => getArtistStorefront(slug, { page, limit: 12 }),
     retry: false,
     placeholderData: (previous) => previous,
   });
@@ -212,7 +204,7 @@ export const ArtistStorefrontPage = () => {
   if (isLoading) return <LoadingBlock label="Opening the storefront" className="min-h-[70vh]" />;
 
   if (isError) {
-    const notFound = error?.response?.status === 404;
+    const notFound = error?.status === 404;
 
     return (
       <div className="mx-auto max-w-3xl px-4 py-24">
@@ -228,7 +220,7 @@ export const ArtistStorefrontPage = () => {
             }
           />
         ) : (
-          <ErrorState message={errorMessage(error)} onRetry={refetch} />
+          <ErrorState message={error?.message} onRetry={refetch} />
         )}
       </div>
     );

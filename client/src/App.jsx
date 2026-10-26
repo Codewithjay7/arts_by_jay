@@ -59,7 +59,22 @@ const AdminPages = {
   Orders: lazy(() => import('./pages/admin/AdminPages').then((m) => ({ default: m.AdminOrdersPage }))),
   Categories: lazy(() => import('./pages/admin/AdminPages').then((m) => ({ default: m.AdminCategoriesPage }))),
   Reports: lazy(() => import('./pages/admin/AdminPages').then((m) => ({ default: m.AdminReportsPage }))),
-  Settings: lazy(() => import('./pages/admin/AdminPages').then((m) => ({ default: m.AdminSettingsPage }))),
+  // The expanded surfaces live in their own modules so the main admin chunk
+  // does not grow for every admin who never opens them.
+  Payouts: lazy(() => import('./pages/admin/AdminPayouts')),
+  Reconciliation: lazy(() =>
+    import('./pages/admin/AdminOversight').then((m) => ({ default: m.AdminReconciliationPage })),
+  ),
+  Audit: lazy(() => import('./pages/admin/AdminOversight').then((m) => ({ default: m.AdminAuditPage }))),
+  Reviews: lazy(() => import('./pages/admin/AdminOversight').then((m) => ({ default: m.AdminReviewsPage }))),
+  Enquiries: lazy(() =>
+    import('./pages/admin/AdminOversight').then((m) => ({ default: m.AdminEnquiriesPage })),
+  ),
+  LinkedAccounts: lazy(() =>
+    import('./pages/admin/AdminOversight').then((m) => ({ default: m.AdminLinkedAccountsPage })),
+  ),
+  // The editable version supersedes the read-only one in AdminPages.
+  Settings: lazy(() => import('./pages/admin/AdminOversight').then((m) => ({ default: m.AdminSettingsPage }))),
 };
 
 const PageFallback = () => <LoadingBlock className="min-h-[60vh]" />;
@@ -168,6 +183,12 @@ export const App = () => {
               <Route path="orders" element={<AdminPages.Orders />} />
               <Route path="categories" element={<AdminPages.Categories />} />
               <Route path="reports" element={<AdminPages.Reports />} />
+              <Route path="payouts" element={<AdminPages.Payouts />} />
+              <Route path="reconciliation" element={<AdminPages.Reconciliation />} />
+              <Route path="linked-accounts" element={<AdminPages.LinkedAccounts />} />
+              <Route path="reviews" element={<AdminPages.Reviews />} />
+              <Route path="enquiries" element={<AdminPages.Enquiries />} />
+              <Route path="audit" element={<AdminPages.Audit />} />
               <Route path="settings" element={<AdminPages.Settings />} />
             </Route>
 

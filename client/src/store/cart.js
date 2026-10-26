@@ -1,26 +1,36 @@
 import { create } from 'zustand';
-import api, { errorMessage } from '../lib/api';
+import * as cartData from '../lib/data/cart';
 import { useUi } from './ui';
+
+const EMPTY_TOTALS = {
+  subtotalMinor: 0,
+  shippingTotalMinor: 0,
+  discountMinor: 0,
+  totalMinor: 0,
+  currency: 'INR',
+  itemCount: 0,
+};
 
 /**
  * Cart state.
  *
- * The cart lives on the server, so it survives a reload and follows the
- * customer between devices. This store is a cache of the server's answer —
- * every mutation round-trips and the server's re-priced response replaces
- * local state wholesale. Nothing here computes a total.
+ * The cart lives in Postgres, so it survives a reload and follows the
+ * customer between devices. This store is only a cache of the server's
+ * answer: every mutation round-trips and the re-priced response replaces
+ * local state wholesale. Nothing here computes a total — the database does,
+ * which is the same reason the browser is never trusted with a price.
  */
 export const useCart = create((set, get) => ({
   items: [],
-  totals: { subtotalMinor: 0, shippingTotalMinor: 0, discountMinor: 0, totalMinor: 0, currency: 'INR', itemCount: 0 },
+  totals: EMPTY_TOTALS,
   issues: [],
-  shippingMethods: [],
+  shippingMethods: cartData.SHIPPING_METHODS,
   shippingMethod: 'standard',
+  canProceed: false,
   status: 'idle', // idle | loading | ready | error
   error: null,
   pendingIds: [],
 
-  /** True while a specific artwork has a mutation in flight. */
   isPending: (artworkId) => get().pendingIds.includes(artworkId),
 
   markPending: (id, pending) =>
@@ -33,30 +43,26 @@ export const useCart = create((set, get) => ({
   apply: (data) =>
     set({
       items: data.items ?? [],
-      totals: data.totals ?? get().totals,
+      totals: data.totals ?? EMPTY_TOTALS,
       issues: data.issues ?? [],
-      shippingMethods: data.shippingMethods ?? get().shippingMethods,
+      shippingMethods: data.shippingMethods ?? cartData.SHIPPING_METHODS,
       shippingMethod: data.shippingMethod ?? get().shippingMethod,
+      canProceed: data.canProceed ?? false,
       status: 'ready',
       error: null,
     }),
 
   reset: () =>
-    set({
-      items: [],
-      totals: { subtotalMinor: 0, shippingTotalMinor: 0, discountMinor: 0, totalMinor: 0, currency: 'INR', itemCount: 0 },
-      issues: [],
-      status: 'idle',
-      error: null,
-    }),
+    set({ items: [], totals: EMPTY_TOTALS, issues: [], canProceed: false, status: 'idle', error: null }),
 
   load: async ({ silent = false } = {}) => {
     if (!silent) set({ status: 'loading' });
+
     try {
-      const { data } = await api.get('/cart');
+      const data = await cartData.getCart({ shippingMethod: get().shippingMethod });
       get().apply(data);
 
-      // The server adjusts quantities when stock moved; say so rather than
+      // The database adjusts quantities when stock moved. Say so, rather than
       // letting the number change under the customer silently.
       (data.issues ?? [])
         .filter((issue) => issue.kind === 'quantity_reduced' || issue.kind === 'sold_out')
@@ -64,7 +70,7 @@ export const useCart = create((set, get) => ({
 
       return data;
     } catch (error) {
-      set({ status: 'error', error: errorMessage(error) });
+      set({ status: 'error', error: error.message });
       return null;
     }
   },
@@ -74,14 +80,13 @@ export const useCart = create((set, get) => ({
     get().markPending(id, true);
 
     try {
-      const { data } = await api.post('/cart/items', { artworkId: id, quantity });
+      const data = await cartData.addToCart(id, quantity);
       get().apply(data);
       useUi.getState().success('Added to your cart', artwork.title ? `"${artwork.title}"` : '');
       return { ok: true };
     } catch (error) {
-      const message = errorMessage(error, 'That could not be added to your cart.');
-      useUi.getState().failure('Not added', message);
-      return { ok: false, message };
+      useUi.getState().failure('Not added', error.message);
+      return { ok: false, message: error.message };
     } finally {
       get().markPending(id, false);
     }
@@ -89,16 +94,16 @@ export const useCart = create((set, get) => ({
 
   setQuantity: async (artworkId, quantity) => {
     get().markPending(artworkId, true);
+
     try {
-      const { data } = await api.patch(`/cart/items/${artworkId}`, { quantity });
+      const data = await cartData.setCartQuantity(artworkId, quantity);
       get().apply(data);
       return { ok: true };
     } catch (error) {
-      const message = errorMessage(error, 'That quantity could not be set.');
-      useUi.getState().failure('Not updated', message);
-      // Re-sync so the UI shows what the server actually holds.
+      useUi.getState().failure('Not updated', error.message);
+      // Re-sync so the UI shows what the database actually holds.
       await get().load({ silent: true });
-      return { ok: false, message };
+      return { ok: false, message: error.message };
     } finally {
       get().markPending(artworkId, false);
     }
@@ -107,11 +112,11 @@ export const useCart = create((set, get) => ({
   remove: async (artworkId) => {
     get().markPending(artworkId, true);
     try {
-      const { data } = await api.delete(`/cart/items/${artworkId}`);
+      const data = await cartData.removeFromCart(artworkId);
       get().apply(data);
       return { ok: true };
     } catch (error) {
-      useUi.getState().failure('Not removed', errorMessage(error));
+      useUi.getState().failure('Not removed', error.message);
       return { ok: false };
     } finally {
       get().markPending(artworkId, false);
@@ -120,11 +125,11 @@ export const useCart = create((set, get) => ({
 
   clear: async () => {
     try {
-      const { data } = await api.delete('/cart');
+      const data = await cartData.clearCart();
       get().apply(data);
       return { ok: true };
     } catch (error) {
-      useUi.getState().failure('Could not empty your cart', errorMessage(error));
+      useUi.getState().failure('Could not empty your cart', error.message);
       return { ok: false };
     }
   },
@@ -132,7 +137,7 @@ export const useCart = create((set, get) => ({
   setShippingMethod: async (method) => {
     set({ shippingMethod: method });
     try {
-      const { data } = await api.get('/cart', { params: { shippingMethod: method } });
+      const data = await cartData.getCart({ shippingMethod: method });
       get().apply(data);
     } catch {
       // Keep the chosen method; checkout re-prices authoritatively anyway.
@@ -156,12 +161,23 @@ export const useWishlist = create((set, get) => ({
   load: async () => {
     set({ status: 'loading' });
     try {
-      const { data } = await api.get('/wishlist');
-      set({ items: data.items ?? [], ids: (data.items ?? []).map((item) => item.id), status: 'ready' });
+      const data = await cartData.getWishlist();
+      set({ items: data.items, ids: data.items.map((item) => item.id), status: 'ready' });
       return data;
     } catch {
       set({ status: 'error' });
       return null;
+    }
+  },
+
+  /** Ids only — enough to render the hearts without fetching every card. */
+  loadIds: async () => {
+    try {
+      const ids = await cartData.getWishlistIds();
+      set({ ids });
+      return ids;
+    } catch {
+      return [];
     }
   },
 
@@ -179,13 +195,14 @@ export const useWishlist = create((set, get) => ({
     }));
 
     try {
-      const { data } = await api.post('/wishlist', { artworkId: id });
+      const result = await cartData.toggleWishlist(id);
+
       set((state) => ({
-        ids: data.added ? [...new Set([...state.ids, id])] : state.ids.filter((entry) => entry !== id),
+        ids: result.added ? [...new Set([...state.ids, id])] : state.ids.filter((entry) => entry !== id),
       }));
 
       useUi.getState().toast({
-        title: data.added ? 'Saved to your wishlist' : 'Removed from your wishlist',
+        title: result.added ? 'Saved to your wishlist' : 'Removed from your wishlist',
         message: artwork.title ? `"${artwork.title}"` : '',
         tone: 'neutral',
         duration: 2500,
@@ -193,27 +210,27 @@ export const useWishlist = create((set, get) => ({
 
       // Keep the full list in step when the wishlist page is open.
       if (get().status === 'ready') await get().load();
-      return { ok: true, added: data.added };
+      return { ok: true, added: result.added };
     } catch (error) {
       // Roll the optimistic change back.
       set((state) => ({
         ids: wasSaved ? [...new Set([...state.ids, id])] : state.ids.filter((entry) => entry !== id),
       }));
-      useUi.getState().failure('Wishlist not updated', errorMessage(error));
+      useUi.getState().failure('Wishlist not updated', error.message);
       return { ok: false };
     }
   },
 
   remove: async (artworkId) => {
     try {
-      await api.delete(`/wishlist/${artworkId}`);
+      const result = await cartData.removeFromWishlist(artworkId);
       set((state) => ({
         ids: state.ids.filter((entry) => entry !== artworkId),
         items: state.items.filter((item) => item.id !== artworkId),
       }));
-      return { ok: true };
+      return { ok: true, total: result.total };
     } catch (error) {
-      useUi.getState().failure('Not removed', errorMessage(error));
+      useUi.getState().failure('Not removed', error.message);
       return { ok: false };
     }
   },

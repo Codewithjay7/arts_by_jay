@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { ArrowRight, Heart, MessageSquare, ShoppingBag, X } from 'lucide-react';
-import api, { errorMessage } from '../lib/api';
+import { getGalleryArtwork } from '../lib/data/artworks';
 import { Badge, Button, LoadingBlock, NoticeBanner, Spinner } from '../components/ui';
 import { ARTWORK_TYPE_LABELS, formatDimensions, formatMoney } from '../lib/format';
 import { imageSource } from '../lib/images';
@@ -30,10 +30,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['gallery-artwork', artworkId],
-    queryFn: async () => {
-      const { data: result } = await api.get(`/gallery/artworks/${artworkId}`);
-      return result;
-    },
+    queryFn: () => getGalleryArtwork(artworkId),
     enabled: Boolean(artworkId),
     retry: false,
   });
@@ -42,8 +39,8 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
 
   // A piece can sell while someone is mid-corridor; the API returns 404 with
   // alternatives, which we surface rather than showing a dead panel.
-  const alternatives = error?.response?.data?.error?.details?.alternatives ?? [];
-  const isGone = error?.response?.data?.error?.code === 'ARTWORK_GONE';
+  const alternatives = error?.alternatives ?? [];
+  const isGone = error?.code === 'ARTWORK_GONE';
 
   useEffect(() => {
     const onKeyDown = (event) => event.key === 'Escape' && onClose();
@@ -105,7 +102,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
             <p className="lede">
               {isGone
                 ? 'It has either sold or been taken down since you started walking. Here is what is hanging nearby.'
-                : errorMessage(error)}
+                : error?.message}
             </p>
           </div>
 
