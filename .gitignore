@@ -38,3 +38,8 @@ desktop.ini
 .vite/
 coverage/
 .mongodb-binaries/
+
+# Supabase CLI local link state. Machine-specific scratch (project ref,
+# pooler host, detected service versions) written by `supabase link`.
+# No secrets in it, but it is not source either.
+supabase/.temp/

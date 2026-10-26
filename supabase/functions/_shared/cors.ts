@@ -1,6 +1,20 @@
 /** Shared CORS handling. The allowed origin is configuration, not a wildcard. */
 
-const allowed = (Deno.env.get('SITE_URL') ?? 'http://localhost:5173')
+/**
+ * The origins allowed to call these functions from a browser.
+ *
+ * SITE_URL (comma-separated) overrides this entirely, so another deployment
+ * can point somewhere else. The default lists the real production origin
+ * because the fallback used to be localhost alone: with SITE_URL unset, a
+ * preflight from artsbyjay.netlify.app was answered with
+ * `Access-Control-Allow-Origin: http://localhost:5173` and the browser
+ * blocked checkout. An origin is a public value - this gives nothing away,
+ * and it is not a wildcard: an unrecognised origin still gets the first
+ * entry, never its own.
+ */
+const DEFAULT_ALLOWED_ORIGINS = 'https://artsbyjay.netlify.app,http://localhost:5173';
+
+const allowed = (Deno.env.get('SITE_URL') ?? DEFAULT_ALLOWED_ORIGINS)
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);

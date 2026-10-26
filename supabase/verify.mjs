@@ -474,6 +474,81 @@ const run = async () => {
     .upload(`${jay.userId}/intrusion.png`, new Blob([new Uint8Array([1, 2, 3])], { type: 'image/png' }));
   check('an artist CANNOT upload into another artist\'s folder', Boolean(foreignUpload.error));
 
+  /* ─────────── Regressions these checks once failed to catch ─────────── */
+
+  // Every check in this section exists because a bug reached the live site
+  // while the suite above was fully green. They are plain reads performed as
+  // an ordinary signed-in user, which is precisely the thing the rest of the
+  // suite skipped: it set rows up with the service role and asserted on
+  // policy INTENT, so a query that cannot execute at all still "passed".
+
+  section('Regression: readable as an ordinary user');
+
+  // Two permissive SELECT policies referred to each other's tables
+  // (orders -> order_items -> orders). Postgres OR-evaluates every policy for
+  // the command, not just the matching one, so ANY authenticated select on
+  // `orders` aborted with 42P17 "infinite recursion detected in policy".
+  // No customer could open their order history and no artist could see a
+  // sale. Fixed in 0011 with SECURITY DEFINER membership helpers.
+  const recursionProne = ['orders', 'order_items', 'shipments', 'refunds', 'delivery_confirmations'];
+  for (const table of recursionProne) {
+    const read = await priya.client.from(table).select('id').limit(1);
+    check(
+      `a customer can SELECT ${table} without policy recursion`,
+      read.error?.code !== '42P17',
+      read.error ? `${read.error.code}: ${read.error.message}` : '',
+    );
+  }
+
+  const artistOrders = await jay.client.from('orders').select('id').limit(1);
+  check(
+    'an artist can SELECT orders without policy recursion',
+    artistOrders.error?.code !== '42P17',
+    artistOrders.error ? `${artistOrders.error.code}: ${artistOrders.error.message}` : '',
+  );
+
+  // The membership helpers must not become a way to ask about someone else:
+  // they read auth.uid() internally and take no user-id argument, so there is
+  // no parameter to point at another person.
+  const probeOther = await priya.client.rpc('order_is_mine', {
+    p_order_id: '00000000-0000-0000-0000-000000000000',
+  });
+  check('order_is_mine answers only about the caller', probeOther.error === null && probeOther.data === false);
+
+  // The artwork detail page and the gallery zoom panel each built a select
+  // that embedded artist_profiles TWICE (the shared card columns already had
+  // it, and the detail query appended a richer one). PostgREST rejects the
+  // whole query: 42712 'table name "artworks_artist_1" specified more than
+  // once'. Both pages showed "That did not load".
+  const detailSelect = `
+    id, title, slug, price_minor, images, status,
+    category:categories ( id, name, slug ),
+    description, story, year, tags,
+    artist:artist_profiles ( id, display_name, slug, bio, avatar_url, location,
+                             accepts_commissions, commission_note )
+  `;
+  const detailRead = await anon.from('artworks').select(detailSelect).eq('status', 'published').limit(1);
+  check(
+    'the artwork detail select resolves (no duplicated embed)',
+    detailRead.error === null && (detailRead.data ?? []).length === 1,
+    detailRead.error ? `${detailRead.error.code}: ${detailRead.error.message}` : '',
+  );
+  check(
+    'the detail select returns the FULL artist embed',
+    Boolean(detailRead.data?.[0]?.artist && 'commission_note' in detailRead.data[0].artist),
+  );
+
+  // A healthy cart once reported can_proceed: null, because
+  // `bool_or(...) filter (...)` over zero rows is NULL rather than false — so
+  // the checkout button was disabled for carts with nothing wrong. Fixed in
+  // 0010. The value must be a real boolean, never null.
+  const summary = await priya.client.rpc('cart_summary', { p_user_id: priya.userId });
+  check(
+    'cart_summary.can_proceed is a boolean, never null',
+    summary.error === null && typeof summary.data?.can_proceed === 'boolean',
+    summary.error ? summary.error.message : `got ${JSON.stringify(summary.data?.can_proceed)}`,
+  );
+
   /* ───────────────────── Clean up ───────────────────── */
 
   // Remove anything this run created, so repeated runs do not accumulate

@@ -13,16 +13,38 @@ import client, { unwrap } from '../supabase';
  * here forgot to exclude it. Defence in the database, not in the caller.
  */
 
-const CARD_COLUMNS = `
+/**
+ * Every column a card needs EXCEPT the artist embed.
+ *
+ * The artist embed is kept separate because the detail views need a richer
+ * one. Appending a second `artist:artist_profiles ( ... )` to a select that
+ * already contains one does NOT widen the first: both resolve to the same
+ * relationship, and PostgREST rejects the whole query with
+ *   "table name \"artworks_artist_1\" specified more than once"
+ * which is how the artwork detail page and the gallery zoom panel came to
+ * fail with "That did not load". Composing one embed per query instead of
+ * concatenating two makes that mistake impossible to repeat.
+ */
+const CARD_BASE_COLUMNS = `
   id, title, slug, price_minor, compare_at_price_minor, currency,
   images, type, medium, style, orientation,
   width_cm, height_cm, depth_cm,
   stock, allow_backorder, is_digital_delivery, is_unique, status,
   is_featured, in_virtual_gallery, published_at,
   rating_average, rating_count, units_sold,
-  artist:artist_profiles ( id, display_name, slug ),
   category:categories ( id, name, slug )
 `;
+
+/** The slim artist embed: all a card renders. */
+const CARD_ARTIST_EMBED = 'artist:artist_profiles ( id, display_name, slug )';
+
+/** The full artist embed, for the detail and gallery views. */
+const DETAIL_ARTIST_EMBED = `
+  artist:artist_profiles ( id, display_name, slug, bio, avatar_url, location,
+                           accepts_commissions, commission_note )
+`;
+
+const CARD_COLUMNS = `${CARD_BASE_COLUMNS}, ${CARD_ARTIST_EMBED}`;
 
 /** Maps a database row onto the card shape the UI already expects. */
 export const toCard = (row) => {
@@ -224,10 +246,9 @@ export const getArtworkDetail = async (slug) => {
     await db
       .from('artworks')
       .select(
-        `${CARD_COLUMNS}, description, story, year, tags, is_framed, weight_grams,
+        `${CARD_BASE_COLUMNS}, description, story, year, tags, is_framed, weight_grams,
          ships_from, processing_days, shipping_flat_minor,
-         artist:artist_profiles ( id, display_name, slug, bio, avatar_url, location,
-                                  accepts_commissions, commission_note )`,
+         ${DETAIL_ARTIST_EMBED}`,
       )
       .eq('slug', slug)
       .eq('status', 'published')
@@ -394,10 +415,9 @@ export const getGalleryArtwork = async (artworkId) => {
     await db
       .from('artworks')
       .select(
-        `${CARD_COLUMNS}, description, story, year, tags, is_framed,
+        `${CARD_BASE_COLUMNS}, description, story, year, tags, is_framed,
          ships_from, processing_days,
-         artist:artist_profiles ( id, display_name, slug, bio, avatar_url,
-                                  accepts_commissions, commission_note )`,
+         ${DETAIL_ARTIST_EMBED}`,
       )
       .eq('id', artworkId)
       .eq('status', 'published')
