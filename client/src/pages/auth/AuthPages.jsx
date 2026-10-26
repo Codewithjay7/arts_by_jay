@@ -181,6 +181,9 @@ export const RegisterPage = () => {
 
   const [form, setForm] = useState({ name: '', email: '', password: '', artistName: '' });
   const [agreed, setAgreed] = useState(false);
+  // Set when Supabase accepts the signup but issues no session, because
+  // email confirmation is required.
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -206,9 +209,51 @@ export const RegisterPage = () => {
       return;
     }
 
+    /**
+     * With email confirmation enabled, Supabase returns no session. Navigating
+     * here would drop the visitor into a signed-out app having just told them
+     * their account was ready — and an artist would then be bounced straight
+     * back out by the role guard.
+     */
+    if (result.needsEmailConfirmation) {
+      setAwaitingConfirmation(true);
+      return;
+    }
+
     success('Your account is ready');
     navigate(intent === 'artist' ? '/artist/storefront' : '/');
   };
+
+  if (awaitingConfirmation) {
+    return (
+      <AuthShell
+        title="Confirm your email"
+        subtitle={`We have sent a confirmation link to ${form.email}.`}
+      >
+        <div className="space-y-5">
+          <NoticeBanner tone="info" title="One more step">
+            Open the link in that email to activate your account, then sign in. The link is what proves
+            the address is yours, so we cannot skip it.
+          </NoticeBanner>
+
+          <p className="text-[0.9rem] leading-relaxed text-muted">
+            Nothing arrived? Check the spam folder. This project has no custom mail service configured
+            yet, so confirmation emails come from Supabase&apos;s shared sender and are rate limited —
+            they can take a few minutes, or be dropped altogether under load.
+          </p>
+
+          <div className="flex flex-wrap gap-2.5">
+            <Button variant="primary" to="/login">
+              Go to sign in
+            </Button>
+            <Button variant="ghost" onClick={() => setAwaitingConfirmation(false)}>
+              Use a different email
+            </Button>
+          </div>
+        </div>
+      </AuthShell>
+    );
+  }
 
   return (
     <AuthShell
