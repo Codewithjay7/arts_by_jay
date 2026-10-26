@@ -30,6 +30,23 @@
 # React Router owns every path. Without this, a deep link like
 # /art/lime-interval or a refresh on /checkout returns Netlify's 404 instead
 # of the app. The 200 status matters: a 301 would break client-side routing.
+#
+# Order matters here: Netlify applies the FIRST matching rule, so the /api
+# rule below has to come before the catch-all.
+
+# There is no backend on this host. The API is Supabase, called directly from
+# the browser, and nothing should ever request /api/* here.
+#
+# Without this rule the catch-all below answers /api/anything with index.html
+# and HTTP 200 — so a stray fetch "succeeds" and hands the caller a page of
+# HTML where it expected JSON. That is exactly how the checkout page came to
+# fail silently against routes that no longer existed. A 404 makes such a
+# call fail where it is made, which is the only place it can be fixed.
+[[redirects]]
+  from = "/api/*"
+  to = "/api-gone.json"
+  status = 404
+  force = true
 
 [[redirects]]
   from = "/*"

@@ -3,7 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { AlertCircle, Check, CreditCard, Lock, MapPin, ShoppingBag, Truck } from 'lucide-react';
-import api, { errorCode, errorDetails, errorMessage } from '../lib/api';
+import { errorDetails, errorMessage } from '../lib/supabase';
+import { getCart, listAddresses, createAddress } from '../lib/data/cart';
+import { getCheckoutConfig } from '../lib/data';
+import { createOrder, confirmPayment, cancelPendingOrder } from '../lib/data/checkout';
 import {
   Button,
   Checkbox,
@@ -96,29 +99,20 @@ export const CheckoutPage = () => {
 
   const review = useQuery({
     queryKey: ['checkout-review', shippingMethod],
-    queryFn: async () => {
-      const { data } = await api.get('/checkout/review', { params: { shippingMethod } });
-      return data;
-    },
+    queryFn: () => getCart({ shippingMethod }),
     enabled: !buyNowId,
     retry: false,
   });
 
   const config = useQuery({
     queryKey: ['checkout-config'],
-    queryFn: async () => {
-      const { data } = await api.get('/checkout/config');
-      return data;
-    },
+    queryFn: getCheckoutConfig,
     staleTime: 5 * 60 * 1000,
   });
 
   const addresses = useQuery({
     queryKey: ['addresses'],
-    queryFn: async () => {
-      const { data } = await api.get('/account/addresses');
-      return data;
-    },
+    queryFn: listAddresses,
   });
 
   // Pre-fill from the saved default, so a returning customer types nothing.
@@ -195,23 +189,22 @@ export const CheckoutPage = () => {
     // Save the address for next time, if asked. A failure here must not stop
     // the purchase.
     if (saveAddress && !selectedAddressId) {
-      api.post('/account/addresses', { ...address, label: 'Delivery' }).catch(() => {});
+      createAddress({ ...address, label: 'Delivery' }).catch(() => {});
     }
 
     let created;
     try {
-      const { data } = await api.post('/checkout', {
+      created = await createOrder({
         shippingAddress: address,
         billingAddress: billingSameAsShipping ? null : billingAddress,
         shippingMethod,
         customerNote,
         idempotencyKey,
       });
-      created = data;
     } catch (error) {
       setPhase('idle');
 
-      if (errorCode(error) === 'CART_CHANGED') {
+      if (error.code === 'CART_CHANGED') {
         await review.refetch();
         await loadCart({ silent: true });
         setPaymentError(
@@ -306,7 +299,7 @@ export const CheckoutPage = () => {
       setPhase('idle');
       setPaymentError('You closed the payment window before paying. Nothing has been charged.');
       // Release the pending order so the stock is not held unnecessarily.
-      api.post('/payments/cancel', { orderId: created.order.id }).catch(() => {});
+      cancelPendingOrder(created.order.orderNumber);
       clearIdempotencyKey();
       return;
     }
@@ -326,7 +319,7 @@ export const CheckoutPage = () => {
     setPhase('verifying');
 
     try {
-      const { data } = await api.post('/payments/confirm', {
+      const data = await confirmPayment({
         orderId: created.order.id,
         providerOrderId: result.providerOrderId,
         providerPaymentId: result.providerPaymentId,

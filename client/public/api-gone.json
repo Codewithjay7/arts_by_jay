@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "NO_BACKEND_HERE",
+    "message": "This site has no /api backend. It talks to Supabase (PostgREST, Auth, Storage) and to Edge Functions directly from the browser. A request reaching this file is a bug in the caller, not a missing route."
+  }
+}
