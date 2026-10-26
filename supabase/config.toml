@@ -11,7 +11,10 @@ max_rows = 1000
 
 [db]
 port = 54322
-major_version = 15
+# Matches the hosted project (Postgres 17.11, region ap-northeast-2 / Seoul).
+# A mismatch here makes a local stack or a database branch behave differently
+# from production, which is the worst place to discover a version difference.
+major_version = 17
 
 [auth]
 enabled = true
