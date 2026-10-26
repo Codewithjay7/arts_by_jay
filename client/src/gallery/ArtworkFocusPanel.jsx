@@ -81,14 +81,24 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
         'md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[clamp(26rem,36vw,34rem)] md:border-l md:border-t-0',
       )}
     >
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-line-strong bg-surface-100/80 text-ink transition-colors hover:border-accent-300/60 hover:text-accent-300"
-        aria-label="Close and return to the gallery"
-      >
-        <X className="h-4.5 w-4.5" aria-hidden="true" />
-      </button>
+      {/* A zero-height sticky strip, so the close control stays at the top of
+          the panel while its contents scroll underneath.
+          It used to be `absolute` inside this scrolling box, which means it
+          scrolled away with the text — read two paragraphs and the only way
+          out of the panel had gone off the top of the screen.
+          `h-0` keeps it out of the flow, so nothing below shifts. */}
+      <div className="sticky top-0 z-20 h-0">
+        <button
+          type="button"
+          onClick={onClose}
+          // 44px, not 40: the minimum comfortable touch target, and this is
+          // the control people reach for on a phone.
+          className="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full border border-line-strong bg-surface-0/95 text-ink shadow-frame backdrop-blur transition-colors hover:border-accent-300/60 hover:text-accent-300"
+          aria-label="Close and return to the gallery"
+        >
+          <X className="h-5 w-5" aria-hidden="true" />
+        </button>
+      </div>
 
       {isLoading && <LoadingBlock label="Approaching the work" className="min-h-[24rem]" />}
 

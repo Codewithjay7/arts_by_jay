@@ -211,11 +211,13 @@ export const GalleryPage = () => {
                   : 'The lighter walkthrough. Every room and piece is here, laid out as a page.'
           }
         />
+        {/* z-50, above the navbar's z-40 — otherwise the bar covers the
+            panel's top-right corner and the close control with it. */}
         {focusedId && (
-          <div className="fixed inset-0 z-40">
+          <div className="fixed inset-0 z-50">
             <button
               type="button"
-              className="absolute inset-0 bg-surface-300/85 backdrop-blur-sm"
+              className="absolute inset-0 cursor-default bg-surface-300/85 backdrop-blur-sm"
               onClick={onClose}
               aria-label="Close artwork details"
               tabIndex={-1}
@@ -358,16 +360,35 @@ export const GalleryPage = () => {
             </>
           )}
 
-          {/* ── Focused detail view ── */}
-          {focusedId && (
-            <ArtworkFocusPanel
-              artworkId={focusedId}
-              onClose={onClose}
-              onSelectAlternative={(artwork) => setFocusedId(artwork.id ?? null)}
-            />
-          )}
         </div>
       </div>
+
+      {/* ── Focused detail view ──
+          Deliberately OUTSIDE the sticky, overflow-hidden corridor wrapper
+          and in its own fixed layer.
+          Inside it, the panel was clipped by that overflow and — worse — sat
+          below the navbar, which is `fixed … z-40` across the top of the
+          viewport. On a wide screen the panel runs the full height, so the
+          navbar covered its top-right corner: precisely where the close
+          control is. It was invisible and it swallowed the taps.
+          z-50 puts this above the navbar; the flat view uses the same layer
+          so both behave identically. */}
+      {focusedId && (
+        <div className="fixed inset-0 z-50">
+          <button
+            type="button"
+            className="absolute inset-0 cursor-default bg-surface-900/40"
+            onClick={onClose}
+            aria-label="Close artwork details"
+            tabIndex={-1}
+          />
+          <ArtworkFocusPanel
+            artworkId={focusedId}
+            onClose={onClose}
+            onSelectAlternative={(artwork) => setFocusedId(artwork.id ?? null)}
+          />
+        </div>
+      )}
 
       {/* After the corridor ends, the page continues into the ordinary shop. */}
       <section className="relative z-10 border-t border-line bg-surface-300 px-4 py-20 text-center sm:px-6">
