@@ -1,0 +1,95 @@
+# ============================================================================
+# Arts by Jay — Netlify deployment
+#
+# Netlify serves the STATIC frontend only. The backend is Supabase:
+# PostgreSQL + Auth + Storage + Edge Functions. There is no server process
+# here, so nothing from `server/` runs on Netlify.
+#
+# Site: 1260b24e-6320-4758-8297-363a193f5421
+# ============================================================================
+
+[build]
+  base    = "client"
+  command = "npm run build"
+  publish = "client/dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # Keep the build fast: Netlify does not need the dev-only toolchain.
+  NPM_FLAGS = "--no-audit --no-fund"
+
+# ── Deploy previews and branches get their own build ──
+[context.production.environment]
+  NODE_ENV = "production"
+
+[context.deploy-preview.environment]
+  NODE_ENV = "production"
+
+# ────────────────────────── SPA routing ──────────────────────────
+# React Router owns every path. Without this, a deep link like
+# /art/lime-interval or a refresh on /checkout returns Netlify's 404 instead
+# of the app. The 200 status matters: a 301 would break client-side routing.
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# ────────────────────────── Security headers ──────────────────────────
+# This is a site that takes payments, so these are not optional.
+#
+# The CSP allowlist below is exhaustive for what the app actually loads. If
+# you add a service, add its origin here or the browser will block it
+# silently — check the console first when something stops working.
+#
+#   *.supabase.co        database, auth, storage, realtime (wss)
+#   *.razorpay.com       checkout script, its iframe, and its API
+#   fonts.googleapis.com / fonts.gstatic.com   the two webfonts
+#   js.stripe.com        only if you switch the provider to Stripe
+#   blob: / data:        the photo studio reads a local file into a canvas
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options         = "DENY"
+    X-Content-Type-Options  = "nosniff"
+    Referrer-Policy         = "strict-origin-when-cross-origin"
+    Permissions-Policy      = "camera=(), microphone=(), geolocation=(), payment=(self)"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    Cross-Origin-Opener-Policy = "same-origin-allow-popups"
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://*.razorpay.com https://js.stripe.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' data: https://fonts.gstatic.com;
+      img-src 'self' data: blob: https://*.supabase.co https://res.cloudinary.com https://*.razorpay.com;
+      media-src 'self' blob:;
+      connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.razorpay.com https://api.stripe.com;
+      frame-src https://*.razorpay.com https://js.stripe.com;
+      worker-src 'self' blob:;
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'none';
+      upgrade-insecure-requests
+    """
+
+# ────────────────────────── Caching ──────────────────────────
+# Vite fingerprints every asset filename, so hashed files are immutable and
+# can be cached for a year. index.html must NOT be, or visitors keep getting
+# an old bundle after a deploy.
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
