@@ -158,35 +158,70 @@ only move their own line along `awaiting → preparing → shipped → delivered
 
 ## 5. Supabase — written, **not applied**
 
-`supabase/migrations/` holds four migrations (227 SQL statements):
+### Migrations — `supabase/migrations/` (242 SQL statements)
 
-| File                              | Contents                                               |
-| --------------------------------- | ------------------------------------------------------ |
-| `0001_foundation.sql`             | Enums, profiles, roles, platform settings, audit log    |
-| `0002_commerce.sql`               | Catalogue, cart, orders, **commission snapshot**, payments, transfers, webhook idempotency |
-| `0003_rls.sql`                    | Row Level Security on all 23 tables                    |
-| `0004_pricing_payouts_storage.sql`| Server-side cart pricing, payout eligibility, storage buckets |
+| File                               | Contents                                               |
+| ---------------------------------- | ------------------------------------------------------ |
+| `0001_foundation.sql`              | Enums, profiles, roles, platform settings, audit log    |
+| `0002_commerce.sql`                | Catalogue, cart, orders, **commission snapshot**, payments, transfers, webhook idempotency |
+| `0003_rls.sql`                     | Row Level Security on all 23 tables                    |
+| `0004_pricing_payouts_storage.sql` | Server-side cart pricing, payout eligibility, storage buckets |
+| `0005_settlement_functions.sql`    | Atomic settlement, refunds with proportional commission reversal, disputes, payout recording |
+
+### Edge Functions — `supabase/functions/`
+
+| Function           | JWT  | Job                                                       |
+| ------------------ | ---- | --------------------------------------------------------- |
+| `create-order`     | yes  | Prices the cart **in the database**, creates the order and the Razorpay order. The request carries an address and a shipping choice — no amounts. |
+| `verify-payment`   | yes  | Verifies Razorpay's HMAC, then asks Razorpay directly, then cross-checks amount, currency and order id before settling. |
+| `razorpay-webhook` | **no** | The authoritative path. Verifies the signature over the raw bytes, de-duplicates by event id, settles or records a refund. JWT off because Razorpay carries no session; the HMAC is the authentication. |
+
+Money-moving SQL functions are `REVOKE`d from `anon` and `authenticated`
+entirely, so there is no path from a browser to settlement, refunds or
+payouts — only service-role code inside an Edge Function can reach them.
 
 ### Honest status
 
-- **Syntax validated** — all four parse cleanly under the real PostgreSQL
-  parser (`libpg_query`).
-- **Not executed, not tested.** This machine has no Docker, no Postgres and no
-  Deno, so `supabase start` cannot run. Semantic errors (a mistyped column, a
-  policy that is subtly too strict) would only surface on first apply.
-- The frontend still talks to the Express API. **No Supabase client code is
-  wired into the app yet** — that is the next decision, see §8.
+- **Migrations: syntax validated.** All five parse cleanly under the real
+  PostgreSQL parser (`libpg_query`).
+- **Edge Functions: syntax validated.** All five TypeScript files transpile
+  cleanly under esbuild.
+- **Nothing has been executed.** This machine has no Docker, no Postgres and
+  no Deno, so `supabase start` cannot run. Semantic errors — a mistyped
+  column, a policy that is subtly too strict, an RPC signature that does not
+  match its caller — would only surface on first apply. **Treat the first
+  apply as a test, on a branch or a throwaway project.**
+- **The frontend still talks to the Express API.** No Supabase client code is
+  wired into the app yet. See §8.
 
-### To apply them
+### To apply
 
 ```bash
 npx supabase link --project-ref tdcdghuzasxkfdvactdz
-npx supabase db push
+npx supabase db push                       # applies 0001 → 0005
+
+# Edge Function secrets — these never go in client code or Git
+npx supabase secrets set \
+  RAZORPAY_KEY_ID=rzp_test_TsPMzji5nqQ09l \
+  RAZORPAY_KEY_SECRET=<your test secret> \
+  RAZORPAY_WEBHOOK_SECRET=<from the dashboard, see §6> \
+  SITE_URL=http://localhost:5173
+
+npx supabase functions deploy create-order
+npx supabase functions deploy verify-payment
+npx supabase functions deploy razorpay-webhook --no-verify-jwt
 ```
 
-You will be asked for the database password (Supabase dashboard → Settings →
-Database). Apply to a branch or a throwaway project first — I have not been
-able to run these, so treat the first apply as a test.
+`SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are
+injected into Edge Functions automatically; you do not set those yourself.
+
+### After applying, seed an admin
+
+1. Set the bootstrap email:
+   `update platform_settings set value = 'you@example.com' where key = 'admin_bootstrap_email';`
+2. Sign up with that email. The `handle_new_user` trigger grants the admin
+   role to the first such account and to no one else.
+3. Insert categories — artists cannot list work without at least one.
 
 ### Credentials I still need
 
@@ -264,16 +299,42 @@ is gitignored — verified with `git check-ignore`.
 
 ---
 
-## 8. The open decision
+## 8. Migration to Supabase — in progress
 
-You now have two backends:
+You chose a full migration to Supabase. Express stays in the tree until the
+Supabase path is verified working, then it is retired. Nothing is deleted
+before its replacement is proven.
 
-- **`server/`** — Express + MongoDB. Complete, 164 tests passing, Razorpay
-  wired, running now.
-- **`supabase/`** — PostgreSQL schema + RLS. Written, syntax-checked, not
-  applied, not connected to the frontend.
+### Done
 
-Your second prompt asks for Supabase; your first asked not to discard working
-code. I have not deleted anything, and I have not rewritten the frontend's data
-layer, because doing so is a one-way door worth agreeing first. See the
-question at the end of my message for the options.
+- Schema, RLS, pricing and settlement functions (§5) — syntax validated
+- The three money-critical Edge Functions (§5) — syntax validated
+
+### Blocked on credentials
+
+| Needed                | Why                                        |
+| --------------------- | ------------------------------------------ |
+| Database password     | to run `supabase db push` and verify the schema actually applies |
+| `anon` key            | the frontend cannot talk to Supabase at all without it |
+| `service_role` key    | only as an Edge Function secret, never in `client/` |
+
+Until the schema is applied and confirmed, rewriting the frontend's data layer
+would be writing a large amount of code against an unverified schema. The
+sensible order is: apply → verify → then port the frontend.
+
+### Remaining work, in order
+
+1. Apply the migrations; fix whatever the first real apply reveals.
+2. Seed categories and an admin account (§5).
+3. Deploy the Edge Functions; add the webhook secret (§6).
+4. Add a Supabase client and port auth (`client/src/store/auth.js`) from JWT
+   to `supabase.auth`.
+5. Port reads to `supabase-js` queries, page by page, leaning on RLS instead
+   of the Express route guards.
+6. Port writes: cart, wishlist, addresses, artwork CRUD, enquiries.
+7. Point checkout at `create-order` / `verify-payment`.
+8. Port the artist onboarding and payout screens.
+9. Re-run the equivalent of `test:flows` against Supabase, then retire
+   `server/`.
+
+Steps 4–8 are mechanical once step 1 succeeds. Step 1 is the risk.
