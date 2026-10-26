@@ -96,10 +96,14 @@ export const getCapabilities = async () => {
   }
 
   /**
-   * Checkout needs the create-order and verify-payment Edge Functions. Their
-   * presence is not something the browser can probe cheaply, so it is
-   * declared by build configuration. Set VITE_CHECKOUT_ENABLED=true only
-   * once `supabase functions deploy` has actually run.
+   * Checkout needs the create-order and verify-payment Edge Functions AND
+   * their Razorpay secrets. Neither is something the browser can probe
+   * cheaply, so it is declared by build configuration.
+   *
+   * Set VITE_CHECKOUT_ENABLED=true only once `node
+   * supabase/check-payments.mjs` reports checkout live — not merely once the
+   * functions are deployed. A deployed function with no secrets answers 503
+   * PAYMENTS_DISABLED, which looks identical from here.
    */
   const checkoutEnabled = env.VITE_CHECKOUT_ENABLED === 'true';
 
@@ -113,9 +117,13 @@ export const getCapabilities = async () => {
       keyId: env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TsPMzji5nqQ09l',
       currency: 'INR',
       isSimulated: false,
+      // Says what is actually true. The functions ARE deployed; what they
+      // lack is their Razorpay secrets, so create-order refuses with 503
+      // PAYMENTS_DISABLED. Claiming they were never deployed would send
+      // whoever reads this looking in the wrong place.
       reason: checkoutEnabled
         ? undefined
-        : 'Checkout is not live on this deployment yet: the payment Edge Functions have not been deployed.',
+        : 'Online payment is not switched on for this deployment yet, so nothing can be purchased. You can still browse, save pieces and send an enquiry.',
     },
     storage: { driver: 'supabase', maxUploadMb: 8 },
     aiPhotoStudio: false,
