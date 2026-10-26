@@ -102,13 +102,13 @@ const RoomDividers = ({ roomCount, quality }) => {
           <meshStandardMaterial color="#171a12" roughness={0.95} />
         </mesh>
 
-        {/* A thin lime reveal around the opening: the one piece of brand
+        {/* A thin terracotta reveal around the opening: the one piece of brand
             colour in the architecture, and a strong depth cue. */}
         <mesh position={[0, CORRIDOR_HEIGHT - 1.42, 0.27]}>
           <boxGeometry args={[openingHalfWidth * 2, 0.025, 0.02]} />
           <meshStandardMaterial
-            color="#c5ff3d"
-            emissive="#c5ff3d"
+            color="#c46a4a"
+            emissive="#c46a4a"
             emissiveIntensity={1.6}
             toneMapped={false}
           />
@@ -130,10 +130,10 @@ const CorridorLighting = ({ length, quality }) => {
   return (
     <group>
       {/* A low ambient keeps the darkest corners from going pure black. */}
-      <ambientLight intensity={0.22} color="#aab79a" />
+      <ambientLight intensity={0.22} color="#b8aea3" />
 
       {/* A single soft fill from above and behind the visitor. */}
-      <directionalLight position={[2, CORRIDOR_HEIGHT, 4]} intensity={0.25} color="#dfe9cd" />
+      <directionalLight position={[2, CORRIDOR_HEIGHT, 4]} intensity={0.25} color="#f0e6da" />
 
       {washes.map((z, index) => (
         <group key={z} position={[0, CORRIDOR_HEIGHT - 0.12, z]}>
@@ -141,8 +141,8 @@ const CorridorLighting = ({ length, quality }) => {
           <mesh>
             <boxGeometry args={[2.6, 0.06, 0.14]} />
             <meshStandardMaterial
-              color="#e8f5c8"
-              emissive="#e8f5c8"
+              color="#f4efe6"
+              emissive="#f4efe6"
               emissiveIntensity={0.9}
               toneMapped={false}
             />
@@ -151,7 +151,7 @@ const CorridorLighting = ({ length, quality }) => {
           {/* Only every other fixture actually casts light on lower tiers,
               which halves the lighting cost without changing the look much. */}
           {(quality === 'high' || index % 2 === 0) && (
-            <pointLight position={[0, -0.4, 0]} intensity={2.6} distance={9} decay={2} color="#d8e6bd" />
+            <pointLight position={[0, -0.4, 0]} intensity={2.6} distance={9} decay={2} color="#efe2d2" />
           )}
         </group>
       ))}

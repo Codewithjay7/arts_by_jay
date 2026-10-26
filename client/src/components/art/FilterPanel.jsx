@@ -76,7 +76,7 @@ export const ActiveFilters = ({ filters, onRemove, onClear, categories, facets, 
           key={key}
           type="button"
           onClick={() => onRemove(key)}
-          className="group inline-flex items-center gap-1.5 rounded-full border border-charcoal-600 bg-charcoal-800 px-3 py-1 text-[0.75rem] text-parchment transition-colors hover:border-lime-300/50 hover:text-lime-300"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-charcoal-600 bg-charcoal-800 px-3 py-1 text-[0.75rem] text-parchment transition-colors hover:border-accent-300/50 hover:text-accent-300"
         >
           {describeFilter(key, filters[key], { categories, facets })}
           <X className="h-3 w-3 opacity-60 group-hover:opacity-100" aria-hidden="true" />
@@ -87,7 +87,7 @@ export const ActiveFilters = ({ filters, onRemove, onClear, categories, facets, 
       <button
         type="button"
         onClick={onClear}
-        className="text-[0.75rem] text-muted underline-offset-4 transition-colors hover:text-lime-300 hover:underline"
+        className="text-[0.75rem] text-muted underline-offset-4 transition-colors hover:text-accent-300 hover:underline"
       >
         Clear all
       </button>

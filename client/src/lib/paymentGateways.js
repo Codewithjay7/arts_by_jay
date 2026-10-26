@@ -58,7 +58,7 @@ const openRazorpay = async ({ config, payment, order, customer }) => {
       description: `Order ${order.orderNumber}`,
       order_id: payment.orderId,
       prefill: { name: customer?.name ?? '', email: customer?.email ?? '' },
-      theme: { color: '#c5ff3d', backdrop_color: '#0f110f' },
+      theme: { color: '#c46a4a', backdrop_color: '#121212' },
 
       // Razorpay hands back an HMAC over order_id|payment_id. The server
       // recomputes it with the key secret, so a forged value cannot pass.
@@ -111,9 +111,9 @@ export const mountStripeElement = async ({ config, payment, container }) => {
     appearance: {
       theme: 'night',
       variables: {
-        colorPrimary: '#c5ff3d',
-        colorBackground: '#141714',
-        colorText: '#f4f6f2',
+        colorPrimary: '#c46a4a',
+        colorBackground: '#1c1b1a',
+        colorText: '#f4efe6',
         colorDanger: '#f87171',
         fontFamily: 'Inter, system-ui, sans-serif',
         borderRadius: '12px',

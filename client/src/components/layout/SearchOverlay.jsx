@@ -153,7 +153,7 @@ export const SearchOverlay = () => {
                         navigate(link.to);
                         closeSearch();
                       }}
-                      className="rounded-full border border-charcoal-600 px-3.5 py-1.5 text-[0.8rem] text-parchment/90 transition-colors hover:border-lime-300/50 hover:text-lime-300"
+                      className="rounded-full border border-charcoal-600 px-3.5 py-1.5 text-[0.8rem] text-parchment/90 transition-colors hover:border-accent-300/50 hover:text-accent-300"
                     >
                       {link.label}
                     </button>
@@ -175,7 +175,7 @@ export const SearchOverlay = () => {
                     navigate('/shop');
                     closeSearch();
                   }}
-                  className="mt-4 text-[0.82rem] text-lime-300 underline-offset-4 hover:underline"
+                  className="mt-4 text-[0.82rem] text-accent-300 underline-offset-4 hover:underline"
                 >
                   Explore all artwork
                 </button>
@@ -213,7 +213,7 @@ export const SearchOverlay = () => {
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="font-mono text-[0.78rem] text-lime-300">
+                          <p className="font-mono text-[0.78rem] text-accent-300">
                             {formatMoney(artwork.priceMinor, artwork.currency)}
                           </p>
                           {artwork.isSoldOut && (
@@ -228,7 +228,7 @@ export const SearchOverlay = () => {
                 <button
                   type="button"
                   onClick={goToSearch}
-                  className="w-full border-t border-charcoal-700 px-4 py-3 text-[0.82rem] text-lime-300 transition-colors hover:bg-charcoal-800"
+                  className="w-full border-t border-charcoal-700 px-4 py-3 text-[0.82rem] text-accent-300 transition-colors hover:bg-charcoal-800"
                 >
                   See all results for “{debounced}”
                 </button>

@@ -422,8 +422,8 @@ export const CheckoutPage = () => {
                 <span
                   className={clsx(
                     'grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[0.78rem] transition-colors',
-                    done && 'border-lime-300 bg-lime-300 text-charcoal-950',
-                    current && 'border-lime-300 text-lime-300',
+                    done && 'border-accent-300 bg-accent-300 text-ink',
+                    current && 'border-accent-300 text-accent-300',
                     !done && !current && 'border-charcoal-600 text-muted',
                   )}
                 >
@@ -439,7 +439,7 @@ export const CheckoutPage = () => {
                 </span>
               </button>
               {index < STEPS.length - 1 && (
-                <span className={clsx('h-px flex-1', done ? 'bg-lime-300/50' : 'bg-charcoal-700')} aria-hidden="true" />
+                <span className={clsx('h-px flex-1', done ? 'bg-accent-300/50' : 'bg-charcoal-700')} aria-hidden="true" />
               )}
             </li>
           );
@@ -502,7 +502,7 @@ export const CheckoutPage = () => {
                         className={clsx(
                           'rounded-2xl border p-4 text-left text-[0.82rem] transition-colors',
                           selectedAddressId === saved.id
-                            ? 'border-lime-300 bg-lime-300/[0.06]'
+                            ? 'border-accent-300 bg-accent-300/[0.06]'
                             : 'border-charcoal-600 hover:border-charcoal-500',
                         )}
                       >
@@ -522,7 +522,7 @@ export const CheckoutPage = () => {
                       className={clsx(
                         'rounded-2xl border border-dashed p-4 text-left text-[0.82rem] transition-colors',
                         selectedAddressId === null
-                          ? 'border-lime-300 text-lime-300'
+                          ? 'border-accent-300 text-accent-300'
                           : 'border-charcoal-600 text-muted hover:border-charcoal-500',
                       )}
                     >
@@ -600,7 +600,7 @@ export const CheckoutPage = () => {
                     className={clsx(
                       'flex w-full items-start justify-between gap-4 rounded-2xl border p-5 text-left transition-colors',
                       shippingMethod === method.key
-                        ? 'border-lime-300 bg-lime-300/[0.06]'
+                        ? 'border-accent-300 bg-accent-300/[0.06]'
                         : 'border-charcoal-600 hover:border-charcoal-500',
                     )}
                   >
@@ -608,7 +608,7 @@ export const CheckoutPage = () => {
                       <p className="text-[0.92rem] text-parchment">{method.label}</p>
                       <p className="text-[0.8rem] leading-relaxed text-muted">{method.description}</p>
                     </div>
-                    <p className="shrink-0 font-mono text-[0.85rem] text-lime-300">
+                    <p className="shrink-0 font-mono text-[0.85rem] text-accent-300">
                       {method.upliftMinor > 0 ? `+${formatMoney(method.upliftMinor, totals?.currency)}` : 'Included'}
                     </p>
                   </button>
@@ -648,10 +648,10 @@ export const CheckoutPage = () => {
                   Your order will be created and marked clearly as a simulated payment.
                 </NoticeBanner>
               ) : (
-                <div className="flex items-start gap-3 rounded-xl border border-lime-300/25 bg-lime-300/[0.05] px-4 py-3">
-                  <Lock className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+                <div className="flex items-start gap-3 rounded-xl border border-accent-300/25 bg-accent-300/[0.05] px-4 py-3">
+                  <Lock className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
                   <p className="text-[0.82rem] leading-relaxed text-parchment/90">
-                    Payment is taken by <span className="text-lime-300">{payment.provider}</span> in their own
+                    Payment is taken by <span className="text-accent-300">{payment.provider}</span> in their own
                     secure window. Your card details never reach our server, and your order is confirmed only
                     after we verify the payment with the gateway.
                   </p>
@@ -763,7 +763,7 @@ export const CheckoutPage = () => {
               </div>
               <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-3">
                 <dt className="text-base text-parchment">Total</dt>
-                <dd className="font-mono text-2xl text-lime-300">
+                <dd className="font-mono text-2xl text-accent-300">
                   {formatMoney(totals?.totalMinor, totals?.currency)}
                 </dd>
               </div>

@@ -14,7 +14,7 @@ const AuthShell = ({ title, subtitle, children, footer }) => (
       <div className="w-full max-w-md space-y-7">
         <div className="space-y-2">
           <Link to="/" className="inline-block font-display text-2xl tracking-tight">
-            Arts by <span className="text-lime-300">Jay</span>
+            Arts by <span className="text-accent-300">Jay</span>
           </Link>
           <h1 className="pt-4 text-display-md">{title}</h1>
           {subtitle && <p className="lede">{subtitle}</p>}
@@ -36,11 +36,11 @@ const AuthShell = ({ title, subtitle, children, footer }) => (
           </blockquote>
           <ul className="space-y-3 text-[0.88rem] text-muted">
             <li className="flex items-start gap-3">
-              <ShoppingBag className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+              <ShoppingBag className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
               Buy originals, limited prints and digital work directly from the studio.
             </li>
             <li className="flex items-start gap-3">
-              <Palette className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+              <Palette className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
               Or open a storefront of your own and start selling.
             </li>
           </ul>
@@ -123,7 +123,7 @@ export const LoginPage = () => {
       footer={
         <p className="text-muted">
           No account yet?{' '}
-          <Link to="/register" className="text-lime-300 underline-offset-4 hover:underline">
+          <Link to="/register" className="text-accent-300 underline-offset-4 hover:underline">
             Create one
           </Link>
         </p>
@@ -217,7 +217,7 @@ export const RegisterPage = () => {
       footer={
         <p className="text-muted">
           Already have an account?{' '}
-          <Link to="/login" className="text-lime-300 underline-offset-4 hover:underline">
+          <Link to="/login" className="text-accent-300 underline-offset-4 hover:underline">
             Sign in
           </Link>
         </p>
@@ -341,11 +341,11 @@ const IntentCard = ({ selected, onClick, icon: Icon, title, description }) => (
     className={clsx(
       'rounded-2xl border p-4 text-left transition-all',
       selected
-        ? 'border-lime-300 bg-lime-300/[0.07]'
+        ? 'border-accent-300 bg-accent-300/[0.07]'
         : 'border-charcoal-600 hover:border-charcoal-500 hover:bg-charcoal-850',
     )}
   >
-    <Icon className={clsx('h-5 w-5', selected ? 'text-lime-300' : 'text-muted')} aria-hidden="true" />
+    <Icon className={clsx('h-5 w-5', selected ? 'text-accent-300' : 'text-muted')} aria-hidden="true" />
     <p className="mt-2.5 text-sm font-medium text-parchment">{title}</p>
     <p className="mt-0.5 text-[0.75rem] text-muted">{description}</p>
   </button>

@@ -38,7 +38,7 @@ export const CartDrawer = () => {
               </div>
               <div className="flex justify-between border-t border-charcoal-700 pt-2 text-base">
                 <dt className="text-parchment">Total</dt>
-                <dd className="font-mono text-lime-300">{formatMoney(totals.totalMinor, totals.currency)}</dd>
+                <dd className="font-mono text-accent-300">{formatMoney(totals.totalMinor, totals.currency)}</dd>
               </div>
             </dl>
 
@@ -135,7 +135,7 @@ export const CartDrawer = () => {
                     <Link
                       to={`/art/${artwork.slug}`}
                       onClick={closeCart}
-                      className="block truncate text-sm text-parchment transition-colors hover:text-lime-300"
+                      className="block truncate text-sm text-parchment transition-colors hover:text-accent-300"
                     >
                       {artwork.title}
                     </Link>

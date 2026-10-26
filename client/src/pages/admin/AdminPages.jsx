@@ -142,7 +142,7 @@ export const AdminOverviewPage = () => {
           <h2 id="recent-heading" className="eyebrow">
             Recent orders
           </h2>
-          <Link to="/admin/orders" className="text-[0.8rem] text-lime-300 underline-offset-4 hover:underline">
+          <Link to="/admin/orders" className="text-[0.8rem] text-accent-300 underline-offset-4 hover:underline">
             All orders
           </Link>
         </div>
@@ -157,14 +157,14 @@ export const AdminOverviewPage = () => {
               <li key={order.orderNumber} className="flex flex-wrap items-center gap-4 py-3.5">
                 <Link
                   to={`/admin/orders?q=${order.orderNumber}`}
-                  className="min-w-0 flex-1 font-mono text-[0.82rem] text-parchment transition-colors hover:text-lime-300"
+                  className="min-w-0 flex-1 font-mono text-[0.82rem] text-parchment transition-colors hover:text-accent-300"
                 >
                   {order.orderNumber}
                 </Link>
                 <span className="truncate text-[0.78rem] text-muted">{order.customerEmail}</span>
                 {order.isSimulatedPayment && <Badge tone="warning">Simulated</Badge>}
                 <Badge tone={statusTone(order.status)}>{statusLabel(order.status)}</Badge>
-                <span className="font-mono text-[0.84rem] text-lime-300">
+                <span className="font-mono text-[0.84rem] text-accent-300">
                   {formatMoney(order.totalMinor, order.currency)}
                 </span>
                 <span className="text-[0.74rem] text-muted">{formatRelative(order.createdAt)}</span>
@@ -183,14 +183,14 @@ const QueueCard = ({ label, count, to, icon: Icon }) => (
     className={clsx(
       'flex items-center gap-3.5 rounded-2xl border p-4 transition-colors',
       count > 0
-        ? 'border-lime-300/30 bg-lime-300/[0.05] hover:border-lime-300/60'
+        ? 'border-accent-300/30 bg-accent-300/[0.05] hover:border-accent-300/60'
         : 'border-charcoal-700 bg-charcoal-850/40 hover:border-charcoal-600',
     )}
   >
     <span
       className={clsx(
         'grid h-9 w-9 shrink-0 place-items-center rounded-full',
-        count > 0 ? 'bg-lime-300/15 text-lime-300' : 'bg-charcoal-800 text-muted',
+        count > 0 ? 'bg-accent-300/15 text-accent-300' : 'bg-charcoal-800 text-muted',
       )}
     >
       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -783,7 +783,7 @@ export const AdminModerationPage = () => {
                       size="sm"
                       onClick={() => moderate.mutate({ id: artwork.id, decision: 'feature' })}
                     >
-                      <Star className={clsx('h-3.5 w-3.5', artwork.isFeatured && 'fill-lime-300 text-lime-300')} aria-hidden="true" />
+                      <Star className={clsx('h-3.5 w-3.5', artwork.isFeatured && 'fill-accent-300 text-accent-300')} aria-hidden="true" />
                       {artwork.isFeatured ? 'Unfeature' : 'Feature'}
                     </Button>
 
@@ -971,7 +971,7 @@ export const AdminOrdersPage = () => {
                         {order.isSimulatedPayment && <Badge tone="warning">Simulated</Badge>}
                       </div>
                     </td>
-                    <td className="py-3.5 pr-4 font-mono text-lime-300">
+                    <td className="py-3.5 pr-4 font-mono text-accent-300">
                       {formatMoney(order.totalMinor, order.currency)}
                     </td>
                     <td className="py-3.5 pr-4 text-[0.78rem] text-muted">{formatDateTime(order.createdAt)}</td>
@@ -1349,7 +1349,7 @@ export const AdminReportsPage = () => {
               {data.byDay.map((row) => (
                 <div key={row.date} className="group relative flex-1">
                   <div
-                    className="w-full rounded-t bg-lime-300/70 transition-colors group-hover:bg-lime-300"
+                    className="w-full rounded-t bg-accent-300/70 transition-colors group-hover:bg-accent-300"
                     style={{ height: `${Math.max(2, (row.grossMinor / maxDay) * 100)}%` }}
                   />
                   <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg border border-charcoal-600 bg-charcoal-900 px-2.5 py-1.5 text-[0.72rem] group-hover:block">
@@ -1400,7 +1400,7 @@ export const AdminReportsPage = () => {
                   <tr key={row._id} className="border-b border-charcoal-700/60">
                     <td className="py-3 pr-4">
                       {row.slug ? (
-                        <Link to={`/artists/${row.slug}`} className="text-parchment transition-colors hover:text-lime-300">
+                        <Link to={`/artists/${row.slug}`} className="text-parchment transition-colors hover:text-accent-300">
                           {row.displayName}
                         </Link>
                       ) : (
@@ -1412,7 +1412,7 @@ export const AdminReportsPage = () => {
                     <td className="py-3 pr-4 font-mono text-muted">
                       {formatMoney(row.commissionMinor, data.currency)}
                     </td>
-                    <td className="py-3 font-mono text-lime-300">{formatMoney(row.earningsMinor, data.currency)}</td>
+                    <td className="py-3 font-mono text-accent-300">{formatMoney(row.earningsMinor, data.currency)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -1442,7 +1442,7 @@ export const AdminReportsPage = () => {
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-charcoal-800">
                     <div
-                      className="h-full rounded-full bg-lime-300/70"
+                      className="h-full rounded-full bg-accent-300/70"
                       style={{ width: `${(row.grossMinor / max) * 100}%` }}
                     />
                   </div>

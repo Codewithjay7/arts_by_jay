@@ -147,7 +147,7 @@ export const ShopPage = () => {
             <p className="lede max-w-2xl">
               Originals, limited prints and digital work from every artist on the platform. Filter by what
               matters to you, or walk the{' '}
-              <a href="/gallery" className="text-lime-300 underline-offset-4 hover:underline">
+              <a href="/gallery" className="text-accent-300 underline-offset-4 hover:underline">
                 virtual gallery
               </a>{' '}
               instead.
@@ -192,7 +192,7 @@ export const ShopPage = () => {
                 <button
                   type="button"
                   onClick={clearAll}
-                  className="text-[0.75rem] text-muted underline-offset-4 hover:text-lime-300 hover:underline"
+                  className="text-[0.75rem] text-muted underline-offset-4 hover:text-accent-300 hover:underline"
                 >
                   Clear all
                 </button>

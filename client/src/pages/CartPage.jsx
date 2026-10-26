@@ -104,7 +104,7 @@ export const CartPage = () => {
                     <div className="space-y-1.5">
                       <Link
                         to={`/art/${artwork.slug}`}
-                        className="block font-display text-xl transition-colors hover:text-lime-300"
+                        className="block font-display text-xl transition-colors hover:text-accent-300"
                       >
                         {artwork.title}
                       </Link>
@@ -206,14 +206,14 @@ export const CartPage = () => {
                 </dd>
               </div>
               {totals.discountMinor > 0 && (
-                <div className="flex justify-between text-lime-300">
+                <div className="flex justify-between text-accent-300">
                   <dt>Discount</dt>
                   <dd>−{formatMoney(totals.discountMinor, totals.currency)}</dd>
                 </div>
               )}
               <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-3">
                 <dt className="text-base text-parchment">Total</dt>
-                <dd className="font-mono text-2xl text-lime-300">
+                <dd className="font-mono text-2xl text-accent-300">
                   {formatMoney(totals.totalMinor, totals.currency)}
                 </dd>
               </div>

@@ -61,7 +61,7 @@ export const OrderConfirmationPage = () => {
         <header className="space-y-5 text-center">
           <span
             className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${
-              isPaid ? 'bg-lime-300 text-charcoal-950' : 'bg-charcoal-800 text-muted'
+              isPaid ? 'bg-accent-300 text-ink' : 'bg-charcoal-800 text-muted'
             }`}
           >
             {isPaid ? <Check className="h-7 w-7" aria-hidden="true" /> : <Package className="h-7 w-7" aria-hidden="true" />}
@@ -135,7 +135,7 @@ export const OrderConfirmationPage = () => {
               <div className="min-w-0 flex-1 space-y-1.5">
                 <Link
                   to={`/art/${item.slug}`}
-                  className="block font-display text-lg transition-colors hover:text-lime-300"
+                  className="block font-display text-lg transition-colors hover:text-accent-300"
                 >
                   {item.title}
                 </Link>
@@ -180,7 +180,7 @@ export const OrderConfirmationPage = () => {
             </div>
             <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-2.5">
               <dt className="text-base text-parchment">Total paid</dt>
-              <dd className="font-mono text-xl text-lime-300">{formatMoney(order.totalMinor, order.currency)}</dd>
+              <dd className="font-mono text-xl text-accent-300">{formatMoney(order.totalMinor, order.currency)}</dd>
             </div>
           </dl>
         </section>
@@ -210,7 +210,7 @@ export const OrderConfirmationPage = () => {
           </h2>
           <ol className="space-y-4 text-[0.86rem] leading-relaxed text-muted">
             <li className="flex gap-3">
-              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-lime-300 font-mono text-[0.7rem] text-charcoal-950">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-accent-300 font-mono text-[0.7rem] text-ink">
                 1
               </span>
               The studio has been notified and will prepare your piece.

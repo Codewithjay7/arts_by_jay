@@ -113,13 +113,13 @@ export const ArtworkDetailPage = () => {
     <div className="mx-auto max-w-[1500px] px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       {/* ── Breadcrumb ── */}
       <nav aria-label="Breadcrumb" className="mb-8 flex flex-wrap items-center gap-2 text-[0.78rem] text-muted">
-        <Link to="/shop" className="transition-colors hover:text-lime-300">
+        <Link to="/shop" className="transition-colors hover:text-accent-300">
           Explore
         </Link>
         {artwork.category && (
           <>
             <span aria-hidden="true">/</span>
-            <Link to={`/shop?category=${artwork.category.slug}`} className="transition-colors hover:text-lime-300">
+            <Link to={`/shop?category=${artwork.category.slug}`} className="transition-colors hover:text-accent-300">
               {artwork.category.name}
             </Link>
           </>
@@ -174,7 +174,7 @@ export const ArtworkDetailPage = () => {
                   onClick={() => setActiveImage(index)}
                   className={clsx(
                     'h-20 w-16 overflow-hidden rounded-sm border-2 transition-colors',
-                    index === activeImage ? 'border-lime-300' : 'border-transparent hover:border-charcoal-500',
+                    index === activeImage ? 'border-accent-300' : 'border-transparent hover:border-charcoal-500',
                   )}
                 >
                   <img
@@ -217,7 +217,7 @@ export const ArtworkDetailPage = () => {
                 )}
                 <span className="text-muted">
                   by{' '}
-                  <span className="text-parchment transition-colors group-hover:text-lime-300">
+                  <span className="text-parchment transition-colors group-hover:text-accent-300">
                     {artwork.artist.displayName}
                   </span>
                   {artwork.artist.location && (
@@ -232,7 +232,7 @@ export const ArtworkDetailPage = () => {
 
           {/* ── Price ── */}
           <div className="flex items-end gap-4">
-            <p className="font-mono text-4xl text-lime-300">
+            <p className="font-mono text-4xl text-accent-300">
               {artwork.type === 'commission' && <span className="text-xl text-muted">from </span>}
               {formatMoney(artwork.priceMinor, artwork.currency)}
             </p>
@@ -331,7 +331,7 @@ export const ArtworkDetailPage = () => {
               )}
 
               <Button variant="secondary" size="lg" onClick={onWishlist} className="sm:w-auto">
-                <Heart className={clsx('h-4 w-4', isWishlisted && 'fill-current text-lime-300')} aria-hidden="true" />
+                <Heart className={clsx('h-4 w-4', isWishlisted && 'fill-current text-accent-300')} aria-hidden="true" />
                 <span className="sm:hidden">{isWishlisted ? 'Saved' : 'Save'}</span>
                 <span className="sr-only sm:not-sr-only sm:sr-only">
                   {isWishlisted ? 'Saved to wishlist' : 'Save to wishlist'}
@@ -347,7 +347,7 @@ export const ArtworkDetailPage = () => {
 
           {/* ── The story ── */}
           {artwork.story && (
-            <blockquote className="border-l-2 border-lime-300/40 pl-4">
+            <blockquote className="border-l-2 border-accent-300/40 pl-4">
               <p className="font-display text-lg italic leading-relaxed text-parchment/90">
                 “{artwork.story}”
               </p>
@@ -389,27 +389,27 @@ export const ArtworkDetailPage = () => {
             <ul className="space-y-2.5 text-[0.84rem] text-muted">
               {artwork.shipping?.isDigitalDelivery ? (
                 <li className="flex items-start gap-2.5">
-                  <Package className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+                  <Package className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
                   Delivered as a download once your payment is confirmed.
                 </li>
               ) : (
                 <>
                   <li className="flex items-start gap-2.5">
-                    <Truck className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+                    <Truck className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
                     {artwork.shipping?.flatRateMinor > 0
                       ? `Shipping ${formatMoney(artwork.shipping.flatRateMinor, artwork.currency)}`
                       : 'Free shipping'}
                     {artwork.shipping?.shipsFrom ? ` · ships from ${artwork.shipping.shipsFrom}` : ''}
                   </li>
                   <li className="flex items-start gap-2.5">
-                    <Package className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+                    <Package className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
                     The studio prepares this in about {artwork.shipping?.processingDays ?? 3} working days,
                     then dispatches by insured courier.
                   </li>
                 </>
               )}
               <li className="flex items-start gap-2.5">
-                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
                 Payment is taken securely by the gateway and verified on our server before any order is
                 confirmed.
               </li>

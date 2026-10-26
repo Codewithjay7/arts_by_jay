@@ -54,7 +54,7 @@ export const Footer = () => {
           {/* ── Identity ── */}
           <div className="space-y-4">
             <Link to="/" className="inline-block font-display text-2xl tracking-tight">
-              Arts by <span className="text-lime-300">Jay</span>
+              Arts by <span className="text-accent-300">Jay</span>
             </Link>
             <p className="max-w-sm text-[0.86rem] leading-relaxed text-muted">
               An art marketplace and immersive virtual gallery. Original paintings, limited prints and
@@ -66,14 +66,14 @@ export const Footer = () => {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-lime-300/50 hover:text-lime-300"
+                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                 aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
                 href="mailto:studio@artsbyjay.example"
-                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-lime-300/50 hover:text-lime-300"
+                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                 aria-label="Email the studio"
               >
                 <Mail className="h-4 w-4" aria-hidden="true" />
@@ -82,7 +82,7 @@ export const Footer = () => {
                 href="https://artsbyjay.example"
                 target="_blank"
                 rel="noreferrer noopener"
-                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-lime-300/50 hover:text-lime-300"
+                className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                 aria-label="Website"
               >
                 <Globe className="h-4 w-4" aria-hidden="true" />
@@ -99,7 +99,7 @@ export const Footer = () => {
                   <li key={link.to}>
                     <Link
                       to={link.to}
-                      className="text-[0.86rem] text-muted transition-colors hover:text-lime-300"
+                      className="text-[0.86rem] text-muted transition-colors hover:text-accent-300"
                     >
                       {link.label}
                     </Link>
@@ -121,7 +121,7 @@ export const Footer = () => {
                     capabilities.payment.enabled
                       ? capabilities.payment.isSimulated
                         ? 'bg-amber-400'
-                        : 'bg-lime-300'
+                        : 'bg-accent-300'
                       : 'bg-charcoal-500'
                   }`}
                   aria-hidden="true"

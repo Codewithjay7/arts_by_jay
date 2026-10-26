@@ -8,14 +8,14 @@ import { AlertCircle, Check, Info, Loader2, Star, X } from 'lucide-react';
 
 const BUTTON_VARIANTS = {
   primary:
-    'bg-lime-300 text-charcoal-950 hover:bg-lime-200 active:bg-lime-400 shadow-glow disabled:bg-charcoal-700 disabled:text-muted disabled:shadow-none',
+    'bg-accent-300 text-ink hover:bg-accent-200 active:bg-accent-400 shadow-glow disabled:bg-charcoal-700 disabled:text-muted disabled:shadow-none',
   secondary:
     'bg-charcoal-750 text-parchment hover:bg-charcoal-700 border border-charcoal-600 disabled:text-muted',
   outline:
-    'border border-lime-300/50 text-lime-300 hover:border-lime-300 hover:bg-lime-300/10 disabled:border-charcoal-700 disabled:text-muted',
+    'border border-accent-300/50 text-accent-300 hover:border-accent-300 hover:bg-accent-300/10 disabled:border-charcoal-700 disabled:text-muted',
   ghost: 'text-parchment hover:bg-charcoal-800 disabled:text-muted',
   danger: 'bg-red-500/90 text-white hover:bg-red-500 disabled:bg-charcoal-700 disabled:text-muted',
-  link: 'text-lime-300 underline-offset-4 hover:underline p-0',
+  link: 'text-accent-300 underline-offset-4 hover:underline p-0',
 };
 
 const BUTTON_SIZES = {
@@ -85,7 +85,7 @@ export const Field = ({ label, hint, error, required, children, className, htmlF
       <label htmlFor={htmlFor} className="block text-[0.8rem] font-medium text-parchment">
         {label}
         {required && (
-          <span className="ml-1 text-lime-300" aria-hidden="true">
+          <span className="ml-1 text-accent-300" aria-hidden="true">
             *
           </span>
         )}
@@ -107,7 +107,7 @@ const inputClasses = (error) =>
   clsx(
     'w-full rounded-xl border bg-charcoal-900/80 px-3.5 py-2.5 text-sm text-parchment',
     'placeholder:text-muted/60 transition-colors',
-    'focus:border-lime-300/60 focus:outline-none focus:ring-1 focus:ring-lime-300/40',
+    'focus:border-accent-300/60 focus:outline-none focus:ring-1 focus:ring-accent-300/40',
     'disabled:cursor-not-allowed disabled:opacity-60',
     error ? 'border-red-500/60' : 'border-charcoal-600',
   );
@@ -163,7 +163,7 @@ export const Checkbox = ({ label, description, className, id, ...props }) => {
       <input
         id={inputId}
         type="checkbox"
-        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-charcoal-600 bg-charcoal-900 text-lime-300 accent-lime-300"
+        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-charcoal-600 bg-charcoal-900 text-accent-300 accent-accent-300"
         {...props}
       />
       <div className="space-y-0.5">
@@ -180,11 +180,11 @@ export const Checkbox = ({ label, description, className, id, ...props }) => {
 
 const BADGE_TONES = {
   neutral: 'bg-charcoal-750 text-muted border-charcoal-600',
-  positive: 'bg-lime-300/12 text-lime-300 border-lime-300/30',
+  positive: 'bg-accent-300/12 text-accent-300 border-accent-300/30',
   info: 'bg-sky-400/12 text-sky-300 border-sky-400/30',
   negative: 'bg-red-500/12 text-red-300 border-red-500/30',
   warning: 'bg-amber-400/12 text-amber-300 border-amber-400/30',
-  accent: 'bg-lime-300 text-charcoal-950 border-lime-300',
+  accent: 'bg-accent-300 text-ink border-accent-300',
 };
 
 export const Badge = ({ tone = 'neutral', className, children, ...props }) => (
@@ -205,7 +205,7 @@ export const Badge = ({ tone = 'neutral', className, children, ...props }) => (
 
 export const Spinner = ({ className, label = 'Loading' }) => (
   <span role="status" aria-label={label} className={clsx('inline-flex', className)}>
-    <Loader2 className="h-5 w-5 animate-spin text-lime-300" aria-hidden="true" />
+    <Loader2 className="h-5 w-5 animate-spin text-accent-300" aria-hidden="true" />
   </span>
 );
 
@@ -476,7 +476,7 @@ export const ToastStack = ({ toasts, onDismiss }) => {
             className={clsx(
               'pointer-events-auto flex items-start gap-3 rounded-2xl border px-4 py-3 shadow-frame backdrop-blur',
               'animate-fade-up',
-              toast.tone === 'positive' && 'border-lime-300/30 bg-charcoal-850/95',
+              toast.tone === 'positive' && 'border-accent-300/30 bg-charcoal-850/95',
               toast.tone === 'negative' && 'border-red-500/35 bg-charcoal-850/95',
               (toast.tone === 'info' || toast.tone === 'neutral') && 'border-charcoal-600 bg-charcoal-850/95',
             )}
@@ -484,7 +484,7 @@ export const ToastStack = ({ toasts, onDismiss }) => {
             <Icon
               className={clsx(
                 'mt-0.5 h-4 w-4 shrink-0',
-                toast.tone === 'positive' && 'text-lime-300',
+                toast.tone === 'positive' && 'text-accent-300',
                 toast.tone === 'negative' && 'text-red-400',
                 (toast.tone === 'info' || toast.tone === 'neutral') && 'text-muted',
               )}
@@ -547,7 +547,7 @@ export const Pagination = ({ page, totalPages, onChange, className }) => {
               className={clsx(
                 'h-9 min-w-9 rounded-full px-2.5 text-sm transition-colors',
                 entry === page
-                  ? 'bg-lime-300 font-medium text-charcoal-950'
+                  ? 'bg-accent-300 font-medium text-ink'
                   : 'text-muted hover:bg-charcoal-800 hover:text-parchment',
               )}
             >
@@ -575,7 +575,7 @@ export const Stars = ({ value = 0, count, size = 'sm', className }) => {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={clsx(dimension, star <= Math.round(value) ? 'fill-lime-300 text-lime-300' : 'text-charcoal-600')}
+            className={clsx(dimension, star <= Math.round(value) ? 'fill-accent-300 text-accent-300' : 'text-charcoal-600')}
             aria-hidden="true"
           />
         ))}
@@ -598,7 +598,7 @@ export const RatingInput = ({ value, onChange, className }) => (
         className="rounded p-0.5 transition-transform hover:scale-110"
       >
         <Star
-          className={clsx('h-6 w-6', star <= value ? 'fill-lime-300 text-lime-300' : 'text-charcoal-600')}
+          className={clsx('h-6 w-6', star <= value ? 'fill-accent-300 text-accent-300' : 'text-charcoal-600')}
           aria-hidden="true"
         />
       </button>
@@ -614,7 +614,7 @@ export const StatCard = ({ label, value, sublabel, tone = 'neutral', className }
     <p
       className={clsx(
         'mt-2 font-display text-3xl leading-none',
-        tone === 'accent' ? 'text-lime-300' : 'text-parchment',
+        tone === 'accent' ? 'text-accent-300' : 'text-parchment',
       )}
     >
       {value}

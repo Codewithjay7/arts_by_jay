@@ -130,7 +130,7 @@ const Wall = ({ label, pieces, onSelect, align }) => (
           </button>
 
           {/* A gallery wall label */}
-          <div className="mt-3.5 flex items-start justify-between gap-4 border-l-2 border-lime-300/30 pl-3">
+          <div className="mt-3.5 flex items-start justify-between gap-4 border-l-2 border-accent-300/30 pl-3">
             <div className="min-w-0 space-y-0.5">
               <h3 className="truncate font-display text-lg leading-snug">{artwork.title}</h3>
               <p className="truncate text-[0.8rem] text-muted">{artwork.artist?.displayName}</p>
@@ -139,7 +139,7 @@ const Wall = ({ label, pieces, onSelect, align }) => (
               </p>
             </div>
             <div className="shrink-0 space-y-1 text-right">
-              <p className="font-mono text-[0.82rem] text-lime-300">
+              <p className="font-mono text-[0.82rem] text-accent-300">
                 {formatMoney(artwork.priceMinor, artwork.currency)}
               </p>
               {artwork.type === 'original' && !artwork.isSoldOut && <Badge tone="neutral">1 of 1</Badge>}
@@ -148,7 +148,7 @@ const Wall = ({ label, pieces, onSelect, align }) => (
 
           <Link
             to={`/art/${artwork.slug}`}
-            className="mt-2 inline-block text-[0.78rem] text-muted underline-offset-4 transition-colors hover:text-lime-300 hover:underline"
+            className="mt-2 inline-block text-[0.78rem] text-muted underline-offset-4 transition-colors hover:text-accent-300 hover:underline"
           >
             Open the full listing
           </Link>

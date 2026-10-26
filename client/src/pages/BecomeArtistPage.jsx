@@ -108,7 +108,7 @@ export const BecomeArtistPage = () => {
               <h1 className="text-display-xl">
                 Sell your work
                 <br />
-                <span className="text-lime-300">on these walls.</span>
+                <span className="text-accent-300">on these walls.</span>
               </h1>
             </Reveal>
             <Reveal delay={160}>
@@ -175,7 +175,7 @@ export const BecomeArtistPage = () => {
               return (
                 <Reveal key={benefit.title} delay={index * 70}>
                   <div className="panel h-full space-y-3.5 p-6">
-                    <span className="grid h-10 w-10 place-items-center rounded-full bg-lime-300/12 text-lime-300">
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300/12 text-accent-300">
                       <Icon className="h-4.5 w-4.5" aria-hidden="true" />
                     </span>
                     <h3 className="font-display text-xl">{benefit.title}</h3>
@@ -195,7 +195,7 @@ export const BecomeArtistPage = () => {
             {STEPS.map((step, index) => (
               <Reveal key={step} delay={index * 60}>
                 <li className="flex gap-5 rounded-2xl border border-charcoal-700 bg-charcoal-850/40 p-5">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-lime-300 font-mono text-[0.8rem] text-charcoal-950">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-300 font-mono text-[0.8rem] text-ink">
                     {index + 1}
                   </span>
                   <p className="pt-1.5 text-[0.92rem] leading-relaxed text-parchment/90">{step}</p>
@@ -215,9 +215,9 @@ export const BecomeArtistPage = () => {
             />
 
             {alreadyArtist ? (
-              <div className="space-y-5 rounded-2xl border border-lime-300/25 bg-lime-300/[0.05] p-6">
+              <div className="space-y-5 rounded-2xl border border-accent-300/25 bg-accent-300/[0.05] p-6">
                 <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-full bg-lime-300 text-charcoal-950">
+                  <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300 text-ink">
                     <Check className="h-5 w-5" aria-hidden="true" />
                   </span>
                   <div>
@@ -333,7 +333,7 @@ export const BecomeArtistPage = () => {
                 </div>
                 <p className="text-[0.78rem] text-muted">
                   Already collecting here?{' '}
-                  <Link to="/login" className="text-lime-300 underline-offset-4 hover:underline">
+                  <Link to="/login" className="text-accent-300 underline-offset-4 hover:underline">
                     Sign in
                   </Link>{' '}
                   and apply with the account you have.

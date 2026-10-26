@@ -314,7 +314,7 @@ export const OrdersPage = () => {
               <li key={order.id}>
                 <Link
                   to={`/account/orders/${order.orderNumber}`}
-                  className="flex flex-wrap items-center gap-5 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-5 transition-colors hover:border-lime-300/40"
+                  className="flex flex-wrap items-center gap-5 rounded-2xl border border-charcoal-700 bg-charcoal-850/50 p-5 transition-colors hover:border-accent-300/40"
                 >
                   <div className="flex shrink-0 gap-1.5">
                     {order.thumbnails.slice(0, 3).map((url, index) => (
@@ -341,7 +341,7 @@ export const OrdersPage = () => {
                     </div>
                   </div>
 
-                  <p className="shrink-0 font-mono text-lg text-lime-300">
+                  <p className="shrink-0 font-mono text-lg text-accent-300">
                     {formatMoney(order.totalMinor, order.currency)}
                   </p>
                 </Link>
@@ -421,7 +421,7 @@ export const OrderDetailPage = () => {
   return (
     <div className="space-y-9">
       <div className="space-y-3">
-        <Link to="/account/orders" className="text-[0.8rem] text-muted transition-colors hover:text-lime-300">
+        <Link to="/account/orders" className="text-[0.8rem] text-muted transition-colors hover:text-accent-300">
           ← All orders
         </Link>
         <div className="flex flex-wrap items-end justify-between gap-4">
@@ -466,7 +466,7 @@ export const OrderDetailPage = () => {
               </div>
 
               <div className="min-w-0 flex-1 space-y-2">
-                <Link to={`/art/${item.slug}`} className="block font-display text-lg transition-colors hover:text-lime-300">
+                <Link to={`/art/${item.slug}`} className="block font-display text-lg transition-colors hover:text-accent-300">
                   {item.title}
                 </Link>
                 <p className="text-[0.8rem] text-muted">
@@ -522,7 +522,7 @@ export const OrderDetailPage = () => {
             </div>
             <div className="flex items-baseline justify-between border-t border-charcoal-700 pt-2.5">
               <dt className="text-base text-parchment">Total</dt>
-              <dd className="font-mono text-xl text-lime-300">{formatMoney(order.totalMinor, order.currency)}</dd>
+              <dd className="font-mono text-xl text-accent-300">{formatMoney(order.totalMinor, order.currency)}</dd>
             </div>
             {order.paidAt && (
               <p className="pt-1 text-[0.76rem] text-muted">Payment verified {formatDateTime(order.paidAt)}</p>
@@ -564,7 +564,7 @@ export const OrderDetailPage = () => {
             {[...order.history].reverse().map((entry, index) => (
               <li key={index} className="relative">
                 <span
-                  className="absolute -left-[1.4rem] top-1.5 h-2 w-2 rounded-full bg-lime-300"
+                  className="absolute -left-[1.4rem] top-1.5 h-2 w-2 rounded-full bg-accent-300"
                   aria-hidden="true"
                 />
                 <p className="text-[0.86rem] text-parchment">{statusLabel(entry.status)}</p>
@@ -1030,9 +1030,9 @@ export const MyCommissionsPage = () => {
               <p className="whitespace-pre-line text-[0.86rem] leading-relaxed text-muted">{request.message}</p>
 
               {request.quotedAmountMinor != null && (
-                <div className="rounded-xl border border-lime-300/25 bg-lime-300/[0.05] p-4">
+                <div className="rounded-xl border border-accent-300/25 bg-accent-300/[0.05] p-4">
                   <p className="eyebrow mb-1">Quoted</p>
-                  <p className="font-mono text-xl text-lime-300">{formatMoney(request.quotedAmountMinor)}</p>
+                  <p className="font-mono text-xl text-accent-300">{formatMoney(request.quotedAmountMinor)}</p>
                   {request.quoteNote && (
                     <p className="mt-2 text-[0.82rem] leading-relaxed text-muted">{request.quoteNote}</p>
                   )}
@@ -1149,7 +1149,7 @@ export const MyReviewsPage = () => {
                 {review.artwork && (
                   <Link
                     to={`/art/${review.artwork.slug}`}
-                    className="block font-display text-lg transition-colors hover:text-lime-300"
+                    className="block font-display text-lg transition-colors hover:text-accent-300"
                   >
                     {review.artwork.title}
                   </Link>
@@ -1238,13 +1238,13 @@ export const NotificationsPage = () => {
                     'flex items-start gap-3.5 rounded-2xl border p-4 transition-colors',
                     notification.readAt
                       ? 'border-charcoal-700 bg-charcoal-850/40'
-                      : 'border-lime-300/25 bg-lime-300/[0.04]',
+                      : 'border-accent-300/25 bg-accent-300/[0.04]',
                   )}
                 >
                   <span
                     className={clsx(
                       'mt-1.5 h-2 w-2 shrink-0 rounded-full',
-                      notification.readAt ? 'bg-charcoal-600' : 'bg-lime-300',
+                      notification.readAt ? 'bg-charcoal-600' : 'bg-accent-300',
                     )}
                     aria-hidden="true"
                   />

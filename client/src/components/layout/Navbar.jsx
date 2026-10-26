@@ -88,16 +88,16 @@ export const Navbar = () => {
   const linkClass = ({ isActive }) =>
     clsx(
       'relative px-1 py-2 text-[0.84rem] tracking-wide transition-colors',
-      'after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-lime-300 after:transition-transform after:duration-300',
+      'after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-accent-300 after:transition-transform after:duration-300',
       'hover:after:scale-x-100',
-      isActive ? 'text-lime-300 after:scale-x-100' : 'text-parchment/85 hover:text-parchment',
+      isActive ? 'text-accent-300 after:scale-x-100' : 'text-parchment/85 hover:text-parchment',
     );
 
   return (
     <>
       <a
         href="#main"
-        className="sr-only-focusable fixed left-4 top-4 z-[70] rounded-full bg-lime-300 px-4 py-2 text-sm font-medium text-charcoal-950"
+        className="sr-only-focusable fixed left-4 top-4 z-[70] rounded-full bg-accent-300 px-4 py-2 text-sm font-medium text-ink"
       >
         Skip to content
       </a>
@@ -116,7 +116,7 @@ export const Navbar = () => {
           {/* ── Wordmark ── */}
           <Link to="/" className="group flex shrink-0 items-baseline gap-2" aria-label="Arts by Jay, home">
             <span className="font-display text-xl tracking-tight text-parchment sm:text-2xl">
-              Arts by <span className="text-lime-300">Jay</span>
+              Arts by <span className="text-accent-300">Jay</span>
             </span>
           </Link>
 
@@ -141,7 +141,7 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={openSearch}
-              className="grid h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-lime-300"
+              className="grid h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300"
               aria-label="Search artwork"
             >
               <Search className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
@@ -150,12 +150,12 @@ export const Navbar = () => {
             {user && (
               <Link
                 to="/account/wishlist"
-                className="relative hidden h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-lime-300 sm:grid"
+                className="relative hidden h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300 sm:grid"
                 aria-label={`Wishlist, ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`}
               >
                 <Heart className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
                 {wishlistCount > 0 && (
-                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-lime-300 px-1 font-mono text-[0.6rem] font-semibold text-charcoal-950">
+                  <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent-300 px-1 font-mono text-[0.6rem] font-semibold text-ink">
                     {wishlistCount > 9 ? '9+' : wishlistCount}
                   </span>
                 )}
@@ -165,12 +165,12 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={openCart}
-              className="relative grid h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-lime-300"
+              className="relative grid h-10 w-10 place-items-center rounded-full text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300"
               aria-label={`Shopping cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
             >
               <ShoppingBag className="h-[1.1rem] w-[1.1rem]" aria-hidden="true" />
               {cartCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-lime-300 px-1 font-mono text-[0.6rem] font-semibold text-charcoal-950">
+                <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-accent-300 px-1 font-mono text-[0.6rem] font-semibold text-ink">
                   {cartCount > 9 ? '9+' : cartCount}
                 </span>
               )}
@@ -186,7 +186,7 @@ export const Navbar = () => {
                   aria-haspopup="menu"
                   className="flex items-center gap-2 rounded-full border border-charcoal-600 bg-charcoal-850/70 py-1 pl-1 pr-3 transition-colors hover:border-charcoal-500"
                 >
-                  <span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-lime-300 font-medium text-charcoal-950">
+                  <span className="grid h-7 w-7 place-items-center overflow-hidden rounded-full bg-accent-300 font-medium text-ink">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
                     ) : (
@@ -337,7 +337,7 @@ const MenuItem = ({ to, icon: Icon, label }) => (
   <Link
     to={to}
     role="menuitem"
-    className="flex items-center gap-2.5 px-4 py-2 text-[0.84rem] text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-lime-300"
+    className="flex items-center gap-2.5 px-4 py-2 text-[0.84rem] text-parchment/85 transition-colors hover:bg-charcoal-800 hover:text-accent-300"
   >
     <Icon className="h-4 w-4" aria-hidden="true" />
     {label}
@@ -350,7 +350,7 @@ const MobileLink = ({ to, label, icon: Icon }) => (
     className={({ isActive }) =>
       clsx(
         'flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-[0.95rem] transition-colors',
-        isActive ? 'bg-charcoal-850 text-lime-300' : 'text-parchment/90 hover:bg-charcoal-850',
+        isActive ? 'bg-charcoal-850 text-accent-300' : 'text-parchment/90 hover:bg-charcoal-850',
       )
     }
   >

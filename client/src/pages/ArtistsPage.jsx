@@ -130,7 +130,7 @@ export const ArtistsPage = () => {
 const ArtistCard = ({ artist }) => (
   <Link
     to={`/artists/${artist.slug}`}
-    className="group block overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850/60 transition-colors hover:border-lime-300/40"
+    className="group block overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850/60 transition-colors hover:border-accent-300/40"
   >
     {/* Three works, so the card is led by art rather than a biography. */}
     <div className="grid grid-cols-3 gap-0.5 bg-charcoal-900">
@@ -167,7 +167,7 @@ const ArtistCard = ({ artist }) => (
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-display text-xl transition-colors group-hover:text-lime-300">
+          <h2 className="truncate font-display text-xl transition-colors group-hover:text-accent-300">
             {artist.displayName}
           </h2>
           {artist.location && (
@@ -184,7 +184,7 @@ const ArtistCard = ({ artist }) => (
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 font-mono text-[0.68rem] uppercase tracking-wider text-muted">
         <span>{pluralise(artist.publishedArtworks, 'work')}</span>
-        {artist.acceptsCommissions && <span className="text-lime-300">Commissions open</span>}
+        {artist.acceptsCommissions && <span className="text-accent-300">Commissions open</span>}
       </div>
     </div>
   </Link>
@@ -299,7 +299,7 @@ export const ArtistStorefrontPage = () => {
           {/* ── Biography rail ── */}
           <aside className="space-y-7">
             {artist.statement && (
-              <blockquote className="border-l-2 border-lime-300/40 pl-4">
+              <blockquote className="border-l-2 border-accent-300/40 pl-4">
                 <p className="font-display text-lg italic leading-relaxed text-parchment/90">
                   “{artist.statement}”
                 </p>
@@ -348,7 +348,7 @@ export const ArtistStorefrontPage = () => {
                       href={artist.links.website}
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-lime-300/50 hover:text-lime-300"
+                      className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                       aria-label={`${artist.displayName} website`}
                     >
                       <Globe className="h-4 w-4" aria-hidden="true" />
@@ -363,7 +363,7 @@ export const ArtistStorefrontPage = () => {
                       }
                       target="_blank"
                       rel="noreferrer noopener"
-                      className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-lime-300/50 hover:text-lime-300"
+                      className="grid h-9 w-9 place-items-center rounded-full border border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
                       aria-label={`${artist.displayName} on Instagram`}
                     >
                       <Instagram className="h-4 w-4" aria-hidden="true" />
@@ -374,7 +374,7 @@ export const ArtistStorefrontPage = () => {
             )}
 
             {artist.commissionNote && (
-              <div className="space-y-2 rounded-2xl border border-lime-300/20 bg-lime-300/[0.04] p-4">
+              <div className="space-y-2 rounded-2xl border border-accent-300/20 bg-accent-300/[0.04] p-4">
                 <h2 className="eyebrow">On commissions</h2>
                 <p className="text-[0.82rem] leading-relaxed text-muted">{artist.commissionNote}</p>
               </div>

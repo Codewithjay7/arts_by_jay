@@ -152,7 +152,7 @@ export const ArtistOverviewPage = () => {
           <h2 id="listings-heading" className="eyebrow">
             Your listings
           </h2>
-          <Link to="/artist/artworks" className="text-[0.8rem] text-lime-300 underline-offset-4 hover:underline">
+          <Link to="/artist/artworks" className="text-[0.8rem] text-accent-300 underline-offset-4 hover:underline">
             Manage all
           </Link>
         </div>
@@ -169,7 +169,7 @@ export const ArtistOverviewPage = () => {
             <Link
               key={key}
               to={`/artist/artworks?status=${key}`}
-              className="rounded-xl border border-charcoal-700 bg-charcoal-850/50 px-4 py-3 transition-colors hover:border-lime-300/40"
+              className="rounded-xl border border-charcoal-700 bg-charcoal-850/50 px-4 py-3 transition-colors hover:border-accent-300/40"
             >
               <p className="font-display text-2xl">{artworks[key] ?? 0}</p>
               <p className="font-mono text-[0.68rem] uppercase tracking-wider text-muted">{label}</p>
@@ -184,7 +184,7 @@ export const ArtistOverviewPage = () => {
           <h2 id="recent-heading" className="eyebrow">
             Recent orders
           </h2>
-          <Link to="/artist/orders" className="text-[0.8rem] text-lime-300 underline-offset-4 hover:underline">
+          <Link to="/artist/orders" className="text-[0.8rem] text-accent-300 underline-offset-4 hover:underline">
             All orders
           </Link>
         </div>
@@ -205,7 +205,7 @@ export const ArtistOverviewPage = () => {
                 <div className="flex items-center gap-3">
                   {order.isSimulatedPayment && <Badge tone="warning">Simulated</Badge>}
                   <Badge tone={statusTone(order.status)}>{statusLabel(order.status)}</Badge>
-                  <p className="font-mono text-[0.86rem] text-lime-300">
+                  <p className="font-mono text-[0.86rem] text-accent-300">
                     {formatMoney(order.myEarningsMinor)}
                   </p>
                 </div>
@@ -221,13 +221,13 @@ export const ArtistOverviewPage = () => {
 const ActionCard = ({ icon: Icon, title, to }) => (
   <Link
     to={to}
-    className="flex items-center gap-3.5 rounded-2xl border border-lime-300/25 bg-lime-300/[0.05] p-4 transition-colors hover:border-lime-300/50"
+    className="flex items-center gap-3.5 rounded-2xl border border-accent-300/25 bg-accent-300/[0.05] p-4 transition-colors hover:border-accent-300/50"
   >
-    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-lime-300/15 text-lime-300">
+    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-accent-300/15 text-accent-300">
       <Icon className="h-4 w-4" aria-hidden="true" />
     </span>
     <span className="flex-1 text-[0.88rem] text-parchment">{title}</span>
-    <ArrowRight className="h-4 w-4 shrink-0 text-lime-300" aria-hidden="true" />
+    <ArrowRight className="h-4 w-4 shrink-0 text-accent-300" aria-hidden="true" />
   </Link>
 );
 
@@ -379,7 +379,7 @@ export const ArtistArtworksPage = () => {
                 </div>
 
                 <div className="shrink-0 space-y-1 text-right">
-                  <p className="font-mono text-[0.9rem] text-lime-300">
+                  <p className="font-mono text-[0.9rem] text-accent-300">
                     {formatMoney(artwork.priceMinor, artwork.currency)}
                   </p>
                   <p className="font-mono text-[0.7rem] text-muted">
@@ -728,7 +728,7 @@ export const ArtworkFormPage = () => {
                 className="h-full w-full object-cover"
               />
               {index === 0 && (
-                <span className="absolute left-1.5 top-1.5 rounded-full bg-lime-300 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-charcoal-950">
+                <span className="absolute left-1.5 top-1.5 rounded-full bg-accent-300 px-2 py-0.5 font-mono text-[0.6rem] uppercase tracking-wider text-ink">
                   Main
                 </span>
               )}
@@ -746,7 +746,7 @@ export const ArtworkFormPage = () => {
           {images.length < 8 && (
             <label
               htmlFor="artwork-images"
-              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-charcoal-600 text-muted transition-colors hover:border-lime-300/50 hover:text-lime-300"
+              className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-charcoal-600 text-muted transition-colors hover:border-accent-300/50 hover:text-accent-300"
             >
               <Upload className="h-5 w-5" aria-hidden="true" />
               <span className="text-[0.72rem]">{uploading ? 'Uploading…' : 'Add images'}</span>
@@ -1190,7 +1190,7 @@ export const ArtistOrdersPage = () => {
                   <div className="flex flex-wrap items-center gap-2">
                     {order.isSimulatedPayment && <Badge tone="warning">Simulated payment</Badge>}
                     <Badge tone={statusTone(order.status)}>{statusLabel(order.status)}</Badge>
-                    <p className="font-mono text-[0.88rem] text-lime-300">
+                    <p className="font-mono text-[0.88rem] text-accent-300">
                       {formatMoney(order.myEarningsMinor, order.currency)}
                     </p>
                   </div>
@@ -1556,7 +1556,7 @@ export const ArtistEnquiriesPage = () => {
                   {request.quotedAmountMinor != null && (
                     <div>
                       <dt className="eyebrow">You quoted</dt>
-                      <dd className="mt-0.5 text-lime-300">{formatMoney(request.quotedAmountMinor)}</dd>
+                      <dd className="mt-0.5 text-accent-300">{formatMoney(request.quotedAmountMinor)}</dd>
                     </div>
                   )}
                 </dl>

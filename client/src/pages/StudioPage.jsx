@@ -162,7 +162,7 @@ export const StudioPage = () => {
       // Re-create the overlay wash the CSS preview applies.
       if (style?.overlay) {
         const gradient = context.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, 'rgba(197,255,61,0.14)');
+        gradient.addColorStop(0, 'rgba(196,106,74,0.16)');
         gradient.addColorStop(1, 'rgba(0,0,0,0.12)');
         context.globalCompositeOperation = 'overlay';
         context.fillStyle = gradient;
@@ -279,7 +279,7 @@ export const StudioPage = () => {
                 event.preventDefault();
                 onPickFile(event.dataTransfer.files?.[0]);
               }}
-              className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-charcoal-600 px-6 py-20 text-center transition-colors hover:border-lime-300/40"
+              className="flex flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-charcoal-600 px-6 py-20 text-center transition-colors hover:border-accent-300/40"
             >
               <span className="grid h-14 w-14 place-items-center rounded-full bg-charcoal-800 text-muted">
                 <ImageIcon className="h-6 w-6" aria-hidden="true" />
@@ -363,7 +363,7 @@ export const StudioPage = () => {
                   className={clsx(
                     'group overflow-hidden rounded-xl border text-left transition-all',
                     styleKey === style.key
-                      ? 'border-lime-300 ring-1 ring-lime-300/40'
+                      ? 'border-accent-300 ring-1 ring-accent-300/40'
                       : 'border-charcoal-600 hover:border-charcoal-500',
                   )}
                 >
@@ -392,7 +392,7 @@ export const StudioPage = () => {
                       />
                     )}
                     {styleKey === style.key && (
-                      <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-lime-300 text-charcoal-950">
+                      <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-accent-300 text-ink">
                         <Check className="h-3 w-3" aria-hidden="true" />
                       </span>
                     )}
@@ -417,9 +417,9 @@ export const StudioPage = () => {
           />
 
           {submitted ? (
-            <div className="space-y-5 rounded-2xl border border-lime-300/25 bg-lime-300/[0.05] p-6">
+            <div className="space-y-5 rounded-2xl border border-accent-300/25 bg-accent-300/[0.05] p-6">
               <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-lime-300 text-charcoal-950">
+                <span className="grid h-10 w-10 place-items-center rounded-full bg-accent-300 text-ink">
                   <Check className="h-5 w-5" aria-hidden="true" />
                 </span>
                 <div>

@@ -72,7 +72,7 @@ export const HomePage = () => {
               <h1 className="text-display-xl">
                 Art you can
                 <br />
-                <span className="text-lime-300">walk up to.</span>
+                <span className="text-accent-300">walk up to.</span>
               </h1>
             </Reveal>
 
@@ -88,9 +88,9 @@ export const HomePage = () => {
               <button
                 type="button"
                 onClick={openSearch}
-                className="group flex w-full max-w-lg items-center gap-3 rounded-full border border-charcoal-600 bg-charcoal-900/70 px-5 py-3.5 text-left backdrop-blur transition-colors hover:border-lime-300/50"
+                className="group flex w-full max-w-lg items-center gap-3 rounded-full border border-charcoal-600 bg-charcoal-900/70 px-5 py-3.5 text-left backdrop-blur transition-colors hover:border-accent-300/50"
               >
-                <Search className="h-4.5 w-4.5 shrink-0 text-muted transition-colors group-hover:text-lime-300" aria-hidden="true" />
+                <Search className="h-4.5 w-4.5 shrink-0 text-muted transition-colors group-hover:text-accent-300" aria-hidden="true" />
                 <span className="flex-1 text-[0.9rem] text-muted">
                   Search by title, artist, medium or style…
                 </span>
@@ -115,7 +115,7 @@ export const HomePage = () => {
             <Reveal delay={340}>
               <p className="text-[0.8rem] text-muted">
                 An artist?{' '}
-                <Link to="/become-an-artist" className="text-lime-300 underline-offset-4 hover:underline">
+                <Link to="/become-an-artist" className="text-accent-300 underline-offset-4 hover:underline">
                   Open your storefront
                 </Link>{' '}
                 and sell your work here.
@@ -139,15 +139,15 @@ export const HomePage = () => {
                         fetchPriority="high"
                       />
                     </div>
-                    <div className="mt-4 flex items-start justify-between gap-4 border-l-2 border-lime-300/40 pl-3.5">
+                    <div className="mt-4 flex items-start justify-between gap-4 border-l-2 border-accent-300/40 pl-3.5">
                       <div className="min-w-0">
                         <p className="eyebrow mb-1">Featured work</p>
-                        <h2 className="truncate font-display text-xl group-hover:text-lime-300">
+                        <h2 className="truncate font-display text-xl group-hover:text-accent-300">
                           {hero.title}
                         </h2>
                         <p className="truncate text-[0.82rem] text-muted">{hero.artist?.displayName}</p>
                       </div>
-                      <p className="shrink-0 font-mono text-sm text-lime-300">
+                      <p className="shrink-0 font-mono text-sm text-accent-300">
                         {formatMoney(hero.priceMinor, hero.currency)}
                       </p>
                     </div>
@@ -177,15 +177,15 @@ export const HomePage = () => {
                 </p>
                 <ul className="flex flex-wrap gap-x-8 gap-y-2 pt-1 text-[0.82rem] text-muted">
                   <li className="inline-flex items-center gap-2">
-                    <Frame className="h-3.5 w-3.5 text-lime-300" aria-hidden="true" />
+                    <Frame className="h-3.5 w-3.5 text-accent-300" aria-hidden="true" />
                     Real listings on every wall
                   </li>
                   <li className="inline-flex items-center gap-2">
-                    <Sparkles className="h-3.5 w-3.5 text-lime-300" aria-hidden="true" />
+                    <Sparkles className="h-3.5 w-3.5 text-accent-300" aria-hidden="true" />
                     Buy without leaving the room
                   </li>
                   <li className="inline-flex items-center gap-2">
-                    <Palette className="h-3.5 w-3.5 text-lime-300" aria-hidden="true" />
+                    <Palette className="h-3.5 w-3.5 text-accent-300" aria-hidden="true" />
                     A lighter view if you prefer
                   </li>
                 </ul>
@@ -246,11 +246,11 @@ export const HomePage = () => {
               <Reveal key={category.id} delay={index * 60}>
                 <Link
                   to={`/shop?category=${category.slug}`}
-                  className="group relative flex aspect-[3/2] flex-col justify-end overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850 p-5 transition-colors hover:border-lime-300/40"
+                  className="group relative flex aspect-[3/2] flex-col justify-end overflow-hidden rounded-2xl border border-charcoal-700 bg-charcoal-850 p-5 transition-colors hover:border-accent-300/40"
                 >
                   <span className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-charcoal-950/40 to-transparent opacity-80" />
                   <span className="relative">
-                    <span className="block font-display text-xl transition-colors group-hover:text-lime-300">
+                    <span className="block font-display text-xl transition-colors group-hover:text-accent-300">
                       {category.name}
                     </span>
                     <span className="mt-0.5 block font-mono text-[0.7rem] uppercase tracking-wider text-muted">
@@ -288,7 +288,7 @@ export const HomePage = () => {
               <Reveal key={artist.id} delay={index * 70}>
                 <Link
                   to={`/artists/${artist.slug}`}
-                  className="group block rounded-2xl border border-charcoal-700 bg-charcoal-850/60 p-5 transition-colors hover:border-lime-300/40"
+                  className="group block rounded-2xl border border-charcoal-700 bg-charcoal-850/60 p-5 transition-colors hover:border-accent-300/40"
                 >
                   <div className="flex items-center gap-3.5">
                     <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-charcoal-800">
@@ -302,7 +302,7 @@ export const HomePage = () => {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <h3 className="truncate font-display text-lg transition-colors group-hover:text-lime-300">
+                      <h3 className="truncate font-display text-lg transition-colors group-hover:text-accent-300">
                         {artist.displayName}
                       </h3>
                       <p className="truncate text-[0.76rem] text-muted">{artist.location}</p>
@@ -371,7 +371,7 @@ export const HomePage = () => {
       {/* ──────────────────── Artist call to action ──────────────────── */}
       <section className="mx-auto max-w-[1500px] px-4 pb-8 pt-10 sm:px-6 lg:px-10">
         <Reveal>
-          <div className="flex flex-col items-center gap-6 rounded-3xl border border-lime-300/20 bg-lime-300/[0.04] px-6 py-12 text-center">
+          <div className="flex flex-col items-center gap-6 rounded-3xl border border-accent-300/20 bg-accent-300/[0.04] px-6 py-12 text-center">
             <p className="eyebrow">For artists</p>
             <h2 className="text-display-md max-w-2xl">Sell your work on these walls</h2>
             <p className="lede max-w-xl">

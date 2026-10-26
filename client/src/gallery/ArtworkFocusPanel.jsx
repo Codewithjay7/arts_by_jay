@@ -87,7 +87,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
       <button
         type="button"
         onClick={onClose}
-        className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-charcoal-600 bg-charcoal-900/80 text-parchment transition-colors hover:border-lime-300/60 hover:text-lime-300"
+        className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-charcoal-600 bg-charcoal-900/80 text-parchment transition-colors hover:border-accent-300/60 hover:text-accent-300"
         aria-label="Close and return to the gallery"
       >
         <X className="h-4.5 w-4.5" aria-hidden="true" />
@@ -128,7 +128,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
                       />
                     )}
                   </div>
-                  <p className="mt-2 truncate text-sm text-parchment group-hover:text-lime-300">
+                  <p className="mt-2 truncate text-sm text-parchment group-hover:text-accent-300">
                     {alternative.title}
                   </p>
                   <p className="font-mono text-[0.75rem] text-muted">
@@ -163,7 +163,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
             {artwork.artist && (
               <Link
                 to={`/artists/${artwork.artist.slug}`}
-                className="group inline-flex items-center gap-2.5 text-sm text-muted transition-colors hover:text-lime-300"
+                className="group inline-flex items-center gap-2.5 text-sm text-muted transition-colors hover:text-accent-300"
               >
                 {artwork.artist.avatarUrl && (
                   <img
@@ -173,7 +173,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
                   />
                 )}
                 <span>
-                  by <span className="text-parchment group-hover:text-lime-300">{artwork.artist.displayName}</span>
+                  by <span className="text-parchment group-hover:text-accent-300">{artwork.artist.displayName}</span>
                 </span>
               </Link>
             )}
@@ -181,7 +181,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
 
           {/* ── The story behind the work ── */}
           {artwork.story && (
-            <blockquote className="mt-6 border-l-2 border-lime-300/40 pl-4">
+            <blockquote className="mt-6 border-l-2 border-accent-300/40 pl-4">
               <p className="font-display text-base italic leading-relaxed text-parchment/90">
                 “{artwork.story}”
               </p>
@@ -243,7 +243,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
             <div className="flex items-end justify-between gap-4">
               <div>
                 <p className="eyebrow">{artwork.type === 'commission' ? 'Commissions from' : 'Price'}</p>
-                <p className="mt-1 font-mono text-3xl text-lime-300">
+                <p className="mt-1 font-mono text-3xl text-accent-300">
                   {formatMoney(artwork.priceMinor, artwork.currency)}
                 </p>
               </div>
@@ -288,7 +288,7 @@ export const ArtworkFocusPanel = ({ artworkId, onClose, onSelectAlternative }) =
 
               <div className="flex gap-2.5">
                 <Button variant="secondary" onClick={onWishlist} className="flex-1">
-                  <Heart className={clsx('h-4 w-4', isWishlisted && 'fill-current text-lime-300')} aria-hidden="true" />
+                  <Heart className={clsx('h-4 w-4', isWishlisted && 'fill-current text-accent-300')} aria-hidden="true" />
                   {isWishlisted ? 'Saved' : 'Save'}
                 </Button>
                 <Button variant="secondary" to={`/art/${artwork.slug}`} className="flex-1">

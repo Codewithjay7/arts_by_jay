@@ -280,7 +280,7 @@ export const GalleryPage = () => {
             <>
               {/* Room indicator */}
               <div className="pointer-events-none absolute left-1/2 top-20 z-20 -translate-x-1/2 text-center sm:top-24">
-                <p className="font-mono text-[0.68rem] uppercase tracking-[0.3em] text-lime-300/80">
+                <p className="font-mono text-[0.68rem] uppercase tracking-[0.3em] text-accent-300/80">
                   {rooms[currentRoom]?.label ?? `Room ${currentRoom + 1}`}
                 </p>
                 <p className="mt-1 text-[0.72rem] text-muted">
@@ -291,7 +291,7 @@ export const GalleryPage = () => {
               {/* Progress rail */}
               <div className="pointer-events-none absolute right-5 top-1/2 z-20 hidden h-44 w-[2px] -translate-y-1/2 bg-charcoal-700 lg:block">
                 <div
-                  className="w-full rounded-full bg-lime-300 transition-[height] duration-150"
+                  className="w-full rounded-full bg-accent-300 transition-[height] duration-150"
                   style={{ height: `${progressDisplay * 100}%` }}
                 />
                 {/* Room ticks, clickable so a visitor can jump ahead. */}
@@ -301,7 +301,7 @@ export const GalleryPage = () => {
                       key={room}
                       type="button"
                       onClick={() => jumpToRoom(room)}
-                      className="absolute -left-1.5 h-3 w-3 rounded-full border border-charcoal-500 bg-charcoal-900 transition-colors hover:border-lime-300"
+                      className="absolute -left-1.5 h-3 w-3 rounded-full border border-charcoal-500 bg-charcoal-900 transition-colors hover:border-accent-300"
                       style={{ top: `${(room / Math.max(1, roomCount)) * 100}%` }}
                       aria-label={`Jump to room ${room + 1}`}
                     />
@@ -312,7 +312,7 @@ export const GalleryPage = () => {
               {/* Scroll hint, only at the very start */}
               {progressDisplay < 0.02 && (
                 <div className="pointer-events-none absolute bottom-8 left-1/2 z-20 -translate-x-1/2 animate-fade-in text-center">
-                  <ChevronDown className="mx-auto h-5 w-5 animate-bounce text-lime-300" aria-hidden="true" />
+                  <ChevronDown className="mx-auto h-5 w-5 animate-bounce text-accent-300" aria-hidden="true" />
                   <p className="mt-1 font-mono text-[0.68rem] uppercase tracking-[0.2em] text-muted">
                     Scroll to walk
                   </p>
@@ -329,7 +329,7 @@ export const GalleryPage = () => {
                 <button
                   type="button"
                   onClick={() => setViewMode('flat')}
-                  className="text-[0.72rem] text-muted underline-offset-4 transition-colors hover:text-lime-300 hover:underline"
+                  className="text-[0.72rem] text-muted underline-offset-4 transition-colors hover:text-accent-300 hover:underline"
                 >
                   Switch to the lighter view
                 </button>
@@ -387,7 +387,7 @@ const GalleryHeader = ({ viewMode, onViewModeChange, canUse3D, total, roomCount 
             onClick={() => onViewModeChange('3d')}
             className={clsx(
               'rounded-full px-3.5 py-1.5 text-[0.78rem] transition-colors',
-              viewMode === '3d' ? 'bg-lime-300 text-charcoal-950' : 'text-muted hover:text-parchment',
+              viewMode === '3d' ? 'bg-accent-300 text-ink' : 'text-muted hover:text-parchment',
             )}
           >
             Immersive
@@ -397,7 +397,7 @@ const GalleryHeader = ({ viewMode, onViewModeChange, canUse3D, total, roomCount 
             onClick={() => onViewModeChange('flat')}
             className={clsx(
               'rounded-full px-3.5 py-1.5 text-[0.78rem] transition-colors',
-              viewMode === 'flat' ? 'bg-lime-300 text-charcoal-950' : 'text-muted hover:text-parchment',
+              viewMode === 'flat' ? 'bg-accent-300 text-ink' : 'text-muted hover:text-parchment',
             )}
           >
             Lighter view

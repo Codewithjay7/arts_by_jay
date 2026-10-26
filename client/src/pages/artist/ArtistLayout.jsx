@@ -62,7 +62,7 @@ export const ArtistLayout = () => {
               {profile.slug && profile.status === 'approved' && (
                 <a
                   href={`/artists/${profile.slug}`}
-                  className="text-[0.78rem] text-muted underline-offset-4 transition-colors hover:text-lime-300 hover:underline"
+                  className="text-[0.78rem] text-muted underline-offset-4 transition-colors hover:text-accent-300 hover:underline"
                 >
                   View my public storefront
                 </a>
@@ -114,7 +114,7 @@ export const ArtistLayout = () => {
                       clsx(
                         'flex items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-[0.86rem] transition-colors',
                         isActive
-                          ? 'bg-charcoal-800 text-lime-300'
+                          ? 'bg-charcoal-800 text-accent-300'
                           : 'text-muted hover:bg-charcoal-850 hover:text-parchment',
                       )
                     }

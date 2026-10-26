@@ -30,7 +30,7 @@ const Canvas2D = ({ url, width, height }) => {
 const CanvasPlaceholder = ({ width, height }) => (
   <mesh position={[0, 0, 0.04]}>
     <planeGeometry args={[width, height]} />
-    <meshBasicMaterial color="#20241e" />
+    <meshBasicMaterial color="#241f1c" />
   </mesh>
 );
 
@@ -78,7 +78,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
         {/* ── Mount / mat board ── */}
         <mesh position={[0, 0, 0.025]}>
           <planeGeometry args={[width + mount * 2, height + mount * 2]} />
-          <meshStandardMaterial color="#15170f" roughness={0.9} />
+          <meshStandardMaterial color="#2b2522" roughness={0.9} />
         </mesh>
 
         {/* ── The artwork ── */}
@@ -89,7 +89,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
         {/* ── Glass sheen: a faint diagonal highlight across the surface ── */}
         <mesh position={[0, 0, 0.05]}>
           <planeGeometry args={[width, height]} />
-          <meshBasicMaterial color="#cfe6a0" transparent opacity={hovered ? 0.07 : 0.035} />
+          <meshBasicMaterial color="#e8dfd1" transparent opacity={hovered ? 0.07 : 0.035} />
         </mesh>
 
         {/* ── Hit area ──
@@ -123,8 +123,8 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
       <mesh position={[0, frameHeight / 2 + 0.3, 0.26]} rotation={[-0.5, 0, 0]}>
         <boxGeometry args={[Math.min(frameWidth * 0.55, 1.1), 0.045, 0.1]} />
         <meshStandardMaterial
-          color="#e8f5c8"
-          emissive="#c5ff3d"
+          color="#f4efe6"
+          emissive="#c46a4a"
           emissiveIntensity={isDimmed ? 0.35 : hovered || isFocused ? 2.4 : 1.1}
           toneMapped={false}
         />
@@ -136,7 +136,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
           intensity={isDimmed ? 0.5 : hovered || isFocused ? 5 : 2.4}
           distance={4.5}
           decay={2}
-          color="#dff0b8"
+          color="#f0e4d6"
         />
       )}
 
@@ -160,7 +160,7 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
       {/* ── Sold marker ── */}
       {artwork.isSoldOut && (
         <group position={[0, -frameHeight / 2 - 0.22, 0.06]}>
-          <Text fontSize={0.11} anchorX="center" anchorY="middle" color="#c5ff3d" letterSpacing={0.2}>
+          <Text fontSize={0.11} anchorX="center" anchorY="middle" color="#c46a4a" letterSpacing={0.2}>
             SOLD
           </Text>
         </group>

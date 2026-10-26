@@ -409,7 +409,7 @@ export const STUDIO_STYLES = [
     name: 'Pop Art',
     description: 'Flattened tone, hard edges and a saturated screen-print palette.',
     cssFilter: 'saturate(2.3) contrast(1.5) brightness(1.06) hue-rotate(8deg)',
-    overlay: 'linear-gradient(45deg, rgba(197,255,61,0.18), rgba(255,60,120,0.18))',
+    overlay: 'linear-gradient(45deg, rgba(196,106,74,0.20), rgba(217,133,101,0.16))',
   },
   {
     key: 'golden_hour',
