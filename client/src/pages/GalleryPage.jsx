@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import { Button, EmptyState, ErrorState, LoadingBlock } from '../components/ui';
 import { useDeviceTier, useDocumentTitle, useReducedMotion } from '../lib/hooks';
 import { GalleryFallback } from '../gallery/GalleryFallback';
+import { SceneBoundary } from '../gallery/SceneBoundary';
 import { ArtworkFocusPanel } from '../gallery/ArtworkFocusPanel';
 import { PX_PER_METRE, ROOM_LENGTH, corridorLengthFor, roomIndexForZ } from '../gallery/galleryConstants';
 
@@ -38,6 +39,9 @@ export const GalleryPage = () => {
   const [viewMode, setViewMode] = useState(null); // '3d' | 'flat'
   const [focusedId, setFocusedId] = useState(null);
   const [hasEntered, setHasEntered] = useState(false);
+  // Set when the 3D scene threw, so the flat view can say why it is showing
+  // instead of silently appearing to be what the visitor asked for.
+  const [sceneFailed, setSceneFailed] = useState(false);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['gallery'],
@@ -73,6 +77,16 @@ export const GalleryPage = () => {
     if (reducedMotion || !webglAvailable()) setViewMode('flat');
     else setViewMode('3d');
   }, [reducedMotion, viewMode]);
+
+  /**
+   * Called when the scene throws. Drops to the flat walkthrough, which shows
+   * the same rooms and pieces, rather than leaving the visitor on a loading
+   * state that will never finish.
+   */
+  const onSceneFail = useCallback(() => {
+    setSceneFailed(true);
+    setViewMode('flat');
+  }, []);
 
   const is3D = viewMode === '3d';
 
@@ -188,11 +202,13 @@ export const GalleryPage = () => {
           rooms={rooms}
           onSelect={onSelect}
           reason={
-            reducedMotion
-              ? 'You have asked your device to reduce motion, so the gallery is laid out as a page you can scroll normally. Every room, wall and piece is here.'
-              : !webglAvailable()
-                ? 'This browser cannot run the 3D view, so the gallery is laid out as a page instead. Nothing is missing — every room and piece is here.'
-                : 'The lighter walkthrough. Every room and piece is here, laid out as a page.'
+            sceneFailed
+              ? 'The 3D view could not start on this device, so the gallery is laid out as a page instead. Nothing is missing — every room and piece is here.'
+              : reducedMotion
+                ? 'You have asked your device to reduce motion, so the gallery is laid out as a page you can scroll normally. Every room, wall and piece is here.'
+                : !webglAvailable()
+                  ? 'This browser cannot run the 3D view, so the gallery is laid out as a page instead. Nothing is missing — every room and piece is here.'
+                  : 'The lighter walkthrough. Every room and piece is here, laid out as a page.'
           }
         />
         {focusedId && (
@@ -221,27 +237,29 @@ export const GalleryPage = () => {
           The canvas itself is sticky and only one viewport tall. */}
       <div ref={scrollerRef} className="no-anchor relative" style={{ height: `${scrollHeight}px` }}>
         <div className="sticky top-0 h-screen w-full overflow-hidden">
-          <Suspense fallback={<LoadingBlock label="Building the gallery" className="h-screen" />}>
-            <Canvas
-              // Clamping DPR is the single biggest win on a laptop or phone.
-              dpr={deviceTier === 'low' ? [1, 1.25] : [1, 1.75]}
-              shadows={deviceTier === 'high'}
-              gl={{ antialias: deviceTier !== 'low', powerPreference: 'high-performance' }}
-              camera={{ fov: 55, near: 0.1, far: 120, position: [0, 1.68, 0] }}
-              className="h-full w-full"
-            >
-              <CorridorScene
-                artworks={artworks}
-                scrollRef={scrollRef}
-                focusedArtwork={focusedArtwork}
-                onSelect={onSelect}
-                length={length}
-                roomCount={roomCount}
-                quality={deviceTier}
-                reducedMotion={reducedMotion}
-              />
-            </Canvas>
-          </Suspense>
+          <SceneBoundary onFail={onSceneFail} resetKey={viewMode}>
+            <Suspense fallback={<LoadingBlock label="Building the gallery" className="h-screen" />}>
+              <Canvas
+                // Clamping DPR is the single biggest win on a laptop or phone.
+                dpr={deviceTier === 'low' ? [1, 1.25] : [1, 1.75]}
+                shadows={deviceTier === 'high'}
+                gl={{ antialias: deviceTier !== 'low', powerPreference: 'high-performance' }}
+                camera={{ fov: 55, near: 0.1, far: 120, position: [0, 1.68, 0] }}
+                className="h-full w-full"
+              >
+                <CorridorScene
+                  artworks={artworks}
+                  scrollRef={scrollRef}
+                  focusedArtwork={focusedArtwork}
+                  onSelect={onSelect}
+                  length={length}
+                  roomCount={roomCount}
+                  quality={deviceTier}
+                  reducedMotion={reducedMotion}
+                />
+              </Canvas>
+            </Suspense>
+          </SceneBoundary>
 
           {/* ── Entry overlay ── */}
           {!hasEntered && (

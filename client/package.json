@@ -10,6 +10,7 @@
     "lint": "eslint . --ext js,jsx --max-warnings 0"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.1.0",
     "@react-three/drei": "^9.120.4",
     "@react-three/fiber": "^8.17.10",
     "@supabase/supabase-js": "^2.118.0",

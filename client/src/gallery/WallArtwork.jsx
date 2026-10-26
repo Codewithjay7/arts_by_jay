@@ -5,6 +5,34 @@ import { Text } from '@react-three/drei';
 import { artworkSize } from './galleryConstants';
 import { imageSource } from '../lib/images';
 
+/**
+ * The font for the wall labels, bundled as an asset.
+ *
+ * This import is why the gallery works at all. drei's <Text> renders through
+ * troika, and troika with no `font` prop resolves one at runtime from
+ * `cdn.jsdelivr.net/gh/lojjic/unicode-font-resolver`. That origin is not in
+ * this site's CSP `connect-src`, so the request never completed, <Text>
+ * suspended forever, and the whole gallery sat on "Building the gallery".
+ *
+ * Bundling the font fixes it without punching a hole in the CSP for a
+ * third-party CDN, and without making a core feature depend on that CDN
+ * staying reachable. Vite fingerprints and serves it from this origin, so
+ * `font-src 'self'` already covers it.
+ *
+ * `.woff` rather than `.woff2`: troika decompresses woff2 in a worker, and
+ * there is no reason to spend that on 31KB.
+ *
+ * One known limit, stated rather than hidden: this is the LATIN subset, and
+ * troika still reaches for that CDN to resolve glyphs a supplied font does
+ * not cover. So a title written in, say, Devanagari would have its label go
+ * looking there and be blocked again. That no longer breaks anything — the
+ * <Suspense fallback={null}> below means the piece simply hangs unlabelled
+ * instead of taking the exhibition down with it — but the label would be
+ * missing. Fixing that properly means bundling the needed subsets too, not
+ * opening the CSP to a third-party CDN.
+ */
+import labelFont from '@fontsource/inter/files/inter-latin-400-normal.woff';
+
 /** The painted surface itself, once its texture has loaded. */
 const Canvas2D = ({ url, width, height }) => {
   const texture = useLoader(TextureLoader, url);
@@ -144,25 +172,42 @@ export const WallArtwork = ({ artwork, isFocused, isDimmed, onSelect, quality = 
            A real gallery labels its work. Rendered as 3D text so it sits on
            the wall and recedes with perspective like everything else. */}
       <group position={[side === 'left' ? frameWidth / 2 + 0.42 : -(frameWidth / 2 + 0.42), -frameHeight / 2 + 0.3, 0.03]}>
-        <Text
-          fontSize={0.1}
-          maxWidth={1.3}
-          lineHeight={1.35}
-          anchorX={side === 'left' ? 'left' : 'right'}
-          anchorY="top"
-          color={isDimmed ? '#aeaeb2' : '#6e6e73'}
-          outlineWidth={0}
-        >
-          {label}
-        </Text>
+        {/* Its own Suspense, with a null fallback. A caption must never be
+            able to stop the gallery from rendering: this <Text> sat outside
+            any boundary, so while its font was pending the visitor saw the
+            loading state for the entire exhibition rather than a room with
+            an unlabelled picture in it. */}
+        <Suspense fallback={null}>
+          <Text
+            font={labelFont}
+            fontSize={0.1}
+            maxWidth={1.3}
+            lineHeight={1.35}
+            anchorX={side === 'left' ? 'left' : 'right'}
+            anchorY="top"
+            color={isDimmed ? '#aeaeb2' : '#6e6e73'}
+            outlineWidth={0}
+          >
+            {label}
+          </Text>
+        </Suspense>
       </group>
 
       {/* ── Sold marker ── */}
       {artwork.isSoldOut && (
         <group position={[0, -frameHeight / 2 - 0.22, 0.06]}>
-          <Text fontSize={0.11} anchorX="center" anchorY="middle" color="#0071e3" letterSpacing={0.2}>
-            SOLD
-          </Text>
+          <Suspense fallback={null}>
+            <Text
+              font={labelFont}
+              fontSize={0.11}
+              anchorX="center"
+              anchorY="middle"
+              color="#0071e3"
+              letterSpacing={0.2}
+            >
+              SOLD
+            </Text>
+          </Suspense>
         </group>
       )}
     </group>
