@@ -338,6 +338,31 @@ export const ArtistArtworksPage = () => {
         </Select>
       </div>
 
+      {/* Why a new piece does not appear on the marketplace straight away.
+          The badges already said "Draft" and "In review", but nothing said
+          what moves a piece ON from either — so work sat waiting with no
+          indication that anything was expected of anyone, which reads as the
+          site having lost it. */}
+      <div className="mb-7 rounded-card border border-line bg-surface-0 p-5">
+        <p className="text-[0.84rem] font-medium text-ink">How a piece reaches the marketplace</p>
+        <ol className="mt-2.5 space-y-1.5 text-[0.84rem] leading-relaxed text-muted">
+          <li>
+            <span className="text-ink">1. Draft</span> — yours alone. Add at least one image, then
+            choose <span className="text-ink">Save and submit for review</span>. Without an image it
+            cannot be submitted.
+          </li>
+          <li>
+            <span className="text-ink">2. In review</span> — with the curators. Nothing more is
+            needed from you, and it is not yet visible to buyers.
+          </li>
+          <li>
+            <span className="text-ink">3. Live</span> — a curator has approved it and it is on the
+            marketplace. Only a curator can publish, which is why your own work does not go live the
+            moment you save it.
+          </li>
+        </ol>
+      </div>
+
       {!data?.items?.length ? (
         <EmptyState
           icon={Frame}

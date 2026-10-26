@@ -110,6 +110,21 @@ export default {
         ],
       },
 
+      spacing: {
+        /**
+         * Tailwind's default scale stops its half-steps at 3.5, so `h-4.5`
+         * and `w-4.5` generated NOTHING. Twelve call sites used them — every
+         * close button, the search icon, the spinner — and each silently fell
+         * back to whatever lucide's default 24px gave, which is why the close
+         * control in the gallery looked wrong against its 40px button.
+         *
+         * Adding the step is better than rewriting those call sites to h-5:
+         * 18px is the size the icons were drawn for, and a class that looks
+         * valid but emits nothing is a trap for the next person too.
+         */
+        4.5: '1.125rem',
+      },
+
       borderRadius: {
         // One generous radius used consistently, rather than five arbitrary ones.
         card: '18px',

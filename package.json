@@ -23,7 +23,8 @@
     "audit:tenancy": "node supabase/audit-tenancy.mjs",
     "audit:auth": "node supabase/audit-auth-flows.mjs",
     "audit:pages": "node --import ./supabase/esm-resolve-hook.mjs supabase/audit-pages.mjs",
-    "verify:all": "npm run lint:client && npm run build && npm run db:security && npm run audit:schema && npm run audit:tenancy && npm run audit:auth && npm run audit:pages"
+    "verify:all": "npm run lint:client && npm run build && npm run db:security && npm run audit:schema && npm run audit:tenancy && npm run audit:auth && npm run audit:pages && npm run audit:artwork",
+    "audit:artwork": "node --import ./supabase/esm-resolve-hook.mjs supabase/audit-artwork-flow.mjs"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.118.0",

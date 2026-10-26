@@ -245,7 +245,14 @@ export const ArtistStorefrontPage = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-surface-100 via-surface-100/50 to-transparent" />
         </div>
 
-        <div className="mx-auto -mt-16 max-w-[1500px] px-4 sm:px-6 lg:-mt-20 lg:px-10">
+        {/* `relative z-10` is load-bearing, not decoration.
+            This block is pulled up into the cover by the negative margin, and
+            the cover's fade is an ABSOLUTELY positioned element. Within one
+            stacking context, positioned boxes paint after non-positioned ones
+            whatever the DOM order — so while this block was static the fade
+            painted straight over the top of it, washing out the badges and
+            the artist's name. Giving it a position puts it back on top. */}
+        <div className="relative z-10 mx-auto -mt-16 max-w-[1500px] px-4 sm:px-6 lg:-mt-20 lg:px-10">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex items-end gap-5">
               <div className="h-24 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-line bg-surface-0 shadow-frame lg:h-32 lg:w-32">
