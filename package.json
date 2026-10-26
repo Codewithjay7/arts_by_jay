@@ -2,7 +2,7 @@
   "name": "arts-by-jay",
   "version": "1.0.0",
   "private": true,
-  "description": "Arts by Jay — premium art marketplace with an immersive virtual gallery",
+  "description": "Arts by Jay \u2014 premium art marketplace with an immersive virtual gallery",
   "scripts": {
     "install:all": "npm install && npm --prefix server install && npm --prefix client install",
     "dev": "concurrently -n server,client -c green,magenta \"npm:dev:server\" \"npm:dev:client\"",
@@ -18,7 +18,12 @@
     "functions:deploy": "npx supabase functions deploy create-order && npx supabase functions deploy verify-payment && npx supabase functions deploy razorpay-webhook --no-verify-jwt",
     "db:apply": "node supabase/apply.mjs",
     "db:verify": "node supabase/apply.mjs --verify",
-    "db:security": "node supabase/verify.mjs"
+    "db:security": "node supabase/verify.mjs",
+    "audit:schema": "node supabase/audit-selects.mjs",
+    "audit:tenancy": "node supabase/audit-tenancy.mjs",
+    "audit:auth": "node supabase/audit-auth-flows.mjs",
+    "audit:pages": "node --import ./supabase/esm-resolve-hook.mjs supabase/audit-pages.mjs",
+    "verify:all": "npm run lint:client && npm run build && npm run db:security && npm run audit:schema && npm run audit:tenancy && npm run audit:auth && npm run audit:pages"
   },
   "devDependencies": {
     "@supabase/supabase-js": "^2.118.0",

@@ -28,8 +28,21 @@ import { createClient } from '@supabase/supabase-js';
 const DEFAULT_SUPABASE_URL = 'https://tdcdghuzasxkfdvactdz.supabase.co';
 const DEFAULT_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_gXXjBpXU55SD5zRm3OK52w_s8VbbqlN';
 
-const url = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
+/**
+ * Read through a defaulted object rather than off `import.meta.env` directly.
+ *
+ * Vite replaces `import.meta.env` wholesale at build time, so this inlines
+ * exactly as before in the browser. What it adds is that the module can also
+ * be imported by Node — where `import.meta.env` is undefined and reading a
+ * property off it throws at module load. That is what let the data layer
+ * become testable against the live project instead of having its queries
+ * copied into a test, where they drift from the real ones and stop testing
+ * anything.
+ */
+const env = import.meta.env ?? {};
+
+const url = env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const anonKey = env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
 
 /**
  * Guard against a key of the wrong KIND being supplied.

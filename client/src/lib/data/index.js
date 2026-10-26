@@ -19,6 +19,11 @@ export * as artist from './artist';
 export * as admin from './admin';
 
 import { supabase } from '../supabase';
+
+// Vite replaces `import.meta.env` wholesale, so this inlines as before in the
+// browser; it also lets Node import this module, where reading a property off
+// an undefined `import.meta.env` would throw at load.
+const env = import.meta.env ?? {};
 import { SHIPPING_METHODS } from './cart';
 
 export { isSupabaseConfigured, supabaseConfigError, supabase } from '../supabase';
@@ -96,7 +101,7 @@ export const getCapabilities = async () => {
    * declared by build configuration. Set VITE_CHECKOUT_ENABLED=true only
    * once `supabase functions deploy` has actually run.
    */
-  const checkoutEnabled = import.meta.env.VITE_CHECKOUT_ENABLED === 'true';
+  const checkoutEnabled = env.VITE_CHECKOUT_ENABLED === 'true';
 
   return {
     payment: {
@@ -105,7 +110,7 @@ export const getCapabilities = async () => {
       // Public by design: the Key ID is handed to Razorpay's checkout
       // script in the browser. The Key SECRET is an Edge Function secret
       // and must never appear here.
-      keyId: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TsPMzji5nqQ09l',
+      keyId: env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TsPMzji5nqQ09l',
       currency: 'INR',
       isSimulated: false,
       reason: checkoutEnabled

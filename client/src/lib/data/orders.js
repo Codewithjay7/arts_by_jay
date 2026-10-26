@@ -1,4 +1,5 @@
 import client, { unwrap, supabaseError } from '../supabase';
+import { requireSession } from './session';
 
 /**
  * Orders, reviews and notifications.
@@ -83,6 +84,7 @@ const toOrderItem = (item) => ({
 });
 
 export const listMyOrders = async ({ page = 1, limit = 10, status } = {}) => {
+  await requireSession();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -346,6 +348,7 @@ export const createReview = async ({ artworkId, orderId, rating, title, body }) 
 };
 
 export const listMyReviews = async () => {
+  await requireSession();
   const db = client();
 
   const rows = unwrap(
@@ -385,6 +388,7 @@ export const deleteReview = async (id) => {
 /* ──────────────────────── Notifications ──────────────────────── */
 
 export const listNotifications = async ({ page = 1, limit = 20 } = {}) => {
+  await requireSession();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -435,6 +439,7 @@ export const markNotificationsRead = async (ids) => {
 
 /** Counts for the account menu badges. */
 export const getAccountSummary = async () => {
+  await requireSession();
   const db = client();
 
   const [orders, active, wishlist, unread] = await Promise.all([

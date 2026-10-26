@@ -1,4 +1,5 @@
 import client, { unwrap, supabaseError } from '../supabase';
+import { requireAdmin } from './session';
 
 /**
  * Privileged admin operations: payouts, delivery confirmation, disputes,
@@ -188,6 +189,7 @@ export const getAuditLog = async ({ limit = 100, entityType } = {}) => {
  * of ours failed. That is a dropped payment, not a gateway problem.
  */
 export const getWebhookEvents = async ({ limit = 50, unprocessedOnly = false } = {}) => {
+  await requireAdmin();
   const db = client();
 
   let query = db
@@ -220,6 +222,7 @@ export const getWebhookEvents = async ({ limit = 50, unprocessedOnly = false } =
 
 /** Payments needing a person: failed, disputed, or captured-but-unverified. */
 export const getPaymentExceptions = async () => {
+  await requireAdmin();
   const db = client();
 
   const rows = unwrap(
@@ -283,6 +286,7 @@ export const getPaymentExceptions = async () => {
 /* ═══════════════════════ Reviews ═══════════════════════ */
 
 export const listAllReviews = async ({ page = 1, limit = 20, hidden } = {}) => {
+  await requireAdmin();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -331,6 +335,7 @@ export const deleteReview = async (id) => {
 /* ═══════════════════════ Enquiries ═══════════════════════ */
 
 export const listAllEnquiries = async ({ page = 1, limit = 20, status, kind } = {}) => {
+  await requireAdmin();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -385,6 +390,7 @@ export const listAllEnquiries = async ({ page = 1, limit = 20, status, kind } = 
  * redirect another artist's money. Onboarding runs server-side.
  */
 export const listLinkedAccounts = async () => {
+  await requireAdmin();
   const db = client();
 
   const rows = unwrap(

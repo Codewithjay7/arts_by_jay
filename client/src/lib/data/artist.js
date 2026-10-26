@@ -1,4 +1,5 @@
 import client, { unwrap, supabaseError, uploadImage } from '../supabase';
+import { requireArtist } from './session';
 import { toCard } from './artworks';
 
 /**
@@ -721,6 +722,7 @@ const toEnquiry = (row) => ({
 });
 
 export const listArtistEnquiries = async ({ page = 1, limit = 20, status } = {}) => {
+  await requireArtist();
   const db = client();
   const from = (page - 1) * limit;
 

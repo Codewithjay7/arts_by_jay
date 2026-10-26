@@ -1,13 +1,20 @@
 import client, { unwrap, supabaseError } from '../supabase';
 import { toCard } from './artworks';
+import { requireAdmin } from './session';
 
 /**
  * Administration.
  *
  * Every function here is gated by `is_admin()` in RLS, so a non-admin session
- * simply sees nothing rather than being refused — which is why the UI also
- * checks the role before routing here. The database is the boundary; the
- * route guard is a courtesy.
+ * sees none of the ROWS. The database is the boundary; the route guard is a
+ * courtesy.
+ *
+ * Each read also asserts `requireAdmin()` first, which is not about secrecy —
+ * RLS already handles that, and it was verified that nothing leaks. It is
+ * because seeing no rows and not being allowed to look produce the same
+ * answer: a dashboard reporting 0 users, 0 orders and no revenue. That is
+ * indistinguishable from a real platform with no activity, so it is refused
+ * instead.
  *
  * What is NOT here: issuing refunds and recording payouts. Those call
  * `apply_refund` and `record_settlement`, which are REVOKEd from browser
@@ -18,6 +25,7 @@ import { toCard } from './artworks';
 /* ─────────────────────────── Overview ─────────────────────────── */
 
 export const getOverview = async () => {
+  await requireAdmin();
   const db = client();
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const PAID = ['paid', 'processing', 'shipped', 'delivered', 'eligible_for_settlement', 'settled'];
@@ -114,6 +122,7 @@ export const getOverview = async () => {
 /* ─────────────────────────── Users ─────────────────────────── */
 
 export const listUsers = async ({ page = 1, limit = 20, q, role, active } = {}) => {
+  await requireAdmin();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -202,6 +211,7 @@ export const updateUser = async (id, { role, isActive, suspendedReason }) => {
 /* ─────────────────────── Artist applications ─────────────────────── */
 
 export const listArtistApplications = async ({ page = 1, limit = 20, status } = {}) => {
+  await requireAdmin();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -290,6 +300,7 @@ export const reviewArtistApplication = async (id, { decision, note }) => {
 /* ─────────────────────── Artwork moderation ─────────────────────── */
 
 export const listArtworksForModeration = async ({ page = 1, limit = 12, status, reported, q } = {}) => {
+  await requireAdmin();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -445,6 +456,7 @@ export const deleteCategory = async (id) => {
 /* ─────────────────────────── Orders ─────────────────────────── */
 
 export const listAllOrders = async ({ page = 1, limit = 20, q, status } = {}) => {
+  await requireAdmin();
   const db = client();
   const from = (page - 1) * limit;
 
@@ -483,6 +495,7 @@ export const listAllOrders = async ({ page = 1, limit = 20, q, status } = {}) =>
 };
 
 export const getOrderForAdmin = async (orderNumber) => {
+  await requireAdmin();
   const db = client();
 
   const row = unwrap(
@@ -510,6 +523,7 @@ export const getOrderForAdmin = async (orderNumber) => {
 /* ─────────────────────────── Reports ─────────────────────────── */
 
 export const getSalesReport = async ({ days = 30 } = {}) => {
+  await requireAdmin();
   const db = client();
   const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const PAID = ['paid', 'processing', 'shipped', 'delivered', 'eligible_for_settlement', 'settled'];
@@ -595,6 +609,7 @@ export const getSalesReport = async ({ days = 30 } = {}) => {
 /* ─────────────────────────── Settings ─────────────────────────── */
 
 export const getPlatformSettings = async () => {
+  await requireAdmin();
   const db = client();
 
   const rows = unwrap(
@@ -605,7 +620,7 @@ export const getPlatformSettings = async () => {
   const map = new Map((rows ?? []).map((row) => [row.key, row.value]));
 
   return {
-    environment: import.meta.env.MODE,
+    environment: (import.meta.env ?? {}).MODE ?? 'unknown',
     settings: rows ?? [],
     payments: {
       provider: 'razorpay',
