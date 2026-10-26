@@ -102,7 +102,10 @@ export const getCapabilities = async () => {
     payment: {
       enabled: checkoutEnabled,
       provider: 'razorpay',
-      keyId: import.meta.env.VITE_RAZORPAY_KEY_ID ?? '',
+      // Public by design: the Key ID is handed to Razorpay's checkout
+      // script in the browser. The Key SECRET is an Edge Function secret
+      // and must never appear here.
+      keyId: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_TsPMzji5nqQ09l',
       currency: 'INR',
       isSimulated: false,
       reason: checkoutEnabled

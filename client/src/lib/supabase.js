@@ -3,26 +3,59 @@ import { createClient } from '@supabase/supabase-js';
 /**
  * The Supabase browser client.
  *
- * This client holds the ANON key, which is public by design — it ships inside
- * the JavaScript bundle and anyone can read it. What protects the data is Row
- * Level Security in the database, not the secrecy of this key. The
- * service-role key must never appear anywhere in `client/`.
+ * This client holds the PUBLISHABLE key, which is public by design: Vite
+ * inlines it into the bundle and anyone can read it from the page source.
+ * What protects the data is Row Level Security in the database, not the
+ * secrecy of this key — which is exactly why Supabase calls it publishable.
+ *
+ * NEVER put these in this file, or anywhere under `client/`:
+ *   - the service-role / `sb_secret_` key  (bypasses RLS entirely)
+ *   - the database password
+ *   - the Razorpay key secret or webhook secret
+ * Those live in Edge Function secrets and `server/.env`, both server-side.
  */
 
-const url = import.meta.env.VITE_SUPABASE_URL ?? '';
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? '';
+/**
+ * Committed defaults for the two public values.
+ *
+ * An environment variable always wins, so a different project can be targeted
+ * per deploy. The defaults exist because Vite inlines `import.meta.env` at
+ * BUILD time: a host that builds without them produces a bundle that can
+ * never reach the database, and the failure appears only in the browser.
+ * Since both values are published to every visitor anyway, committing them
+ * removes a deployment step without giving anything away.
+ */
+const DEFAULT_SUPABASE_URL = 'https://tdcdghuzasxkfdvactdz.supabase.co';
+const DEFAULT_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_gXXjBpXU55SD5zRm3OK52w_s8VbbqlN';
+
+const url = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
 
 /**
- * True only when both values are present. The app checks this before using
- * any Supabase path, so a missing key produces a clear message instead of a
+ * Guard against a key of the wrong KIND being supplied.
+ *
+ * If someone pastes the `sb_secret_` key into `VITE_SUPABASE_ANON_KEY`, Vite
+ * would publish it to every visitor and that key bypasses RLS completely.
+ * Refusing to start is the only safe response, so this throws at module load
+ * rather than letting the app run with it.
+ */
+if (/^sb_secret_|^sbp_/.test(anonKey) || anonKey.includes('service_role')) {
+  throw new Error(
+    'VITE_SUPABASE_ANON_KEY looks like a SECRET key. It would be published to every visitor and it bypasses Row Level Security. Use the publishable (anon) key instead.',
+  );
+}
+
+/**
+ * True when both values are present. The app checks this before using any
+ * Supabase path, so a misconfiguration produces a clear message instead of a
  * stack trace from deep inside a query.
  */
 export const isSupabaseConfigured = Boolean(url && anonKey);
 
 export const supabaseConfigError = !url
-  ? 'VITE_SUPABASE_URL is not set.'
+  ? 'VITE_SUPABASE_URL is not set and no default is compiled in.'
   : !anonKey
-    ? 'VITE_SUPABASE_ANON_KEY is not set.'
+    ? 'VITE_SUPABASE_ANON_KEY is not set and no default is compiled in.'
     : null;
 
 export const supabase = isSupabaseConfigured
