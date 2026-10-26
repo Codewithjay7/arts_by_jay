@@ -44,11 +44,15 @@ export const listArtists = async ({ page = 1, limit = 12, q, featured } = {}) =>
   const from = (page - 1) * limit;
 
   let query = db
-    .from('artist_profiles')
+    // artist_public_profiles, not artist_profiles: the view adds the derived
+    // published_artworks and total_sales. The table has no `stats` column -
+    // that was a MongoDB embedded document, and selecting it failed the whole
+    // page with "column artist_profiles.stats does not exist".
+    .from('artist_public_profiles')
     .select(
       `id, display_name, slug, bio, statement, location, avatar_url, cover_url,
        specialities, links, accepts_commissions, commission_note, is_featured,
-       status, created_at, stats`,
+       status, created_at, published_artworks, total_sales`,
       { count: 'exact' },
     )
     // RLS already hides unapproved artists from the public, but being explicit
@@ -102,11 +106,7 @@ export const listArtists = async ({ page = 1, limit = 12, q, featured } = {}) =>
 
   return {
     items: rows.map((row) => ({
-      ...toPublicProfile({
-        ...row,
-        published_artworks: row.stats?.publishedArtworks ?? 0,
-        total_sales: row.stats?.totalSales ?? 0,
-      }),
+      ...toPublicProfile(row),
       preview: byArtist.get(row.id) ?? [],
     })),
     meta: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)), hasMore: from + limit < total },
@@ -118,11 +118,11 @@ export const getArtistStorefront = async (slug, { page = 1, limit = 12 } = {}) =
 
   const profile = unwrap(
     await db
-      .from('artist_profiles')
+      .from('artist_public_profiles')
       .select(
         `id, display_name, slug, bio, statement, location, avatar_url, cover_url,
          specialities, links, accepts_commissions, commission_note, is_featured,
-         status, created_at, stats`,
+         status, created_at, published_artworks, total_sales`,
       )
       .eq('slug', slug)
       .eq('status', 'approved')
@@ -159,11 +159,7 @@ export const getArtistStorefront = async (slug, { page = 1, limit = 12 } = {}) =
   const total = count ?? 0;
 
   return {
-    artist: toPublicProfile({
-      ...profile,
-      published_artworks: profile.stats?.publishedArtworks ?? 0,
-      total_sales: profile.stats?.totalSales ?? 0,
-    }),
+    artist: toPublicProfile(profile),
     artworks: (data ?? []).map(toCard),
     meta: { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)), hasMore: from + limit < total },
   };
@@ -178,7 +174,7 @@ export const getMyArtistProfile = async () => {
 
   const row = unwrap(
     await db
-      .from('artist_profiles')
+      .from('artist_public_profiles')
       .select('*')
       .eq('user_id', user.id)
       .maybeSingle(),
@@ -191,25 +187,32 @@ export const getMyArtistProfile = async () => {
     throw notFound;
   }
 
-  const commission = unwrap(
-    await db.from('platform_settings').select('value').eq('key', 'commission_percent').maybeSingle(),
-  );
+  // Money comes from artist_payout_summary, which aggregates the immutable
+  // per-line snapshots in order_items. This used to read `row.stats`, a
+  // MongoDB-era document with no Postgres column: it did not error, it just
+  // read as undefined, so the dashboard told every artist their lifetime
+  // earnings were zero no matter what they had sold. A wrong number shown
+  // confidently is worse than a failure, so it is now derived or absent.
+  const [commission, payout] = await Promise.all([
+    db.from('platform_settings').select('value').eq('key', 'commission_percent').maybeSingle(),
+    db.rpc('artist_payout_summary', { p_artist_user_id: user.id }),
+  ]);
+
+  const money = payout.data ?? null;
 
   return {
     profile: {
-      ...toPublicProfile({
-        ...row,
-        published_artworks: row.stats?.publishedArtworks ?? 0,
-        total_sales: row.stats?.totalSales ?? 0,
-      }),
+      ...toPublicProfile(row),
       stats: {
-        publishedArtworks: row.stats?.publishedArtworks ?? 0,
-        totalSales: row.stats?.totalSales ?? 0,
-        lifetimeEarningsMinor: row.stats?.lifetimeEarningsMinor ?? 0,
-        pendingEarningsMinor: row.stats?.pendingEarningsMinor ?? 0,
+        publishedArtworks: row.published_artworks ?? 0,
+        totalSales: row.total_sales ?? 0,
+        // null, not 0, when the summary could not be read: the UI can then
+        // say so rather than present an invented figure as settled fact.
+        lifetimeEarningsMinor: money ? Number(money.earnings_minor ?? 0) : null,
+        pendingEarningsMinor: money ? Number(money.pending_minor ?? 0) : null,
       },
     },
-    commissionPercent: Number(commission?.value ?? 10),
+    commissionPercent: Number(commission.data?.value ?? 10),
   };
 };
 
@@ -567,8 +570,8 @@ export const getArtistOverview = async () => {
 
   const [profileResult, payout, artworkRows, actionRows, recentRows, settings] = await Promise.all([
     db
-      .from('artist_profiles')
-      .select('id, display_name, slug, status, avatar_url, review_note, stats')
+      .from('artist_public_profiles')
+      .select('id, display_name, slug, status, avatar_url, review_note, published_artworks, total_sales')
       .eq('user_id', user.id)
       .maybeSingle(),
     db.rpc('artist_payout_summary', { p_artist_user_id: user.id }),

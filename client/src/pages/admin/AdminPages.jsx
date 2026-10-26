@@ -512,8 +512,12 @@ export const AdminArtistsPage = () => {
                       {artist.location ? ` · ${artist.location}` : ''} · applied {formatDate(artist.createdAt)}
                     </p>
                     <p className="font-mono text-[0.72rem] text-muted">
-                      {artist.stats?.publishedArtworks ?? 0} live ·{' '}
-                      {formatMoney(artist.stats?.lifetimeEarningsMinor ?? 0)} earned
+                      {/* `?? 0` here would present an unavailable figure as a
+                          settled one. The data layer sends null when the
+                          stats call failed, so say so instead. */}
+                      {artist.stats
+                        ? `${artist.stats.publishedArtworks} live · ${formatMoney(artist.stats.lifetimeEarningsMinor)} earned`
+                        : 'figures unavailable'}
                     </p>
                   </div>
 

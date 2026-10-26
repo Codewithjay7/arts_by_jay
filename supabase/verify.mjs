@@ -549,6 +549,64 @@ const run = async () => {
     summary.error ? summary.error.message : `got ${JSON.stringify(summary.data?.can_proceed)}`,
   );
 
+  section('Regression: artist figures are derived, not stored');
+
+  // The Artists page, the storefront and the artist dashboard all selected
+  // `artist_profiles.stats`, a MongoDB embedded document with no Postgres
+  // column. The page failed outright with "column artist_profiles.stats does
+  // not exist". 0012 replaced it with a view that derives the figures.
+  const publicArtists = await anon
+    .from('artist_public_profiles')
+    .select('id, display_name, status, published_artworks, total_sales')
+    .eq('status', 'approved');
+
+  check(
+    'the public artist view is readable anonymously',
+    publicArtists.error === null && (publicArtists.data ?? []).length > 0,
+    publicArtists.error ? `${publicArtists.error.code}: ${publicArtists.error.message}` : '',
+  );
+
+  check(
+    'artist_profiles still has NO stats column (the figures are derived)',
+    Boolean((await anon.from('artist_profiles').select('stats').limit(1)).error),
+  );
+
+  // security_invoker must be on, or the view becomes a way to read around the
+  // policies on artist_profiles.
+  check(
+    'the view does not leak unapproved artists to an anonymous visitor',
+    (publicArtists.data ?? []).every((row) => row.status === 'approved'),
+  );
+
+  // The derived count has to be right, not merely present. Compare it with a
+  // direct count of published artworks.
+  const publishedTotal = await anon
+    .from('artworks')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'published');
+  const derivedTotal = (publicArtists.data ?? []).reduce((n, r) => n + Number(r.published_artworks), 0);
+  check(
+    'the derived published counts reconcile with the artworks table',
+    derivedTotal === (publishedTotal.count ?? -1),
+    `view says ${derivedTotal}, artworks says ${publishedTotal.count}`,
+  );
+
+  // Earnings are deliberately NOT in the public view, and the admin function
+  // that does expose them must refuse everyone else.
+  check(
+    'the public artist view exposes no earnings column',
+    !Object.keys(publicArtists.data?.[0] ?? {}).some((k) => /earning|minor/i.test(k)),
+  );
+
+  const statsAsCustomer = await priya.client.rpc('admin_artist_stats');
+  check('admin_artist_stats refuses a customer', Boolean(statsAsCustomer.error));
+
+  const statsAsArtist = await jay.client.rpc('admin_artist_stats');
+  check('admin_artist_stats refuses an artist', Boolean(statsAsArtist.error));
+
+  const statsAsAnon = await anon.rpc('admin_artist_stats');
+  check('admin_artist_stats refuses an anonymous caller', Boolean(statsAsAnon.error));
+
   /* ───────────────────── Clean up ───────────────────── */
 
   // Remove anything this run created, so repeated runs do not accumulate

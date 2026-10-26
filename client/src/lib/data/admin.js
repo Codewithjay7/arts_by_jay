@@ -220,6 +220,15 @@ export const listArtistApplications = async ({ page = 1, limit = 20, status } = 
 
   unwrap({ data, error }, 'Could not load the applications');
 
+  // Published counts and earnings, keyed by artist_profiles.id. These used to
+  // be read from `row.stats`, a MongoDB embedded document with no Postgres
+  // column: it read as undefined and every artist showed 0 works and 0
+  // earned, so the admin could not tell a busy artist from a dormant one.
+  // A failure here must not take down the list, so the stats are optional
+  // and the rows fall back to null rather than to a confident zero.
+  const statsResult = await db.rpc('admin_artist_stats');
+  const statsById = statsResult.error ? null : (statsResult.data ?? {});
+
   const total = count ?? 0;
 
   return {
@@ -233,10 +242,14 @@ export const listArtistApplications = async ({ page = 1, limit = 20, status } = 
       avatarUrl: row.avatar_url,
       specialities: row.specialities ?? [],
       links: row.links ?? {},
-      stats: {
-        publishedArtworks: row.stats?.publishedArtworks ?? 0,
-        lifetimeEarningsMinor: row.stats?.lifetimeEarningsMinor ?? 0,
-      },
+      stats: statsById?.[row.id]
+        ? {
+            publishedArtworks: Number(statsById[row.id].published_artworks ?? 0),
+            totalSales: Number(statsById[row.id].total_sales ?? 0),
+            lifetimeEarningsMinor: Number(statsById[row.id].lifetime_earnings_minor ?? 0),
+            pendingEarningsMinor: Number(statsById[row.id].pending_earnings_minor ?? 0),
+          }
+        : null,
       reviewNote: row.review_note,
       createdAt: row.created_at,
       user: row.user
