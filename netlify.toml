@@ -2,28 +2,29 @@
 # Arts by Jay — Netlify deployment
 #
 # Netlify serves the STATIC frontend only. The backend is Supabase:
-# PostgreSQL + Auth + Storage + Edge Functions. There is no server process
-# here, so nothing from `server/` runs on Netlify.
+# PostgreSQL + Auth + Storage + Edge Functions. Nothing from `server/` runs
+# here, and nothing needs to.
 #
-# Site: 1260b24e-6320-4758-8297-363a193f5421
+# Site: artsbyjay.netlify.app
 # ============================================================================
 
 [build]
-  base    = "client"
+  # Netlify changes into this directory, and runs the install and the build
+  # from here. Everything below is therefore relative to `client/`.
+  base = "client"
   command = "npm run build"
-  publish = "client/dist"
+  # Relative to `base`, NOT to the repo root. Writing "client/dist" here
+  # resolves to client/client/dist and fails with "deploy directory does not
+  # exist" — which is exactly how the first three deploys failed.
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  # Keep the build fast: Netlify does not need the dev-only toolchain.
   NPM_FLAGS = "--no-audit --no-fund"
-
-# ── Deploy previews and branches get their own build ──
-[context.production.environment]
-  NODE_ENV = "production"
-
-[context.deploy-preview.environment]
-  NODE_ENV = "production"
+  # NODE_ENV is deliberately NOT set to "production" here. npm treats that as
+  # "skip devDependencies", and vite is a devDependency — so the install would
+  # succeed and then `npm run build` would fail with "vite: not found".
+  # Vite already builds in production mode for `vite build`.
 
 # ────────────────────────── SPA routing ──────────────────────────
 # React Router owns every path. Without this, a deep link like
@@ -31,38 +32,40 @@
 # of the app. The 200 status matters: a 301 would break client-side routing.
 
 [[redirects]]
-  from   = "/*"
-  to     = "/index.html"
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 # ────────────────────────── Security headers ──────────────────────────
-# This is a site that takes payments, so these are not optional.
+# This site takes payments, so these are not optional.
 #
-# The CSP allowlist below is exhaustive for what the app actually loads. If
-# you add a service, add its origin here or the browser will block it
-# silently — check the console first when something stops working.
+# The CSP allowlist is exhaustive for what the app actually loads. If you add
+# a service, add its origin here or the browser blocks it silently — check the
+# console first when something stops working.
 #
 #   *.supabase.co        database, auth, storage, realtime (wss)
 #   *.razorpay.com       checkout script, its iframe, and its API
-#   fonts.googleapis.com / fonts.gstatic.com   the two webfonts
-#   js.stripe.com        only if you switch the provider to Stripe
+#   js.stripe.com        only if the provider is switched to Stripe
 #   blob: / data:        the photo studio reads a local file into a canvas
+#
+# No font or style origins are needed: the app uses the system font stack and
+# loads no webfonts.
 
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options         = "DENY"
-    X-Content-Type-Options  = "nosniff"
-    Referrer-Policy         = "strict-origin-when-cross-origin"
-    Permissions-Policy      = "camera=(), microphone=(), geolocation=(), payment=(self)"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(self)"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
     Cross-Origin-Opener-Policy = "same-origin-allow-popups"
     Content-Security-Policy = """
       default-src 'self';
       script-src 'self' 'unsafe-inline' https://*.razorpay.com https://js.stripe.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' data: https://fonts.gstatic.com;
-      img-src 'self' data: blob: https://*.supabase.co https://res.cloudinary.com https://*.razorpay.com;
+      style-src 'self' 'unsafe-inline';
+      font-src 'self' data:;
+      img-src 'self' data: blob: https://*.supabase.co https://*.razorpay.com;
       media-src 'self' blob:;
       connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.razorpay.com https://api.stripe.com;
       frame-src https://*.razorpay.com https://js.stripe.com;
